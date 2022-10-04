@@ -26,7 +26,7 @@ class UnhandleLeadsController extends Controller
         abort_if(Gate::denies('unhandle_lead_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            if (auth()->user()->type->in([UserType::DEFAULT, UserType::DigitalMarketing, UserType::DIRECTOR])) {
+            if (auth()->user()->type->in([UserType::DEFAULT, UserType::DIGITAL_MARKETING, UserType::DIRECTOR])) {
                 $query = Lead::unhandled()->with(['sales', 'customer', 'channel'])->select(sprintf('%s.*', (new Lead)->table));
             } else {
                 $query = Lead::tenanted()->unhandled()->with(['sales', 'customer', 'channel'])->select(sprintf('%s.*', (new Lead)->table));

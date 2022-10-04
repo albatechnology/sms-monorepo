@@ -18,29 +18,45 @@ class StoreUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'orlan_user_id' => 'nullable|string|unique:users,orlan_user_id',
             'name'        => [
                 'string',
                 'required',
             ],
             'email'              => [
                 'required',
-                'unique:users',
+                'unique:users,email',
             ],
             'password'           => [
                 'required',
                 'min:3'
             ],
-            'roles.*'            => [
+            'role'            => [
+                'required',
                 'integer',
-            ],
-            'roles'              => [
-                'nullable',
-                'array',
+                'exists:roles,id'
             ],
             'type'               => [
                 'required',
                 new EnumValue(UserType::class, 0)
+            ],
+            'company_id'         => [
+                'nullable',
+                'exists:companies,id'
+            ],
+            'company_ids'         => [
+                'nullable',
+                'array',
+            ],
+            'channel_ids'           => [
+                'nullable',
+                'array',
+            ],
+            'channel_ids.*'         => [
+                'integer',
+            ],
+            'channel_id'         => [
+                'nullable',
+                'exists:channels,id',
             ],
             'supervisor_type_id' => [
                 'required_if:type,' . UserType::SUPERVISOR,
@@ -64,19 +80,13 @@ class StoreUserRequest extends FormRequest
                     }
                 }
             ],
-            'company_id'         => [
-                'nullable',
-                'exists:companies,id'
-            ],
-            'company_ids'         => [
+            'product_brand_ids'         => [
                 'nullable',
                 'array',
             ],
-            'channels.*'         => [
+            'product_brand_ids.*'         => [
                 'integer',
-            ],
-            'channels'           => [
-                'array',
+                'exists:product_brands,id'
             ],
         ];
     }

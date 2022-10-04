@@ -5,15 +5,8 @@
             {{ trans('global.create') }} {{ trans('cruds.user.title_singular') }}
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ route('admin.users.store') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('admin.users.store') }}" enctype="multipart/form-data" class="form-loading">
                 @csrf
-                <div class="form-group">
-                    <label for="orlan_user_id">Orlansoft ID</label>
-                    <input class="form-control {{ $errors->has('orlan_user_id') ? 'is-invalid' : '' }}" type="text" name="orlan_user_id" id="orlan_user_id" value="{{ old('orlan_user_id', '') }}">
-                    @if($errors->has('orlan_user_id'))
-                        <span class="text-danger">{{ $errors->first('orlan_user_id') }}</span>
-                    @endif
-                </div>
                 <div class="form-group">
                     <label class="required" for="name">{{ trans('cruds.user.fields.name') }}</label>
                     <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name"
@@ -25,8 +18,8 @@
                 </div>
                 <div class="form-group">
                     <label class="required" for="email">{{ trans('cruds.user.fields.email') }}</label>
-                    <input class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" type="email" name="email"
-                        id="email" value="{{ old('email') }}" required>
+                    <input class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" type="email"
+                        name="email" id="email" value="{{ old('email') }}" required>
                     @if ($errors->has('email'))
                         <span class="text-danger">{{ $errors->first('email') }}</span>
                     @endif
@@ -42,84 +35,51 @@
                     <span class="help-block">{{ trans('cruds.user.fields.password_helper') }}</span>
                 </div>
                 <div class="form-group">
-                    <label for="roles">{{ trans('cruds.user.fields.roles') }}</label>
-                    <div style="padding-bottom: 4px">
+                    <label for="role">{{ trans('cruds.user.fields.roles') }}</label>
+                    {{-- <div style="padding-bottom: 4px">
                         <span class="btn btn-info btn-xs select-all"
                             style="border-radius: 0">{{ trans('global.select_all') }}</span>
                         <span class="btn btn-info btn-xs deselect-all"
                             style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
-                    </div>
-                    <select class="form-control select2 {{ $errors->has('roles') ? 'is-invalid' : '' }}" name="roles[]"
-                        id="roles" multiple>
-                        @foreach ($roles as $id => $roles)
-                            <option value="{{ $id }}" {{ in_array($id, old('roles', [])) ? 'selected' : '' }}>
-                                {{ $roles }}</option>
+                    </div> --}}
+                    <select class="form-control select2 {{ $errors->has('role') ? 'is-invalid' : '' }}" name="role"
+                        id="role">
+                        @foreach ($roles as $id => $role)
+                            <option value="{{ $id }}" {{ in_array($id, old('role', [])) ? 'selected' : '' }}>
+                                {{ $role }}</option>
                         @endforeach
                     </select>
-                    @if ($errors->has('roles'))
-                        <span class="text-danger">{{ $errors->first('roles') }}</span>
+                    @if ($errors->has('role'))
+                        <span class="text-danger">{{ $errors->first('role') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.user.fields.roles_helper') }}</span>
                 </div>
-                <div x-data="{ type: ''}">
-                    <!-- type -->
-                    <div class="form-group">
-                        <label class="required">{{ trans('cruds.user.fields.type') }}</label>
-                        <select x-model="type" class="form-control {{ $errors->has('type') ? 'is-invalid' : '' }}"
-                            name="type" id="type" required>
-                            <option value disabled {{ old('type', null) === null ? 'selected' : '' }}>
-                                {{ trans('global.pleaseSelect') }}</option>
-                            @foreach (App\Enums\UserType::getInstances() as $enum)
-                                <option value="{{ $enum->value }}"
-                                    {{ old('type', App\Enums\UserType::getDefaultValue()) === (string) $enum->value ? 'selected' : '' }}>
-                                    {{ $enum->description }}</option>
-                            @endforeach
-                        </select>
-                        @if ($errors->has('type'))
-                            <span class="text-danger">{{ $errors->first('type') }}</span>
-                        @endif
-                        <span class="help-block">{{ trans('cruds.user.fields.type_helper') }}</span>
-                    </div>
-                    <!-- supervisor_type_id -->
-                    <template x-if="type == '{{ \App\Enums\UserType::SUPERVISOR }}'">
-                        <div class="form-group">
-                            <label class="required"
-                                for="supervisor_type_id">{{ trans('cruds.user.fields.supervisor_type') }}</label>
-                            <select
-                                class="form-control select2 {{ $errors->has('supervisor_type') ? 'is-invalid' : '' }}"
-                                name="supervisor_type_id" id="supervisor_type_id">
-                                @foreach ($supervisor_types as $id => $supervisor_type)
-                                    <option value="{{ $id }}"
-                                        {{ old('supervisor_type_id') == $id ? 'selected' : '' }}>
-                                        {{ $supervisor_type }}</option>
-                                @endforeach
-                            </select>
-                            @if ($errors->has('supervisor_type'))
-                                <span class="text-danger">{{ $errors->first('supervisor_type') }}</span>
-                            @endif
-                            <span class="help-block">{{ trans('cruds.user.fields.supervisor_type_helper') }}</span>
-                        </div>
-                    </template>
-                    <!-- supervisor_id -->
-                    <div class="form-group">
-                        <label for="supervisor_id">{{ trans('cruds.user.fields.supervisor') }}</label>
-                        <select class="form-control select2 {{ $errors->has('supervisor') ? 'is-invalid' : '' }}"
-                            name="supervisor_id" id="supervisor_id">
-                            @foreach ($supervisors as $id => $supervisor)
-                                <option value="{{ $id }}" {{ old('supervisor_id') == $id ? 'selected' : '' }}>
-                                    {{ $supervisor }}</option>
-                            @endforeach
-                        </select>
-                        @if ($errors->has('supervisor'))
-                            <span class="text-danger">{{ $errors->first('supervisor') }}</span>
-                        @endif
-                        <span class="help-block">{{ trans('cruds.user.fields.supervisor_helper') }}</span>
-                    </div>
-                    <!-- companies -->
-                    <template x-if="type == '{{ \App\Enums\UserType::DIRECTOR }}' || type == '{{ \App\Enums\UserType::DigitalMarketing }}'">
+                <div class="form-group">
+                    <label class="required">{{ trans('cruds.user.fields.type') }}</label>
+                    <select x-model="type" class="form-control {{ $errors->has('type') ? 'is-invalid' : '' }}"
+                        name="type" id="type" required>
+                        <option value="">{{ trans('global.pleaseSelect') }}</option>
+                        @foreach (App\Enums\UserType::getInstances() as $enum)
+                            <option value="{{ $enum->value }}"
+                                {{ old('type') === (string) $enum->value ? 'selected' : '' }}>
+                                {{ $enum->description }}</option>
+                        @endforeach
+                    </select>
+                    @if ($errors->has('type'))
+                        <span class="text-danger">{{ $errors->first('type') }}</span>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.user.fields.type_helper') }}</span>
+                </div>
+                <div id="extra-from"></div>
+                {{-- <div x-data="{ type: '' }"> --}}
+                <!-- type -->
+
+                {{-- <template
+                        x-if="type == '{{ \App\Enums\UserType::DIRECTOR }}' || type == '{{ \App\Enums\UserType::DIGITAL_MARKETING }}'">
                         <div class="form-group">
                             <label class="required" for="company_ids">{{ trans('cruds.user.fields.company') }}</label>
-                            <select class="form-control select2 {{ $errors->has('company_ids') ? 'is-invalid' : '' }}" name="company_ids[]" id="company_ids" multiple>
+                            <select class="form-control select2 {{ $errors->has('company_ids') ? 'is-invalid' : '' }}"
+                                name="company_ids[]" id="company_ids" multiple>
                                 @foreach ($companies as $id => $name)
                                     <option value="{{ $id }}"
                                         {{ in_array($id, old('company_ids', [])) ? 'selected' : '' }}>{{ $name }}
@@ -134,14 +94,16 @@
                         <script>
                             $('.select2').select2();
                         </script>
-                    </template>
-                    <template x-if="type == '{{ \App\Enums\UserType::DEFAULT }}' || type == '{{ \App\Enums\UserType::SALES }}' || type == '{{ \App\Enums\UserType::SUPERVISOR }}'">
+                    </template> --}}
+                <!-- supervisor_type_id -->
+                {{-- <template x-if="type == '{{ \App\Enums\UserType::SUPERVISOR }}'">
                         <div class="form-group">
                             <label class="required" for="company_id">{{ trans('cruds.user.fields.company') }}</label>
-                            <select class="form-control select2 {{ $errors->has('company_id') ? 'is-invalid' : '' }}" name="company_id" id="company_id">
+                            <select class="form-control select2 {{ $errors->has('company_id') ? 'is-invalid' : '' }}"
+                                name="company_id" id="company_id">
                                 @foreach ($companies as $id => $name)
-                                    <option value="{{ $id }}"
-                                        {{ old('company_id') == $id ? 'selected' : '' }}>{{ $name }}
+                                    <option value="{{ $id }}" {{ old('company_id') == $id ? 'selected' : '' }}>
+                                        {{ $name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -150,29 +112,78 @@
                             @endif
                             <span class="help-block">{{ trans('cruds.user.fields.company_helper') }}</span>
                         </div>
-                        <script>
-                            $('.select2').select2();
-                        </script>
-                    </template>
-                    <div class="form-group">
-                        <label for="channels">{{ trans('cruds.user.fields.channels') }}</label>
+                        <div class="form-group">
+                            <label class="required"
+                                for="supervisor_type_id">{{ trans('cruds.user.fields.supervisor_type') }}</label>
+                            <select class="form-control select2 {{ $errors->has('supervisor_type') ? 'is-invalid' : '' }}"
+                                name="supervisor_type_id" id="supervisor_type_id">
+                                @foreach ($supervisor_types as $id => $supervisor_type)
+                                    <option value="{{ $id }}"
+                                        {{ old('supervisor_type_id') == $id ? 'selected' : '' }}>
+                                        {{ $supervisor_type }}</option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('supervisor_type'))
+                                <span class="text-danger">{{ $errors->first('supervisor_type') }}</span>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.user.fields.supervisor_type_helper') }}</span>
+                        </div>
+                    </template> --}}
+
+                <!-- companies -->
+                {{-- <template
+                        x-if="type == '{{ \App\Enums\UserType::DEFAULT }}' || type == '{{ \App\Enums\UserType::SALES }}' }}'">
+                        <div class="form-group">
+                            <label for="supervisor_id">{{ trans('cruds.user.fields.supervisor') }}</label>
+                            <select class="form-control select2 {{ $errors->has('supervisor') ? 'is-invalid' : '' }}"
+                                name="supervisor_id" id="supervisor_id">
+                                @foreach ($supervisors as $id => $supervisor)
+                                    <option value="{{ $id }}" {{ old('supervisor_id') == $id ? 'selected' : '' }}>
+                                        {{ $supervisor }}</option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('supervisor'))
+                                <span class="text-danger">{{ $errors->first('supervisor') }}</span>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.user.fields.supervisor_helper') }}</span>
+                        </div>
+
+                    </template> --}}
+
+                {{-- <div class="form-group">
+                        <label for="channel_ids">{{ trans('cruds.user.fields.channels') }}</label>
                         <div style="padding-bottom: 4px">
                             <span class="btn btn-info btn-xs select-all"
                                 style="border-radius: 0">{{ trans('global.select_all') }}</span>
                             <span class="btn btn-info btn-xs deselect-all"
                                 style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
                         </div>
-                        <select class="form-control select2 {{ $errors->has('channels') ? 'is-invalid' : '' }}"
-                            name="channels[]" id="channels" multiple disabled data-placeholder="Select channels">
+                        <select class="form-control select2 {{ $errors->has('channel_ids') ? 'is-invalid' : '' }}"
+                            name="channel_ids[]" id="channel_ids" multiple disabled data-placeholder="Select channel_ids">
                         </select>
-                        @if ($errors->has('channels'))
-                            <span class="text-danger">{{ $errors->first('channels') }}</span>
+                        @if ($errors->has('channel_ids'))
+                            <span class="text-danger">{{ $errors->first('channel_ids') }}</span>
                         @endif
                         <span class="help-block">{{ trans('cruds.user.fields.channels_helper') }}</span>
                     </div>
-                </div>
+
+                    <div class="form-group">
+                        <label>Product Brand</label>
+                        <div class="mb-1">
+                            <button type="button" class="btn btn-success btn-xs btnSelectAll">Select All</button>
+                            <button type="button" class="btn btn-success btn-xs btnDeselectAll">Deselect All</button>
+                        </div>
+                        <select name="product_brand_ids[]" id="product_brand_ids"
+                            class="form-control select2 @error('product_brand_ids') is-invalid @enderror" multiple
+                            disabled>
+                        </select>
+                        @error('product_brand_ids')
+                            <span class="error invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div> --}}
+                {{-- </div> --}}
                 <div class="form-group">
-                    <button class="btn btn-danger" type="submit">
+                    <button class="btn btn-danger" type="submit" disabled>
                         {{ trans('global.save') }}
                     </button>
                 </div>
@@ -202,17 +213,29 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        var companyId = null;
-        $('body').on('change', '#company_id', function() {
-            $('#channels').attr('disabled', true).html('');
-            companyId = $(this).val();
-            $.post("{{ url('admin/users/get-channels') }}/" + companyId, function(html) {
-                if (companyId) {
-                    $('#channels').attr('disabled', false).html(html);
-                } else {
-                    $('#channels').attr('disabled', true).html('');
-                }
-            });
+
+        $('#type').on('change', function() {
+            var type = $(this).val();
+
+            if (type == 1) {
+                $('#extra-from').load("{{ url('admin/users/includes/default') }}");
+            } else if (type == 2) {
+                $('#extra-from').load("{{ url('admin/users/includes/sales') }}");
+            } else if (type == 3) {
+                $('#extra-from').load("{{ url('admin/users/includes/supervisor') }}");
+            } else if (type == 4) {
+                $('#extra-from').load("{{ url('admin/users/includes/director') }}");
+            } else {
+                $('#extra-from').html("");
+            }
+
+            if (type) {
+                $(":submit").attr('disabled', false);
+            } else {
+                $(":submit").attr('disabled', true);
+            }
         });
+
+
     </script>
 @endsection

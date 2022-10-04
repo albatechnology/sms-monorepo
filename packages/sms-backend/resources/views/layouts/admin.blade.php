@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>{{ trans('panel.site_title') }}</title>
+    <title>{{ env('APP_NAME') }}</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" rel="stylesheet" />
     <link
@@ -26,11 +24,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.css" rel="stylesheet" />
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
     @yield('styles')
-
     <livewire:styles />
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.1/dist/alpine.min.js" defer></script>
 </head>
-
 <body class="sidebar-mini layout-fixed" style="height: auto;">
     <div class="wrapper">
         <nav class="main-header navbar navbar-expand bg-white navbar-light border-bottom">
@@ -42,7 +38,7 @@
             </ul>
 
             <!-- Right navbar links -->
-            @if (count(config('panel.available_languages', [])) > 1)
+            {{-- @if (count(config('panel.available_languages', [])) > 1)
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link" data-toggle="dropdown" href="#">
@@ -57,7 +53,7 @@
                         </div>
                     </li>
                 </ul>
-            @endif
+            @endif --}}
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item align-self-center">
                     {{ auth()->user()->name }}
@@ -99,9 +95,7 @@
                     </div>
                 </li>
             </ul>
-
         </nav>
-
         @include('partials.menu')
         <div class="content-wrapper" style="min-height: 917px;">
             <!-- Main content -->
@@ -126,7 +120,6 @@
             </section>
             <!-- /.content -->
         </div>
-
         <footer class="main-footer">
             <div class="float-right d-none d-sm-block">
                 <b>Version</b> 3.0.0-alpha

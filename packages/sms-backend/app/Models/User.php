@@ -50,7 +50,6 @@ class User extends Authenticatable implements Tenanted, ReportableScope
     ];
 
     protected $fillable = [
-        'orlan_user_id',
         'name',
         'email',
         'email_verified_at',
@@ -249,10 +248,10 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         $hasActiveChannel = tenancy()->getActiveTenant();
         $hasActiveCompany = tenancy()->getActiveCompany();
         $user = tenancy()->getUser();
-        $isDigitalMarketing = $user->type->is(UserType::DigitalMarketing);
+        $isDIGITAL_MARKETING = $user->type->is(UserType::DIGITAL_MARKETING);
         $isAdmin = $user->is_admin;
 
-        if (!$hasActiveChannel && ($isAdmin || $isDigitalMarketing)) {
+        if (!$hasActiveChannel && ($isAdmin || $isDIGITAL_MARKETING)) {
             return $query;
         }
 
@@ -263,7 +262,7 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         }
 
         if ($hasActiveCompany) {
-            if ($isAdmin || $isDigitalMarketing) {
+            if ($isAdmin || $isDIGITAL_MARKETING) {
                 // lets admin see all channels in a company
                 return $query->whereHas('channels', function ($query) use ($hasActiveCompany) {
                     $query->whereIn('company_id', $hasActiveCompany->id);
@@ -276,7 +275,7 @@ class User extends Authenticatable implements Tenanted, ReportableScope
                 });
             }
         } else {
-            if ($isAdmin || $isDigitalMarketing) {
+            if ($isAdmin || $isDIGITAL_MARKETING) {
                 // lets admin see all
                 return $query;
             } else {
@@ -347,9 +346,9 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         return $this->type->is(UserType::DIRECTOR);
     }
 
-    public function getIsDigitalMarketingAttribute(): bool
+    public function getIsDIGITAL_MARKETINGAttribute(): bool
     {
-        return $this->type->is(UserType::DigitalMarketing);
+        return $this->type->is(UserType::DIGITAL_MARKETING);
     }
 
     public function getEmailVerifiedAtAttribute($value): ?string
@@ -502,6 +501,11 @@ class User extends Authenticatable implements Tenanted, ReportableScope
     public function userUserAlerts(): BelongsToMany
     {
         return $this->belongsToMany(UserAlert::class);
+    }
+
+    public function productBrands(): BelongsToMany
+    {
+        return $this->belongsToMany(ProductBrand::class, 'product_brand_users');
     }
 
     /**

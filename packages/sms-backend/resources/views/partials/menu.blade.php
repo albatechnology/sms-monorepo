@@ -1,7 +1,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4" style="min-height: 917px;">
     <!-- Brand Logo -->
     <a href="#" class="brand-link">
-        <span class="brand-text font-weight-light">{{ trans('panel.site_title') }}</span>
+        <span class="brand-text font-weight-light">{{ env('APP_NAME') }}</span>
     </a>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -97,7 +97,7 @@
                                     </a>
                                 </li>
                             @endcan
-                            @can('audit_log_access')
+                            {{-- @can('audit_log_access')
                                 <li class="nav-item">
                                     <a href="{{ route("admin.audit-logs.index") }}"
                                        class="nav-link {{ request()->is("admin/audit-logs") || request()->is("admin/audit-logs/*") ? "active" : "" }}">
@@ -109,7 +109,7 @@
                                         </p>
                                     </a>
                                 </li>
-                            @endcan
+                            @endcan --}}
                             @can('user_alert_access')
                                 <li class="nav-item">
                                     <a href="{{ route("admin.user-alerts.index") }}"

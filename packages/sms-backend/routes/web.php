@@ -72,7 +72,7 @@ Auth::routes(['register' => false]);
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth']], function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('phpinfo', function(){
+    Route::get('phpinfo', function () {
         phpinfo();
     });
     Route::get('email', [HomeController::class, 'testEmail'])->name('testEmail');
@@ -93,6 +93,14 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('roles', 'RolesController');
 
     // Users
+
+    Route::group(['prefix' => 'users/includes'], function () {
+        Route::get('default', [UsersController::class, 'includeFormDefault']);
+        Route::get('director', [UsersController::class, 'includeFormDirector']);
+        Route::get('supervisor', [UsersController::class, 'includeFormSupervisor']);
+        Route::get('sales', [UsersController::class, 'includeFormSales']);
+    });
+    Route::get('users/get-users', 'UsersController@ajaxGetUsers');
     Route::get('users/create-sms', [UsersController::class, 'createSms'])->name('users.createSms');
     Route::post('users/create-sms', [UsersController::class, 'storeSms'])->name('users.storeSms');
     Route::get('users/{id}/edit-sms', [UsersController::class, 'editSms'])->name('users.editSms');
@@ -168,6 +176,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('channel-categories', 'ChannelCategoryController');
 
     // Channels
+    Route::get('channels/get-channels', 'ChannelController@ajaxGetChannels');
     Route::delete('channels/destroy', [ChannelController::class, 'massDestroy'])->name('channels.massDestroy');
     Route::resource('channels', 'ChannelController');
 
@@ -396,6 +405,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('target-schedules', 'TargetScheduleController');
 
     // Product Brand
+    Route::get('product-brands/get-product-brands', 'ProductBrandController@ajaxGetProductBrands');
     Route::get('product-brands/getProductBrand/{brandCategoryId}', 'ProductBrandController@getProductBrand')->name('product-brands.getProductBrand');
     Route::delete('product-brands/destroy', 'ProductBrandController@massDestroy')->name('product-brands.massDestroy');
     Route::post('product-brands/activation-data', 'ProductBrandController@ajaxActivationData')->name('product-brands.ajaxActivationData');

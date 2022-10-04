@@ -18,11 +18,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Lead;
 use App\Enums\UserType;
-use App\Http\Requests\StoreSmsUserRequest;
-use App\Http\Requests\UpdateSmsUserRequest;
 use App\Models\PermissionUser;
-use App\Models\SmsChannel;
 use App\Models\UserCompany;
+use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
@@ -36,16 +34,6 @@ class UsersController extends Controller
             $query = User::tenanted()->with(['roles', 'supervisor_type', 'companies', 'channels'])
                 ->leftJoin('users AS spv', 'spv.id', '=', 'users.supervisor_id')
                 ->select(sprintf('%s.*', (new User)->table));
-
-            if (isset($request->user_app) && $request->user_app != '') {
-                if ($request->user_app == 'sms') {
-                    // $query = $query->type->in([UserType::SALES_SMS, UserType::SUPERVISOR_SMS]);
-                    $query = $query->whereIn('users.type', [UserType::SALES_SMS, UserType::SUPERVISOR_SMS]);
-                } else {
-                    $query = $query->whereNotIn('users.type', [UserType::SALES_SMS, UserType::SUPERVISOR_SMS]);
-                    // $query = $query->type->notIn([UserType::SALES_SMS, UserType::SUPERVISOR_SMS]);
-                }
-            }
 
             if (!empty($request->input('columns.9.search.value'))) {
                 $query->whereHas('channels', function ($q) use ($request) {
@@ -124,17 +112,7 @@ class UsersController extends Controller
                     $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $channel->name);
                 }
 
-                return implode(' ', $labels);
-            });
-
-            $table->editColumn('channels', function ($row) {
-                $labels = [];
-
-                foreach ($row->channels as $channel) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $channel->name);
-                }
-
-                return implode(' ', $labels);
+                return implode(', ', $labels);
             });
 
             $table->filterColumn('channels', function ($query) {
@@ -160,41 +138,22 @@ class UsersController extends Controller
     {
         abort_if(Gate::denies('user_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $roles = Role::all()->pluck('title', 'id');
+        $roles = Role::all()->pluck('title', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $supervisor_types = SupervisorType::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $supervisors = User::tenanted()->whereIsSupervisor()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $companies = Company::tenanted()->get()->pluck('name', 'id');
+        $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         return view('admin.users.create', compact('roles', 'supervisor_types', 'supervisors', 'companies'));
     }
 
-    public function createSms(Request $request)
-    {
-        abort_if(Gate::denies('user_create_sms'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        $supervisors = User::where('type', UserType::SUPERVISOR_SMS)->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $channels = SmsChannel::whereNull('user_id')->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $types = UserType::getSMSUserType();
-        return view('admin.users.create-sms', compact('channels', 'supervisors', 'types'));
-    }
-
-    public function storeSms(StoreSmsUserRequest $request)
-    {
-        $data = $request->validated();
-        if ($request->type == UserType::SALES_SMS) {
-            $channel_id = User::findOrFail($request->supervisor_id)->channel_id;
-            $data = array_merge($data, ['channel_id' => $channel_id]);
-        }
-        $user = User::create($data);
-        if ($request->type == UserType::SUPERVISOR_SMS) SmsChannel::findOrFail($request->channel_id)->update(['user_id' => $user->id]);
-        return redirect()->route('admin.users.index');
-    }
-
     public function store(StoreUserRequest $request)
+    // public function store(Request $request)
     {
-        /** @var User $user */
+        // dump($request->validated());
+        // dd($request->all());
+
         $user = User::create($request->validated());
         if (isset($request->company_ids) && count($request->company_ids) > 0) {
             $user->userCompanies()->delete();
@@ -207,9 +166,12 @@ class UsersController extends Controller
             UserCompany::create(['user_id' => $user->id, 'company_id' => $user->company_id]);
         }
 
-        $user->roles()->sync($request->input('roles', []));
+        $user->roles()->sync($request->input('role', []));
+
+        $user->productBrands()->sync($request->input('product_brand_ids', []));
 
         $userId = $user->id;
+
         $user->roles->each(function ($role) use ($userId) {
             $role->permissions->each(function ($permission) use ($userId) {
                 PermissionUser::insert([
@@ -219,36 +181,12 @@ class UsersController extends Controller
             });
         });
         //$user->companies()->sync($request->input('companies', []));
-        if (isset($request->channels) && count($request->channels) > 0) $user->channels()->sync($request->input('channels', []));
-
-        return redirect()->route('admin.users.index');
-    }
-
-    public function editSms($id)
-    {
-        $user = User::findOrFail($id);
-        abort_if(Gate::denies('user_edit_sms'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        if (!$user->type->in([UserType::SALES_SMS, UserType::SUPERVISOR_SMS])) return redirect()->route('admin.users.edit', $user->id);
-        $supervisors = User::where('type', UserType::SUPERVISOR_SMS)->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $channels = SmsChannel::whereNull('user_id')->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $types = UserType::getSMSUserType();
-        return view('admin.users.edit-sms', compact('supervisors', 'channels', 'types', 'user'));
-    }
-
-    public function updateSms(UpdateSmsUserRequest $request, $id)
-    {
-        $user = User::findOrFail($id);
-        if ($request->type == UserType::SALES_SMS) {
-            $channel_id = User::findOrFail($request->supervisor_id)->channel_id;
-            $user->channel_id = $channel_id;
+        if (isset($request->channel_ids) && count($request->channel_ids) > 0) {
+            $user->channels()->sync($request->input('channel_ids', []));
+        } elseif (isset($request->channel_id)) {
+            $user->channels()->sync([$request->channel_id]);
         }
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->type = $request->type;
-        $user->supervisor_id = $request->supervisor_id;
-        if (isset($request->password) && $request->password != '') $user->password = $request->password;
-        $user->save();
-        if ($request->type == UserType::SUPERVISOR_SMS) SmsChannel::findOrFail($request->channel_id)->update(['user_id' => $user->id]);
+
         return redirect()->route('admin.users.index');
     }
 
@@ -331,6 +269,43 @@ class UsersController extends Controller
         return response(null, Response::HTTP_NO_CONTENT);
     }
 
+    public function ajaxGetUsers(Request $request)
+    {
+        if ($request->ajax()) {
+            $users = User::select('id', 'name');
+            if ($companyId = $request->company_id) {
+                $users->where(function ($q) use ($companyId) {
+                    $q->where('company_id', $companyId)->orWhereHas('companies', fn ($q) => $q->where('channel_id', $companyId));
+                });
+            }
+            if ($channelId = $request->channel_id) {
+                $users->whereHas('channels', fn ($q) => $q->where('channel_id', $channelId));
+            }
+            if ($type = $request->type) {
+                $users->where('type', $type);
+            }
+            if ($supervisorTypeId = $request->supervisor_type_id) {
+                if ($request->is_create_user == 1) {
+                    $supervisorTypeId = (int)$supervisorTypeId + 1;
+                    $users->where('supervisor_type_id', $supervisorTypeId);
+                } else {
+                    $users->where('supervisor_type_id', $supervisorTypeId);
+                }
+            }
+            // if ($supervisorId = $request->supervisor_id) {
+            //     $users->where('supervisor_id', $supervisorId);
+            // }
+            // if ($name = $request->name) {
+            //     $users->where('name', 'like', '%' . $name . '%');
+            // }
+            // if ($email = $request->email) {
+            //     $users->where('email', 'like', '%' . $email . '%');
+            // }
+
+            return $users->get();
+        }
+    }
+
     public function getChannels($companyId)
     {
         $channel_ids = isset($_POST['channel_ids']) && count($_POST['channel_ids']) > 0 ? $_POST['channel_ids'] : [];
@@ -350,5 +325,32 @@ class UsersController extends Controller
     {
         $user = User::findOrFail($id);
         return response()->json($user);
+    }
+
+    public function includeFormDefault()
+    {
+        $companies = Company::tenanted()->get()->pluck('name', 'id');
+        return view('admin.users.includes.default', ['companies' => $companies]);
+    }
+
+    public function includeFormDirector()
+    {
+        $companies = Company::tenanted()->get()->pluck('name', 'id');
+        return view('admin.users.includes.director', ['companies' => $companies]);
+    }
+
+    public function includeFormSupervisor()
+    {
+        $companies = Company::tenanted()->get()->pluck('name', 'id');
+        $supervisor_types = SupervisorType::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $maxSupervisorTypeId = DB::table('supervisor_types')->whereNull('deleted_at')->max('id');
+
+        return view('admin.users.includes.supervisor', ['companies' => $companies, 'supervisor_types' => $supervisor_types, 'maxSupervisorTypeId' => $maxSupervisorTypeId]);
+    }
+
+    public function includeFormSales()
+    {
+        $companies = Company::tenanted()->get()->pluck('name', 'id');
+        return view('admin.users.includes.sales', ['companies' => $companies]);
     }
 }

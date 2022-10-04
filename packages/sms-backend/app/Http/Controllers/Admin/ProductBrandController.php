@@ -228,4 +228,16 @@ class ProductBrandController extends Controller
         }
         return ['success' => false, 'message' => 'Request Rejected'];
     }
+
+    public function ajaxGetProductBrands(Request $request)
+    {
+        if ($request->ajax()) {
+            $productBrands = ProductBrand::tenanted();
+            if ($request->company_id) {
+                $company_id = explode(',', $request->company_id);
+                $productBrands = $productBrands->whereIn('company_id', $company_id ?? []);
+            }
+            return $productBrands->get(['id', 'name']);
+        }
+    }
 }

@@ -506,23 +506,23 @@ class MenuService
     protected static function menuManagement()
     {
 
-        $target = new Submenu(
-            'target_access',
-            route("admin.targets.index"),
-            'admin/targets',
-            'fas fa-chart-line',
-            trans('cruds.target.title'),
-            1,
-        );
+        // $target = new Submenu(
+        //     'target_access',
+        //     route("admin.targets.index"),
+        //     'admin/targets',
+        //     'fas fa-chart-line',
+        //     trans('cruds.target.title'),
+        //     1,
+        // );
 
-        $schedule = new Submenu(
-            'target_schedule_access',
-            route("admin.target-schedules.index"),
-            'admin/target-schedules',
-            'fas fa-calendar-alt',
-            trans('cruds.targetSchedule.title'),
-            1,
-        );
+        // $schedule = new Submenu(
+        //     'target_schedule_access',
+        //     route("admin.target-schedules.index"),
+        //     'admin/target-schedules',
+        //     'fas fa-calendar-alt',
+        //     trans('cruds.targetSchedule.title'),
+        //     1,
+        // );
 
         $supervisorType = new Submenu(
             'supervisor_type_access',
@@ -533,24 +533,24 @@ class MenuService
             0,
         );
 
-        $currency = new Submenu(
-            'currency_access',
-            route("admin.currencies.index"),
-            'admin/currencies',
-            'fas fa-money-bill-alt',
-            trans('cruds.currency.title'),
-            0,
-        );
+        // $currency = new Submenu(
+        //     'currency_access',
+        //     route("admin.currencies.index"),
+        //     'admin/currencies',
+        //     'fas fa-money-bill-alt',
+        //     trans('cruds.currency.title'),
+        //     0,
+        // );
 
         return new Menu(
             'management_access',
             'fas fa-cogs',
             trans('cruds.management.title'),
             ...[
-                $target,
-                $schedule,
+                // $target,
+                // $schedule,
                 $supervisorType,
-                $currency,
+                // $currency,
             ]
         );
     }

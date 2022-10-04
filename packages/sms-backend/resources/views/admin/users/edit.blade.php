@@ -118,7 +118,7 @@
                         <span class="help-block">{{ trans('cruds.user.fields.supervisor_helper') }}</span>
                     </div>
                     <!-- companies -->
-                    <template x-if="type == '{{ \App\Enums\UserType::DIRECTOR }}' || type == '{{ \App\Enums\UserType::DigitalMarketing }}'">
+                    <template x-if="type == '{{ \App\Enums\UserType::DIRECTOR }}' || type == '{{ \App\Enums\UserType::DIGITAL_MARKETING }}'">
                         <div class="form-group">
                             <label class="required" for="company_ids">{{ trans('cruds.user.fields.company') }}</label>
                             <select class="form-control select2 {{ $errors->has('company_ids') ? 'is-invalid' : '' }}" name="company_ids[]" id="company_ids" multiple>

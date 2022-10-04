@@ -8,6 +8,7 @@ use App\Http\Requests\StoreChannelRequest;
 use App\Http\Requests\UpdateChannelRequest;
 use App\Models\Channel;
 use App\Models\ChannelCategory;
+use App\Models\ChannelUser;
 use App\Models\Company;
 use App\Models\SmsChannel;
 use Gate;
@@ -147,5 +148,21 @@ class ChannelController extends Controller
         Channel::whereIn('id', request('ids'))->delete();
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function ajaxGetChannels(Request $request)
+    {
+        if ($request->ajax()) {
+            if ($supervisorId = $request->supervisor_id) {
+                return Channel::whereIn('id', ChannelUser::where('user_id', $supervisorId)->pluck('channel_id')->all())->get(['id', 'name']);
+            }
+
+            $channels = Channel::tenanted();
+            if ($request->company_id) {
+                $company_id = explode(',', $request->company_id);
+                $channels = $channels->whereIn('company_id', $company_id ?? []);
+            }
+            return $channels->get(['id', 'name']);
+        }
     }
 }

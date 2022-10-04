@@ -4,7 +4,7 @@
         <div style="margin-bottom: 10px;" class="row">
             <div class="col-lg-12">
                 <a class="btn btn-success" href="{{ route('admin.users.create') }}">{{ trans('global.add') }} {{ trans('cruds.user.title_singular') }}</a>
-                <a class="btn btn-success" href="{{ route('admin.users.createSms') }}">Add SMS User</a>
+                {{-- <a class="btn btn-success" href="{{ route('admin.users.createSms') }}">Add SMS User</a> --}}
                 <button class="btn btn-warning" data-toggle="modal" data-target="#csvImportModal">
                     {{ trans('global.app_csvImport') }}
                 </button>
@@ -13,14 +13,14 @@
         </div>
     @endcan
     <div class="card">
-        <div class="card-header">
+        {{-- <div class="card-header">
             {{ trans('cruds.user.title_singular') }} {{ trans('global.list') }}
             <select name="user_app" id="user_app" class="float-right">
                 <option value="">- All User App -</option>
                 <option value="moves">- Moves -</option>
                 <option value="sms">- SMS -</option>
             </select>
-        </div>
+        </div> --}}
         <div class="card-body">
             <table class=" table table-bordered table-striped table-hover ajaxTable datatable datatable-User">
                 <thead>
@@ -29,7 +29,6 @@
                         <th>
                             {{ trans('cruds.user.fields.id') }}
                         </th>
-                        <th>Orlansoft ID</th>
                         <th>
                             {{ trans('cruds.user.fields.name') }}
                         </th>
@@ -59,9 +58,6 @@
                         <td></td>
                         <td>
                             <input class="search" type="text" strict="true" placeholder="{{ trans('global.search') }}">
-                        </td>
-                        <td>
-                            <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
@@ -163,7 +159,7 @@
                 ajax: {
                     url: "{{ route('admin.users.index') }}",
                     data: function(d) {
-                        d.user_app = $('#user_app').val();
+                        // d.user_app = $('#user_app').val();
                     }
                 },
                 columns: [{
@@ -173,10 +169,6 @@
                     {
                         data: 'id',
                         name: 'id'
-                    },
-                    {
-                        data: 'orlan_user_id',
-                        name: 'orlan_user_id'
                     },
                     {
                         data: 'name',
@@ -246,9 +238,9 @@
                 });
             });
 
-            $('#user_app').change(function() {
-                table.ajax.reload();
-            });
+            // $('#user_app').change(function() {
+            //     table.ajax.reload();
+            // });
         });
     </script>
 @endsection
