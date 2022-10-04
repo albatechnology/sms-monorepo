@@ -1,0 +1,44 @@
+name: Deploy Staging Melandas Expo
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'packages/melandas-app/**'
+
+jobs:
+  install_build:
+    name: Install dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Cache Node Modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install packages
+        working-directory: ./packages/melandas-app
+        run: yarn install
+
+      - uses: expo/expo-github-action@v5
+        with:
+          expo-packager: yarn
+          expo-username: ${{ secrets.EXPO_MELANDAS_CLI_USERNAME }}
+          expo-password: ${{ secrets.EXPO_MELANDAS_CLI_PASSWORD }}
+          expo-cache: true
+
+      - name: Expo Publish Channel
+        working-directory: ./packages/melandas-app
+        run: expo publish --non-interactive
+        env:
+          NODE_OPTIONS: --max_old_space_size=4096

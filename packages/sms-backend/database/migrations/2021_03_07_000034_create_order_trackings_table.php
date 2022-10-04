@@ -1,0 +1,22 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateOrderTrackingsTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('order_trackings', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('type')->nullable();
+            $table->longText('context')->nullable();
+            $table->longText('old_value')->nullable();
+            $table->longText('new_value')->nullable();
+            $table->foreignId('order_id')->constrained();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
+}

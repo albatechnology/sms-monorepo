@@ -1,0 +1,7 @@
+[
+  {
+    "code": "ActivityReminder",
+    "link": "{'index':0,'routes':[{'name':'Customer','state':{'routes':[{'name':'CustomerList'},{'name':'ActivityDetail','params':{'id':%s,'isDeals':false}}]}}]}",
+    "description": "User set their own reminder on activities. Link to the activity page where the reminder is set."
+  }
+]

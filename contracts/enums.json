@@ -1,0 +1,815 @@
+[
+    {
+        "code": "ActivityFollowUpMethod",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "PHONE",
+                "label": "Phone",
+                "read_only": false
+            },
+            {
+                "value": "WHATSAPP",
+                "label": "Whatsapp",
+                "read_only": false
+            },
+            {
+                "value": "MEETING",
+                "label": "Meeting",
+                "read_only": false
+            },
+            {
+                "value": "OTHERS",
+                "label": "Others",
+                "read_only": false
+            },
+            {
+                "value": "WALK_IN_CUSTOMER",
+                "label": "Walk in customer",
+                "read_only": false
+            },
+            {
+                "value": "NEW_ORDER",
+                "label": "New order",
+                "read_only": true
+            }
+        ]
+    },
+    {
+        "code": "ActivityStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "HOT",
+                "label": "Hot",
+                "read_only": false
+            },
+            {
+                "value": "WARM",
+                "label": "Warm",
+                "read_only": false
+            },
+            {
+                "value": "COLD",
+                "label": "Cold",
+                "read_only": false
+            },
+            {
+                "value": "CLOSED",
+                "label": "Closed",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "AddressType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "ADDRESS",
+                "label": "Address",
+                "read_only": false
+            },
+            {
+                "value": "DELIVERY",
+                "label": "Delivery",
+                "read_only": false
+            },
+            {
+                "value": "BILLING",
+                "label": "Billing",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "CacheKey",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "ALL_COMPANIES_COLLECTION",
+                "label": "All companies collection",
+                "read_only": false
+            },
+            {
+                "value": "ALL_CHANNELS_COLLECTION",
+                "label": "All channels collection",
+                "read_only": false
+            },
+            {
+                "value": "ALL_SUPERVISOR_TYPES_COLLECTION",
+                "label": "All supervisor types collection",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "CacheTags",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "COMPANY",
+                "label": "Company",
+                "read_only": false
+            },
+            {
+                "value": "CHANNEL",
+                "label": "Channel",
+                "read_only": false
+            },
+            {
+                "value": "SUPERVISOR_TYPE",
+                "label": "Supervisor type",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "DiscountableType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "ORDER",
+                "label": "Order",
+                "read_only": false
+            },
+            {
+                "value": "PRODUCT",
+                "label": "Product",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "DiscountError",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "INACTIVE",
+                "label": "This discount is no longer active.",
+                "read_only": false
+            },
+            {
+                "value": "USE_LIMIT_REACHED",
+                "label": "This customer has reached the discount use limit.",
+                "read_only": false
+            },
+            {
+                "value": "UNDER_MINIMUM_PRICE",
+                "label": "The order price is under the minimum required price for the discount.",
+                "read_only": false
+            },
+            {
+                "value": "NOT_APPLICABLE_TO_ANY_PRODUCT",
+                "label": "The selected discount does not apply to any of the products.",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "DiscountScope",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "QUANTITY",
+                "label": "Per product unit quantity",
+                "read_only": false
+            },
+            {
+                "value": "TYPE",
+                "label": "Per product unit type",
+                "read_only": false
+            },
+            {
+                "value": "TRANSACTION",
+                "label": "Per transaction",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "DiscountType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "NOMINAL",
+                "label": "Nominal",
+                "read_only": false
+            },
+            {
+                "value": "PERCENTAGE",
+                "label": "Percentage",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "ExportModel",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "PRODUCT",
+                "label": "Product",
+                "read_only": false
+            },
+            {
+                "value": "PRODUCT_BRAND",
+                "label": "Product_brand",
+                "read_only": false
+            },
+            {
+                "value": "PRODUCT_MODEL",
+                "label": "Product_model",
+                "read_only": false
+            },
+            {
+                "value": "PRODUCT_VERSION",
+                "label": "Product_version",
+                "read_only": false
+            },
+            {
+                "value": "PRODUCT_CATEGORY_CODE",
+                "label": "Product_category_code",
+                "read_only": false
+            },
+            {
+                "value": "PRODUCT_UNIT",
+                "label": "Product_unit",
+                "read_only": false
+            },
+            {
+                "value": "COLOUR",
+                "label": "Colour",
+                "read_only": false
+            },
+            {
+                "value": "COVERING",
+                "label": "Covering",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "LeadStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "GREEN",
+                "label": "Green",
+                "read_only": false
+            },
+            {
+                "value": "YELLOW",
+                "label": "Yellow",
+                "read_only": false
+            },
+            {
+                "value": "RED",
+                "label": "Red",
+                "read_only": false
+            },
+            {
+                "value": "EXPIRED",
+                "label": "Expired",
+                "read_only": false
+            },
+            {
+                "value": "SALES",
+                "label": "Sales",
+                "read_only": false
+            },
+            {
+                "value": "OTHER_SALES",
+                "label": "Other_sales",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "LeadType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "PROSPECT",
+                "label": "Prospect",
+                "read_only": false
+            },
+            {
+                "value": "CLOSED",
+                "label": "Closed",
+                "read_only": false
+            },
+            {
+                "value": "LEADS",
+                "label": "Leads",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "NotificationType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "ActivityReminder",
+                "label": "Activityreminder",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "OrderApprovalStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "NOT_REQUIRED",
+                "label": "Not_required",
+                "read_only": false
+            },
+            {
+                "value": "WAITING_APPROVAL",
+                "label": "Waiting_approval",
+                "read_only": false
+            },
+            {
+                "value": "APPROVED",
+                "label": "Approved",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "OrderDetailShipmentStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "NONE",
+                "label": "None",
+                "read_only": false
+            },
+            {
+                "value": "PARTIAL",
+                "label": "Partial",
+                "read_only": false
+            },
+            {
+                "value": "PREPARING",
+                "label": "Preparing",
+                "read_only": false
+            },
+            {
+                "value": "DELIVERING",
+                "label": "Delivering",
+                "read_only": false
+            },
+            {
+                "value": "ARRIVED",
+                "label": "Arrived",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "OrderDetailStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "NOT_FULFILLED",
+                "label": "Not_fulfilled",
+                "read_only": false
+            },
+            {
+                "value": "PARTIALLY_FULFILLED",
+                "label": "Partially_fulfilled",
+                "read_only": false
+            },
+            {
+                "value": "FULFILLED",
+                "label": "Fulfilled",
+                "read_only": false
+            },
+            {
+                "value": "OVER_FULFILLED",
+                "label": "Over_fulfilled",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "OrderPaymentStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "NONE",
+                "label": "None",
+                "read_only": false
+            },
+            {
+                "value": "PARTIAL",
+                "label": "Partial",
+                "read_only": false
+            },
+            {
+                "value": "SETTLEMENT",
+                "label": "Settlement",
+                "read_only": false
+            },
+            {
+                "value": "OVERPAYMENT",
+                "label": "Overpayment",
+                "read_only": false
+            },
+            {
+                "value": "REFUNDED",
+                "label": "Refunded",
+                "read_only": false
+            },
+            {
+                "value": "DOWN_PAYMENT",
+                "label": "Down_payment",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "OrderShipmentStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "NONE",
+                "label": "None",
+                "read_only": false
+            },
+            {
+                "value": "PARTIAL",
+                "label": "Partial",
+                "read_only": false
+            },
+            {
+                "value": "PREPARING",
+                "label": "Preparing",
+                "read_only": false
+            },
+            {
+                "value": "DELIVERING",
+                "label": "Delivering",
+                "read_only": false
+            },
+            {
+                "value": "ARRIVED",
+                "label": "Arrived",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "OrderStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "QUOTATION",
+                "label": "Quotation",
+                "read_only": false
+            },
+            {
+                "value": "SHIPMENT",
+                "label": "Shipment",
+                "read_only": false
+            },
+            {
+                "value": "CANCELLED",
+                "label": "Cancelled",
+                "read_only": false
+            },
+            {
+                "value": "RETURNED",
+                "label": "Returned",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "OrderStockStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "INDENT",
+                "label": "Indent",
+                "read_only": false
+            },
+            {
+                "value": "FULFILLED",
+                "label": "Fulfilled",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "PaymentStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "PENDING",
+                "label": "Pending",
+                "read_only": false
+            },
+            {
+                "value": "APPROVED",
+                "label": "Approved",
+                "read_only": false
+            },
+            {
+                "value": "REJECTED",
+                "label": "Rejected",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "PersonTitle",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "MR",
+                "label": "Mr.",
+                "read_only": false
+            },
+            {
+                "value": "MS",
+                "label": "Ms.",
+                "read_only": false
+            },
+            {
+                "value": "MRS",
+                "label": "Mrs.",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "ProductCategoryType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "COLLECTION",
+                "label": "Collection",
+                "read_only": false
+            },
+            {
+                "value": "SUB_COLLECTION",
+                "label": "Sub collection",
+                "read_only": false
+            },
+            {
+                "value": "BRAND_TYPE",
+                "label": "Brand type",
+                "read_only": false
+            },
+            {
+                "value": "BRAND",
+                "label": "Brand",
+                "read_only": false
+            },
+            {
+                "value": "CATEGORY",
+                "label": "Category",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "ReportableType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "COMPANY",
+                "label": "Company",
+                "read_only": false
+            },
+            {
+                "value": "CHANNEL",
+                "label": "Channel",
+                "read_only": false
+            },
+            {
+                "value": "USER",
+                "label": "User",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "ReportPipelineMode",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "ADD_TARGET_MAP",
+                "label": "Add_target_map",
+                "read_only": false
+            },
+            {
+                "value": "EVALUATE_TARGET",
+                "label": "Evaluate_target",
+                "read_only": false
+            },
+            {
+                "value": "ADD_NEW_TARGET_MAP_TO_TARGET",
+                "label": "Add_new_target_map_to_target",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "ShipmentStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "PREPARING",
+                "label": "Preparing",
+                "read_only": false
+            },
+            {
+                "value": "DELIVERING",
+                "label": "Delivering",
+                "read_only": false
+            },
+            {
+                "value": "ARRIVED",
+                "label": "Arrived",
+                "read_only": false
+            },
+            {
+                "value": "CANCELLED",
+                "label": "Cancelled",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "StockHistoryDirection",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "OUTBOUND",
+                "label": "Outbound",
+                "read_only": false
+            },
+            {
+                "value": "INBOUND",
+                "label": "Inbound",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "StockHistoryType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "MANUAL",
+                "label": "Stock has been modified manually via cms",
+                "read_only": false
+            },
+            {
+                "value": "ORDER",
+                "label": "Stock has been modified to fulfil an order",
+                "read_only": false
+            },
+            {
+                "value": "TRANSFER",
+                "label": "Stock has been transferred from one channel to another",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "StockTransferStatus",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "PENDING",
+                "label": "Pending",
+                "read_only": false
+            },
+            {
+                "value": "FAILED",
+                "label": "Failed",
+                "read_only": false
+            },
+            {
+                "value": "COMPLETE",
+                "label": "Complete",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "TargetBreakdownType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "ACTIVITY_STATUS",
+                "label": "Activity_status",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "TargetChartType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "SINGLE",
+                "label": "Single",
+                "read_only": false
+            },
+            {
+                "value": "MULTIPLE",
+                "label": "Multiple",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "TargetType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "DEALS_INVOICE_PRICE",
+                "label": "Calculate the total invoice price from all orders that has reached a deal",
+                "read_only": false
+            },
+            {
+                "value": "DEALS_PAYMENT_PRICE",
+                "label": "Calculate the total confirmed payment made against all orders that has reached a deal",
+                "read_only": false
+            },
+            {
+                "value": "DEALS_BRAND_PRICE",
+                "label": "Calculate the total net price of all order detail from a selected brand.",
+                "read_only": false
+            },
+            {
+                "value": "DEALS_MODEL_PRICE",
+                "label": "Calculate the total net price of all order detail from a selected model.",
+                "read_only": false
+            },
+            {
+                "value": "DEALS_ORDER_COUNT",
+                "label": "Calculate the number of deal order made.",
+                "read_only": false
+            },
+            {
+                "value": "DEALS_BRAND_COUNT",
+                "label": "Calculate the total quantity of product unit purchased as a deal for a given brand.",
+                "read_only": false
+            },
+            {
+                "value": "DEALS_MODEL_COUNT",
+                "label": "Calculate the total quantity of product unit purchased as a deal for a given model.",
+                "read_only": false
+            },
+            {
+                "value": "ACTIVITY_COUNT",
+                "label": "Calculate the number of activity",
+                "read_only": false
+            },
+            {
+                "value": "ACTIVITY_COUNT_CLOSED",
+                "label": "Calculate the number of activity with status closed",
+                "read_only": false
+            },
+            {
+                "value": "ORDER_SETTLEMENT_COUNT",
+                "label": "Calculate the number order that has been fully paid",
+                "read_only": false
+            }
+        ]
+    },
+    {
+        "code": "UserType",
+        "description": "Missing enum description",
+        "enums": [
+            {
+                "value": "DEFAULT",
+                "label": "Default",
+                "read_only": false
+            },
+            {
+                "value": "SALES",
+                "label": "Sales",
+                "read_only": false
+            },
+            {
+                "value": "SUPERVISOR",
+                "label": "Supervisor",
+                "read_only": false
+            },
+            {
+                "value": "DIRECTOR",
+                "label": "Director",
+                "read_only": false
+            }
+        ]
+    }
+]

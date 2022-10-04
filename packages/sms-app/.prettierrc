@@ -1,0 +1,24 @@
+{
+  "semi": false,
+  "trailingComma": "all",
+  "jsxBracketSameLine": false,
+  "arrowParens": "always",
+  "useTabs": false,
+  "importOrder": [
+    "^@core/(.*)$",
+    "^@server/(.*)$",
+    "^@ui/(.*)$",
+    "^containers/?(.*)$",
+    "^components/?(.*)$",
+    "^hooks/?(.*)$",
+    "^providers/?(.*)$",
+    "^forms/?(.*)$",
+    "^filters/?(.*)$",
+    "^api/?(.*)$",
+    "^Router/?(.*)$",
+    "^helper/?(.*)$",
+    "^types/?(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true
+}

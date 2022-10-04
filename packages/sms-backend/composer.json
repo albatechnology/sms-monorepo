@@ -1,0 +1,102 @@
+{
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "The Laravel Framework.",
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.0",
+        "barryvdh/laravel-dompdf": "^0.9.0",
+        "bensampo/laravel-enum": "^3.3",
+        "darkaonline/l5-swagger": "^8.0",
+        "doctrine/dbal": "^3.0",
+        "fideloper/proxy": "^4.4",
+        "fruitcake/laravel-cors": "^2.0",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "haruncpi/laravel-log-reader": "^1.0",
+        "kalnoy/nestedset": "^5.0",
+        "larabug/larabug": "^2.3",
+        "laravel/framework": "^8.12",
+        "laravel/horizon": "^5.7",
+        "laravel/sanctum": "^2.9",
+        "laravel/telescope": "^4.4",
+        "laravel/tinker": "^2.5",
+        "laravel/ui": "^3.2",
+        "laraveldaily/laravel-charts": "^0.1.25",
+        "league/csv": "^9.7",
+        "league/flysystem-aws-s3-v3": "~1.0",
+        "livewire/livewire": "^2.4",
+        "maatwebsite/excel": "^3.1",
+        "mbezhanov/faker-provider-collection": "^2.0",
+        "milon/barcode": "^9.0",
+        "nuovo/spreadsheet-reader": "^0.5.11",
+        "spatie/laravel-medialibrary": "^9.4",
+        "spatie/laravel-query-builder": "^3.3",
+        "spatie/laravel-sluggable": "^2.6",
+        "staudenmeir/eloquent-has-many-deep": "^1.13",
+        "vyuldashev/laravel-openapi": "^1.0",
+        "yajra/laravel-datatables-oracle": "^9.15",
+        "yoramdelangen/laravel-pdo-odbc": "^1.1"
+    },
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.5",
+        "facade/ignition": "^2.5",
+        "fakerphp/faker": "^1.9.1",
+        "laravel/sail": "^1.0.1",
+        "mockery/mockery": "^1.4.2",
+        "nunomaduro/collision": "^5.0",
+        "osteel/openapi-httpfoundation-testing": "^0.2.0",
+        "phpunit/phpunit": "^9.3.3",
+        "spatie/laravel-ray": "^1.13"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "platform": {
+          "ext-pcntl": "7.4",
+          "ext-posix": "7.4"
+        },
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": [
+                "Vyuldashev\\LaravelOpenApi\\OpenApiServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        },
+        "files": ["app/Helpers/helpers.php"]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi",
+            "@php artisan vendor:publish --force --tag=livewire:assets --ansi"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ]
+    }
+}

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "443366184384",
+    "project_id": "melandas-dd909",
+    "storage_bucket": "melandas-dd909.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:443366184384:android:465b8fbc4fc18acacae425",
+        "android_client_info": {
+          "package_name": "com.nalphas.melandas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "443366184384-etqm2lmfgo67vh18ic28rrm2nog4aedv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqYPEJGKKRkKHbUbhnEdmTiIB8uwn8grc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "443366184384-etqm2lmfgo67vh18ic28rrm2nog4aedv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

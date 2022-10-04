@@ -1,0 +1,79 @@
+{
+    "US01": {
+        "error_code": "US01",
+        "label": "Supervisor does not exist for the target user.",
+        "exception": "App\\Exceptions\\SupervisorDoesNotExistException",
+        "description": "Occurs when requesting the supervisor detail of a user that does not have a supervisor.",
+        "http_code": 422
+    },
+    "AU01": {
+        "error_code": "AU01",
+        "label": "User must have default channel to access this resource.",
+        "exception": "App\\Exceptions\\DefaultTenantRequiredException",
+        "description": "Occurs when requesting a tenanted resource but user does not have a default channel_id.",
+        "http_code": 403
+    },
+    "AU02": {
+        "error_code": "AU02",
+        "label": "User does not have tenant access for this action or resource.",
+        "exception": "App\\Exceptions\\UnauthorisedTenantAccessException",
+        "description": "Occurs when user does not have tenant authority for the requested tenanted resource",
+        "http_code": 403
+    },
+    "ER01": {
+        "error_code": "ER01",
+        "label": "Custom user friendly message will be generated depending on the context",
+        "exception": "App\\Exceptions\\GenericAuthorizationException",
+        "description": "Occurs when users encounter a generic forbidden issue. Specific reason will be returned along with the exception",
+        "http_code": 403
+    },
+    "AU03": {
+        "error_code": "AU03",
+        "label": "Only sales are allowed to perform this action!",
+        "exception": "App\\Exceptions\\SalesOnlyActionException",
+        "description": "Occurs when a non sales attempting to perform sales only action",
+        "http_code": 403
+    },
+    "CH01": {
+        "error_code": "CH01",
+        "label": "Order price does not match the given expected price!",
+        "exception": "App\\Exceptions\\SalesOnlyActionException",
+        "description": "Products and\/or discounts could have been updated. App should re fetch cart and discount.",
+        "http_code": 400
+    },
+    "CO01": {
+        "error_code": "CO01",
+        "label": "Active company does not have default account",
+        "exception": "App\\Exceptions\\DefaultCompanyAccountDoesNotExistException",
+        "description": "Occurs when requesting the default company account, but the active company does not have default account set.",
+        "http_code": 400
+    },
+    "LE01": {
+        "error_code": "LE01",
+        "label": "Creating activity for unassigned lead is not allowed!",
+        "exception": "App\\Exceptions\\LeadIsUnassignedException",
+        "description": "Occurs when requesting to create an activity, but the lead is not assigned.",
+        "http_code": 400
+    },
+    "GE01": {
+        "error_code": "GE01",
+        "label": "Generic error message generated during runtime.",
+        "exception": "App\\Exceptions\\GenericErrorException",
+        "description": "Generic exception caught during execution.",
+        "http_code": 400
+    },
+    "OR01": {
+        "error_code": "OR01",
+        "label": "The requested action is invalid as the related order require approval",
+        "exception": "App\\Exceptions\\UnapprovedOrderException",
+        "description": "Occurs when requesting action that require related order to be approved.",
+        "http_code": 400
+    },
+    "OR02": {
+        "error_code": "OR02",
+        "label": "The requested action involve cancellation of an order, but is not allowed as the order is no longer on quotation",
+        "exception": "App\\Exceptions\\InvalidOrderCancellationException",
+        "description": "Occurs when requesting action that require cancellation of an order.",
+        "http_code": 400
+    }
+}
