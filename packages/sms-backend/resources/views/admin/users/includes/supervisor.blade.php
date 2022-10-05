@@ -4,7 +4,7 @@
         id="company_id">
         <option value="">{{ trans('global.pleaseSelect') }}</option>
         @foreach ($companies as $id => $name)
-            <option value="{{ $id }}">
+            <option value="{{ $id }}" {{ $id == $user?->company_id ? 'selected' : '' }}>
                 {{ $name }}
             </option>
         @endforeach
@@ -19,7 +19,7 @@
     <select class="form-control select2 {{ $errors->has('supervisor_type') ? 'is-invalid' : '' }}"
         name="supervisor_type_id" id="supervisor_type_id">
         @foreach ($supervisor_types as $id => $supervisor_type)
-            <option value="{{ $id }}" {{ old('supervisor_type_id') == $id ? 'selected' : '' }}>
+            <option value="{{ $id }}" {{ $id == $user?->supervisor_type_id ? 'selected' : '' }}>
                 {{ $supervisor_type }}</option>
         @endforeach
     </select>
@@ -31,11 +31,11 @@
 <div class="form-group">
     <label for="supervisor_id">{{ trans('cruds.user.fields.supervisor') }}</label>
     <select class="form-control select2 {{ $errors->has('supervisor_id') ? 'is-invalid' : '' }}" name="supervisor_id"
-        id="supervisor_id" disabled>
-        {{-- @foreach ($supervisors as $id => $supervisor)
-            <option value="{{ $id }}" {{ old('supervisor_id') == $id ? 'selected' : '' }}>
-                {{ $supervisor }}</option>
-        @endforeach --}}
+        id="supervisor_id" {{ $user ? '' : 'disabled' }}>
+        @if ($user && !is_null($user->supervisor_id))
+            <option value="{{ $user->supervisor_id }}" selected>
+                {{ \App\Models\User::find($user->supervisor_id)->name }}</option>
+        @endif
     </select>
     @if ($errors->has('supervisor_id'))
         <span class="text-danger">{{ $errors->first('supervisor_id') }}</span>
@@ -50,7 +50,12 @@
             style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
     </div> --}}
     <select class="form-control select2 {{ $errors->has('channel_ids') ? 'is-invalid' : '' }}" name="channel_ids[]"
-        id="channel_ids" multiple disabled data-placeholder="Select channels">
+        id="channel_ids" multiple {{ $user ? '' : 'disabled' }} data-placeholder="Select channels">
+        {{-- @if ($selectedChannels)
+            @foreach ($selectedChannels as $id => $name)
+                <option value="{{ $id }}" selected>{{ $name }}</option>
+            @endforeach
+        @endif --}}
     </select>
     @if ($errors->has('channel_ids'))
         <span class="text-danger">{{ $errors->first('channel_ids') }}</span>
@@ -58,71 +63,67 @@
     <span class="help-block">{{ trans('cruds.user.fields.channels_helper') }}</span>
 </div>
 <script>
+    var selectedChannels = {{ $selectedChannels ? json_encode($selectedChannels) : json_encode([]) }};
     var maxSupervisorTypeId = {{ $maxSupervisorTypeId }};
-
+    var defaultSupervisorTypeId = '{{ $user?->supervisor_type_id }}';
+    var defaultSupervisorId = '{{ $user?->supervisor_id }}';
     $('.select2').select2();
 
-    $('body').on('change', '#supervisor_type_id', function() {
-        $('#supervisor_id').attr('disabled', true).html(options).val('').change();
-
+    function getSupervisors(supervisorTypeId) {
         var options = '';
-        if ($(this).val().length > 0) {
-            $.get('{{ url('admin/users/get-users') }}?is_create_user=1&supervisor_type_id=' + $(this).val() +
+        $('#supervisor_id').attr('disabled', true).html(options).val('').change();
+        if (supervisorTypeId.length > 0) {
+            $.get('{{ url('admin/users/get-users') }}?is_create_user=1&supervisor_type_id=' + supervisorTypeId +
                 '&company_id=' + $('#company_id').val(),
                 function(res) {
                     res.forEach(data => {
-                        options += '<option value="' + data.id + '">' + data.name + '</option>';
+                        var selected = defaultSupervisorId == data.id ? 'selected' : '';
+                        options += '<option value="' + data.id + '" ' + selected + '>' + data.name +
+                            '</option>';
                     });
-                    $('#supervisor_id').attr('disabled', false).html(options).val('').change();
+                    $('#supervisor_id').attr('disabled', false).html(options).change();
                 })
         } else {
             $('#supervisor_id').attr('disabled', true).html(options).val('').change();
         }
 
-        if ($(this).val() == maxSupervisorTypeId) {
+        if (supervisorTypeId == maxSupervisorTypeId) {
             $.get("{{ url('admin/channels/get-channels') }}?company_id=" + $('#company_id').val(), function(
                 res) {
                 res.forEach(data => {
-                    options += '<option value="' + data.id + '">' + data.name + '</option>';
+                    options += '<option value="' + data.id + '">' + data.name +
+                        '</option>';
                 });
-                $('#channel_ids').attr('disabled', false).html(options).val('').change();
+                $('#channel_ids').attr('disabled', false).html(options).change();
             })
         }
+    }
+
+    getSupervisors(defaultSupervisorTypeId);
+
+    $('body').on('change', '#supervisor_type_id', function() {
+        getSupervisors($(this).val())
     });
 
-    $('#supervisor_id').on('change', function() {
+    function setChannels(supervisorId = null) {
         var options = '';
         $('#channel_ids').attr('disabled', true).html(options).val('').change();
-        var supervisorId = $(this).val();
         if (supervisorId) {
             $.get("{{ url('admin/channels/get-channels') }}?supervisor_id=" + supervisorId, function(
                 res) {
                 res.forEach(data => {
-                    options += '<option value="' + data.id + '">' + data.name + '</option>';
+                    var selected = selectedChannels.includes(data.id) ? 'selected' : '';
+                    options += '<option value="' + data.id + '" ' + selected + '>' + data.name +
+                        '</option>';
                 });
-                $('#channel_ids').attr('disabled', false).html(options).val('').change();
+                $('#channel_ids').attr('disabled', false).html(options).change();
             });
         } else {
             $('#channel_ids').attr('disabled', true).html(options).val('').change();
         }
+    }
+
+    $('#supervisor_id').on('change', function() {
+        setChannels($(this).val());
     });
-
-    // $('#company_id').on('change', function() {
-    //     $('#channels').attr('disabled', true).html('');
-
-    //     $('#channel_ids').attr('disabled', true).html(options).val('').change();
-    //     var options = '';
-    //     if ($(this).val()) {
-    //         $.get("{{ url('admin/channels/get-channels') }}?company_id=" + $(this).val(), function(
-    //             res) {
-    //             res.forEach(data => {
-    //                 options += '<option value="' + data.id + '">' + data.name + '</option>';
-    //             });
-    //             $('#channel_ids').attr('disabled', false).html(options).val('').change();
-    //         })
-    //     } else {
-    //         $('#channel_ids').attr('disabled', true).html(options).val('').change();
-    //         // $('#supervisor_id').attr('disabled', true).html(options).val('').change();
-    //     }
-    // });
 </script>

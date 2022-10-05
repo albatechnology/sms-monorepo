@@ -95,10 +95,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Users
 
     Route::group(['prefix' => 'users/includes'], function () {
-        Route::get('default', [UsersController::class, 'includeFormDefault']);
-        Route::get('director', [UsersController::class, 'includeFormDirector']);
-        Route::get('supervisor', [UsersController::class, 'includeFormSupervisor']);
-        Route::get('sales', [UsersController::class, 'includeFormSales']);
+        Route::get('default/{id?}', [UsersController::class, 'includeFormDefault']);
+        Route::get('director/{id?}', [UsersController::class, 'includeFormDirector']);
+        Route::get('supervisor/{id?}', [UsersController::class, 'includeFormSupervisor']);
+        Route::get('sales/{id?}', [UsersController::class, 'includeFormSales']);
     });
     Route::get('users/get-users', 'UsersController@ajaxGetUsers');
     Route::get('users/create-sms', [UsersController::class, 'createSms'])->name('users.createSms');

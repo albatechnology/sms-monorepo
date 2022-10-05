@@ -21,7 +21,6 @@ class UpdateUserRequest extends FormRequest
         $user = User::findOrFail(request()->route('user')->id);
 
         return [
-            'orlan_user_id' => 'nullable|string|unique:users,orlan_user_id,' . $user->id,
             'name'     => [
                 'string',
                 'required',
@@ -34,18 +33,34 @@ class UpdateUserRequest extends FormRequest
                 'nullable',
                 'min:3'
             ],
-            'roles.*'  => [
+            'role'  => [
+                'required',
                 'integer',
-            ],
-            'roles'    => [
-                'nullable',
-                'array',
+                'exists:roles,id'
             ],
             'type'     => [
                 'required',
                 new EnumValue(UserType::class, 0)
             ],
-
+            'company_id'         => [
+                'nullable',
+                'exists:companies,id'
+            ],
+            'company_ids'         => [
+                'nullable',
+                'array',
+            ],
+            'channel_ids.*'         => [
+                'integer',
+                'exists:channels,id',
+            ],
+            'channel_ids'           => [
+                'array',
+            ],
+            'channel_id'         => [
+                'nullable',
+                'exists:channels,id',
+            ],
             'supervisor_type_id' => [
                 'required_if:type,' . UserType::SUPERVISOR,
                 'exists:supervisor_types,id',
@@ -82,19 +97,13 @@ class UpdateUserRequest extends FormRequest
                     }
                 }
             ],
-            'company_id'         => [
-                'nullable',
-                'exists:companies,id'
-            ],
-            'company_ids'         => [
+            'product_brand_ids'         => [
                 'nullable',
                 'array',
             ],
-            'channels.*'         => [
+            'product_brand_ids.*'         => [
                 'integer',
-            ],
-            'channels'           => [
-                'array',
+                'exists:product_brands,id'
             ],
         ];
     }

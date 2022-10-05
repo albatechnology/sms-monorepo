@@ -3,7 +3,8 @@
     <select class="form-control select2 {{ $errors->has('company_ids') ? 'is-invalid' : '' }}" name="company_ids[]"
         id="company_ids" multiple>
         @foreach ($companies as $id => $name)
-            <option value="{{ $id }}" {{ in_array($id, old('company_ids', [])) ? 'selected' : '' }}>
+            <option value="{{ $id }}"
+                {{ in_array($id, $user?->companies?->pluck('id')->all() ?? []) ? 'selected' : '' }}>
                 {{ $name }}
             </option>
         @endforeach
@@ -21,7 +22,12 @@
             style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
     </div> --}}
     <select class="form-control select2 {{ $errors->has('channel_ids') ? 'is-invalid' : '' }}" name="channel_ids[]"
-        id="channel_ids" multiple disabled data-placeholder="Select channels">
+        id="channel_ids" multiple {{ $user ? '' : 'disabled' }} data-placeholder="Select channels">
+        @if ($selectedChannels)
+            @foreach ($selectedChannels as $id => $name)
+                <option value="{{ $id }}" selected>{{ $name }}</option>
+            @endforeach
+        @endif
     </select>
     @if ($errors->has('channel_ids'))
         <span class="text-danger">{{ $errors->first('channel_ids') }}</span>

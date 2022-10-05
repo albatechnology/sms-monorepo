@@ -53,6 +53,7 @@ class StoreUserRequest extends FormRequest
             ],
             'channel_ids.*'         => [
                 'integer',
+                'exists:channels,id',
             ],
             'channel_id'         => [
                 'nullable',

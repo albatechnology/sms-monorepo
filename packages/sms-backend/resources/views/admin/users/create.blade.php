@@ -70,7 +70,7 @@
                     @endif
                     <span class="help-block">{{ trans('cruds.user.fields.type_helper') }}</span>
                 </div>
-                <div id="extra-from"></div>
+                <div id="extra-form"></div>
                 {{-- <div x-data="{ type: '' }"> --}}
                 <!-- type -->
 
@@ -218,15 +218,15 @@
             var type = $(this).val();
 
             if (type == 1) {
-                $('#extra-from').load("{{ url('admin/users/includes/default') }}");
+                $('#extra-form').load("{{ url('admin/users/includes/default') }}");
             } else if (type == 2) {
-                $('#extra-from').load("{{ url('admin/users/includes/sales') }}");
+                $('#extra-form').load("{{ url('admin/users/includes/sales') }}");
             } else if (type == 3) {
-                $('#extra-from').load("{{ url('admin/users/includes/supervisor') }}");
+                $('#extra-form').load("{{ url('admin/users/includes/supervisor') }}");
             } else if (type == 4) {
-                $('#extra-from').load("{{ url('admin/users/includes/director') }}");
+                $('#extra-form').load("{{ url('admin/users/includes/director') }}");
             } else {
-                $('#extra-from').html("");
+                $('#extra-form').html("");
             }
 
             if (type) {
@@ -235,7 +235,6 @@
                 $(":submit").attr('disabled', true);
             }
         });
-
 
     </script>
 @endsection

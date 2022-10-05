@@ -103,7 +103,7 @@ class UsersController extends Controller
                     $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $company->name);
                 }
 
-                return implode(' ', $labels);
+                return implode(', ', $labels);
             });
             $table->editColumn('channels', function ($row) {
                 $labels = [];
@@ -156,14 +156,15 @@ class UsersController extends Controller
 
         $user = User::create($request->validated());
         if (isset($request->company_ids) && count($request->company_ids) > 0) {
-            $user->userCompanies()->delete();
             $user->update(['company_id' => $request->company_ids[0]]);
-            foreach ($request->company_ids as $cid) {
-                UserCompany::create(['user_id' => $user->id, 'company_id' => $cid]);
-            }
+            $user->companies()->sync($request->input('company_ids', []));
+            // foreach ($request->company_ids as $cid) {
+            //     UserCompany::create(['user_id' => $user->id, 'company_id' => $cid]);
+            // }
         } else {
             $user->update(['company_ids' => [$user->company_id]]);
-            UserCompany::create(['user_id' => $user->id, 'company_id' => $user->company_id]);
+            $user->companies()->sync([$user->company_id]);
+            // UserCompany::create(['user_id' => $user->id, 'company_id' => $user->company_id]);
         }
 
         $user->roles()->sync($request->input('role', []));
@@ -209,18 +210,26 @@ class UsersController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        // dump($request->all());
+        // dump($request->validated());
+        // dd($user);
         $user->update($request->validated());
-        $user->roles()->sync($request->input('roles', []));
+        // dd($user);
+        $user->roles()->sync($request->input('role', []));
 
-        $user->userCompanies()->delete();
+        $user->productBrands()->sync($request->input('product_brand_ids', []));
+
+        // $user->userCompanies()->delete();
         if (isset($request->company_ids) && count($request->company_ids) > 0) {
             $user->update(['company_id' => $request->company_ids[0]]);
-            foreach ($request->company_ids as $cid) {
-                UserCompany::create(['user_id' => $user->id, 'company_id' => $cid]);
-            }
+            $user->companies()->sync($request->input('company_ids', []));
+            // foreach ($request->company_ids as $cid) {
+            //     UserCompany::create(['user_id' => $user->id, 'company_id' => $cid]);
+            // }
         } else {
             $user->update(['company_ids' => [$user->company_id]]);
-            UserCompany::create(['user_id' => $user->id, 'company_id' => $user->company_id]);
+            $user->companies()->sync([$user->company_id]);
+            // UserCompany::create(['user_id' => $user->id, 'company_id' => $user->company_id]);
         }
 
         $userId = $user->id;
@@ -234,11 +243,15 @@ class UsersController extends Controller
             });
         });
 
-        //$user->companies()->sync($request->input('companies', []));
-        $user->channels()->sync($request->input('channels', []));
+        if (isset($request->channel_ids) && count($request->channel_ids) > 0) {
+            $user->channels()->sync($request->input('channel_ids', []));
+        } elseif (isset($request->channel_id)) {
+            $user->channels()->sync([$request->channel_id]);
+        }
+
         if (intval($request->type) == UserType::SALES()->value) {
-            $user->update(['channel_id' => intval($request->validated()['channels'][0])]);
-            Lead::where('user_id', $user->id)->update(['channel_id' => intval($request->validated()['channels'][0])]);
+            $user->update(['channel_id' => intval($request->validated()['channel_id'])]);
+            Lead::where('user_id', $user->id)->update(['channel_id' => intval($request->validated()['channel_id'])]);
         }
 
         return redirect()->route('admin.users.index');
@@ -327,30 +340,43 @@ class UsersController extends Controller
         return response()->json($user);
     }
 
-    public function includeFormDefault()
+    public function includeFormDefault($userId = null)
     {
+        $user = $userId ? User::findOrFail($userId) : null;
+        $selectedChannels = $user?->channels?->pluck('name', 'id')->all() ?? null;
+
         $companies = Company::tenanted()->get()->pluck('name', 'id');
-        return view('admin.users.includes.default', ['companies' => $companies]);
+
+        return view('admin.users.includes.default', ['companies' => $companies, 'user' => $user, 'selectedChannels' => $selectedChannels]);
     }
 
-    public function includeFormDirector()
+    public function includeFormDirector($userId = null)
     {
+        $user = $userId ? User::findOrFail($userId) : null;
+        $selectedCompanies = $user?->companies?->pluck('id')->all() ?? null;
         $companies = Company::tenanted()->get()->pluck('name', 'id');
-        return view('admin.users.includes.director', ['companies' => $companies]);
+
+        return view('admin.users.includes.director', ['companies' => $companies, 'user' => $user, 'selectedCompanies' => $selectedCompanies]);
     }
 
-    public function includeFormSupervisor()
+    public function includeFormSupervisor($userId = null)
     {
+        $user = $userId ? User::findOrFail($userId) : null;
+        $selectedChannels = $user?->channels?->pluck('id')->all() ?? null;
+
         $companies = Company::tenanted()->get()->pluck('name', 'id');
         $supervisor_types = SupervisorType::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         $maxSupervisorTypeId = DB::table('supervisor_types')->whereNull('deleted_at')->max('id');
 
-        return view('admin.users.includes.supervisor', ['companies' => $companies, 'supervisor_types' => $supervisor_types, 'maxSupervisorTypeId' => $maxSupervisorTypeId]);
+        return view('admin.users.includes.supervisor', ['companies' => $companies, 'user' => $user, 'supervisor_types' => $supervisor_types, 'maxSupervisorTypeId' => $maxSupervisorTypeId, 'selectedChannels' => $selectedChannels]);
     }
 
-    public function includeFormSales()
+    public function includeFormSales($userId = null)
     {
+        $user = $userId ? User::findOrFail($userId) : null;
         $companies = Company::tenanted()->get()->pluck('name', 'id');
-        return view('admin.users.includes.sales', ['companies' => $companies]);
+        $selectedProductBrands = $user?->productBrands?->pluck('id')->all() ?? null;
+
+        return view('admin.users.includes.sales', ['companies' => $companies, 'user' => $user, 'selectedProductBrands' => $selectedProductBrands]);
     }
 }

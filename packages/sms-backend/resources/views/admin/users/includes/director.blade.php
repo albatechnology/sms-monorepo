@@ -3,7 +3,7 @@
     <select class="form-control select2 {{ $errors->has('company_ids') ? 'is-invalid' : '' }}" name="company_ids[]"
         id="company_ids" multiple>
         @foreach ($companies as $id => $name)
-            <option value="{{ $id }}" {{ in_array($id, old('company_ids', [])) ? 'selected' : '' }}>
+            <option value="{{ $id }}" {{ in_array($id, $selectedCompanies ?? []) ? 'selected' : '' }}>
                 {{ $name }}
             </option>
         @endforeach

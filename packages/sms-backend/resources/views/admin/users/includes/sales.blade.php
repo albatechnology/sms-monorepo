@@ -4,7 +4,7 @@
         id="company_id">
         <option value="">{{ trans('global.pleaseSelect') }}</option>
         @foreach ($companies as $id => $name)
-            <option value="{{ $id }}">
+            <option value="{{ $id }}" {{ $user?->company_id == $id ? 'selected' : '' }}>
                 {{ $name }}
             </option>
         @endforeach
@@ -57,57 +57,84 @@
     @enderror
 </div>
 <script>
+    var selectedProductBrands = {{ $selectedProductBrands ? json_encode($selectedProductBrands) : json_encode([]) }};
+    var selectedSupervisor = '{{ $user?->supervisor_id }}';
+    var selectedCompanyId = '{{ $user?->company_id }}';
+    var selectedChannelId = '{{ $user?->channel_id }}';
+
+    console.log('selectedProductBrands', selectedProductBrands)
+    console.log('selectedSupervisor', selectedSupervisor)
+    console.log('selectedCompanyId', selectedCompanyId)
+    console.log('selectedChannelId', selectedChannelId)
     $('.select2').select2();
 
-    $('#company_id').on('change', function() {
+    function getSupervisors(companyId) {
         var options = '';
         $('#supervisor_id').attr('disabled', true).html(options).val('').change();
-        if ($(this).val()) {
-            $.get("{{ url('admin/users/get-users') }}?type=3&supervisor_type_id=1&company_id=" + $(this).val(),
+        if (companyId) {
+            $.get("{{ url('admin/users/get-users') }}?type=3&supervisor_type_id=1&company_id=" + companyId,
                 function(
                     res) {
                     res.forEach(data => {
-                        options += '<option value="' + data.id + '">' + data.name + '</option>';
+                        var selected = selectedSupervisor == data.id ? 'selected' : '';
+                        options += '<option value="' + data.id + '" ' + selected + '>' + data.name +
+                            '</option>';
                     });
-                    $('#supervisor_id').attr('disabled', false).html(options).val('').change();
+                    $('#supervisor_id').attr('disabled', false).html(options).change();
                 })
         } else {
             $('#supervisor_id').attr('disabled', true).html(options).val('').change();
         }
 
 
-        $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
+    }
+
+    function getProductBrands(companyId) {
         var options = '';
-        if ($(this).val().length > 0) {
-            $.get('{{ url('admin/product-brands/get-product-brands') }}?company_id=' + $(this)
-                .val(),
+        $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
+        if (companyId) {
+            $.get('{{ url('admin/product-brands/get-product-brands') }}?company_id=' + companyId,
                 function(
                     res) {
                     res.forEach(data => {
-                        options += '<option value="' + data.id + '">' + data.name +
+                        var selected2 = selectedProductBrands.includes(data.id) ? 'selected' : '';
+                        options += '<option value="' + data.id + '" ' + selected2 + '>' + data.name +
                             '</option>';
                     });
-                    $('#product_brand_ids').attr('disabled', false).html(options).val('')
-                        .change();
+                    $('#product_brand_ids').attr('disabled', false).html(options).change();
                 })
         } else {
             $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
         }
+    }
+
+    getSupervisors(parseInt(selectedCompanyId))
+    getProductBrands(parseInt(selectedCompanyId))
+    $('#company_id').on('change', function() {
+        getSupervisors($(this).val());
+        getProductBrands($(this).val());
     });
 
-    $('#supervisor_id').on('change', function() {
+    function getChannles(supervisorId) {
         var options = '';
         $('#channel_id').attr('disabled', true).html(options).val('').change();
-        if ($(this).val()) {
-            $.get("{{ url('admin/channels/get-channels') }}?supervisor_id=" + $(this).val(), function(
+        if (supervisorId) {
+            $.get("{{ url('admin/channels/get-channels') }}?supervisor_id=" + supervisorId, function(
                 res) {
                 res.forEach(data => {
-                    options += '<option value="' + data.id + '">' + data.name + '</option>';
+                    var selected = selectedChannelId == data.id ? 'selected' : '';
+                    options += '<option value="' + data.id + '" ' + selected + '>' + data.name +
+                        '</option>';
                 });
-                $('#channel_id').attr('disabled', false).html(options).val('').change();
+                $('#channel_id').attr('disabled', false).html(options).change();
             })
         } else {
             $('#channel_id').attr('disabled', true).html(options).val('').change();
         }
+    }
+
+    getChannles(selectedSupervisor);
+    $('#supervisor_id').on('change', function() {
+        getChannles($(this).val());
     });
 </script>
