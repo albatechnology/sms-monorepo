@@ -181,7 +181,6 @@ return [
 
         Barryvdh\DomPDF\ServiceProvider::class,
         Milon\Barcode\BarcodeServiceProvider::class,
-        LaravelPdoOdbc\ODBCServiceProvider::class
     ],
 
     /*
