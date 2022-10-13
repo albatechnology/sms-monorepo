@@ -38,8 +38,7 @@
         "spatie/laravel-sluggable": "^2.6",
         "staudenmeir/eloquent-has-many-deep": "^1.13",
         "vyuldashev/laravel-openapi": "^1.0",
-        "yajra/laravel-datatables-oracle": "^9.15",
-        "yoramdelangen/laravel-pdo-odbc": "^1.1"
+        "yajra/laravel-datatables-oracle": "^9.15"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.5",
