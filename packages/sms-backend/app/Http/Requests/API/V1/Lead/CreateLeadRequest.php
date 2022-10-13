@@ -41,7 +41,7 @@ class CreateLeadRequest extends BaseApiRequest
             RequestData::make('interest', Schema::TYPE_STRING, 'Lagi Pengen LazyBoy', 'nullable'),
             RequestData::make('user_referral_id', Schema::TYPE_INTEGER, 1, 'nullable|exists:users,id'),
             RequestData::make('channel_id', Schema::TYPE_INTEGER, 1, $channelIdValidation),
-            RequestData::make('product_brand_ids', Schema::TYPE_ARRAY, [1, 2, 3], 'nullable|array'),
+            RequestData::make('product_brand_ids', Schema::TYPE_ARRAY, [1, 2, 3], 'nullable|array')->schema(Schema::array('product_brand_ids')->items(Schema::integer('id')->example(1))),
         ];
     }
 
