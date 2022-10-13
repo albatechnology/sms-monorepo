@@ -11,6 +11,10 @@
                 @csrf
                 <div class="form-group">
                     <label class="required" for="name">{{ trans('cruds.productBrand.fields.name') }}</label>
+                    <input class="form-control" type="text" value="{{ $productBrand->company->name }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="required" for="name">{{ trans('cruds.productBrand.fields.name') }}</label>
                     <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name"
                            id="name" value="{{ old('name', $productBrand->name) }}" required>
                     @if($errors->has('name'))
@@ -30,7 +34,7 @@
                     @endif
                     <span class="help-block">{{ trans('cruds.productBrand.fields.brand_categories_helper') }}</span>
                 </div>
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="required" for="hpp_calculation">{{ trans('cruds.productBrand.fields.hpp_calculation') }}</label>
                     <input class="form-control {{ $errors->has('hpp_calculation') ? 'is-invalid' : '' }}" type="number" name="hpp_calculation" id="hpp_calculation" value="{{ $productBrand->hpp_calculation }}" step="1" min="1" max="100" required>
                     @if($errors->has('hpp_calculation'))
@@ -48,7 +52,7 @@
                     @if($errors->has('currency_id'))
                         <span class="text-danger">{{ $errors->first('currency_id') }}</span>
                     @endif
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label for="photo">{{ trans('cruds.productBrand.fields.photo') }}</label>
                     <div class="needsclick dropzone {{ $errors->has('photo') ? 'is-invalid' : '' }}"

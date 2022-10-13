@@ -11,7 +11,7 @@
                 </button>
                 @include('csvImport.customModal', ['model' => 'Product', 'route' => 'admin.products.parseCsvImport', 'type' => \App\Enums\Import\ImportBatchType::PRODUCT])
                 <button class="btn btn-warning" data-toggle="modal" data-target="#mdlGenerateBarcode">Generate Barcode</button>
-                <div class="modal fade" id="mdlGenerateBarcode" tabindex="-1" role="dialog" aria-labelledby="mdlGenerateBarcodeLabel">
+                {{-- <div class="modal fade" id="mdlGenerateBarcode" tabindex="-1" role="dialog" aria-labelledby="mdlGenerateBarcodeLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -45,7 +45,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     @endcan
@@ -62,7 +62,7 @@
                     <th>
                         {{ trans('cruds.product.fields.id') }}
                     </th>
-                    <th>Barcode</th>
+                    {{-- <th>Barcode</th> --}}
                     <th>
                         {{ trans('cruds.product.fields.name') }}
                     </th>
@@ -71,18 +71,6 @@
                     </th>
                     <th>
                         {{ trans('cruds.product.fields.brand') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.product.fields.model') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.product.fields.version') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.product.fields.category_code') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.product.fields.tag') }}
                     </th>
                     <th>
                         {{ trans('cruds.product.fields.price') }}
@@ -105,34 +93,22 @@
                     <td>
                         <input class="search" type="text" strict="true" placeholder="{{ trans('global.search') }}">
                     </td>
-                    <td></td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
+                    {{-- <td></td> --}}
                     <td>
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td>
                         <select class="search">
                             <option value>{{ trans('global.all') }}</option>
-                            @foreach($product_categories as $key => $item)
+                            @foreach($productCategories as $key => $item)
                                 <option value="{{ $item->name }}">{{ $item->name }}</option>
                             @endforeach
                         </select>
                     </td>
                     <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
                         <select class="search">
                             <option value>{{ trans('global.all') }}</option>
-                            @foreach($product_tags as $key => $item)
+                            @foreach($productBrands as $key => $item)
                                 <option value="{{ $item->name }}">{{ $item->name }}</option>
                             @endforeach
                         </select>
@@ -208,14 +184,10 @@
                 columns: [
                     {data: 'placeholder', name: 'placeholder'},
                     {data: 'id', name: 'id'},
-                    {data: 'barcode', name: 'barcode', sortable: false, searchable: false},
+                    // {data: 'barcode', name: 'barcode', sortable: false, searchable: false},
                     {data: 'name', name: 'name'},
-                    {data: 'category', name: 'categories.name'},
+                    {data: 'category', name: 'productCategory.name'},
                     {data: 'brand', name: 'brand.name'},
-                    {data: 'model', name: 'model.name'},
-                    {data: 'version', name: 'version.name'},
-                    {data: 'categoryCode', name: 'categoryCode.name'},
-                    {data: 'tag', name: 'tags.name'},
                     {data: 'price', name: 'price'},
                     {data: 'photo', name: 'photo', sortable: false, searchable: false},
                     {data: 'is_active', name: 'is_active'},

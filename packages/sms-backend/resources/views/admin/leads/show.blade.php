@@ -51,7 +51,7 @@
                                 {{ trans('cruds.lead.fields.is_new_customer') }}
                             </th>
                             <td>
-                                <input type="checkbox" disabled="disabled" {{ $lead->is_new_customer ? 'checked' : '' }}>
+                                {!! $lead->is_new_customer ? '<i class="fa fa-check text-success"></i>' : '<i class="fa fa-times text-danger"></i>' !!}
                             </td>
                         </tr>
                         <tr>
@@ -71,11 +71,35 @@
                             </td>
                         </tr>
                         <tr>
+                            <th>Company</th>
+                            <td>
+                                {{ $lead->channel?->company?->name ?? '' }}
+                            </td>
+                        </tr>
+                        <tr>
                             <th>
                                 {{ trans('cruds.lead.fields.channel') }}
                             </th>
                             <td>
-                                {{ $lead->channel->name ?? '' }}
+                                {{ $lead->channel?->name ?? '' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Product Brand</th>
+                            <td>
+                                {{ $lead->productBrand?->name ?? '' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Handled Status</th>
+                            <td>
+                                {{ $lead->is_unhandled ? 'Unhandled' : 'Handled' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Handled By</th>
+                            <td>
+                                {{ $lead->user?->name .' - '. $lead->user->type->description }}
                             </td>
                         </tr>
                         <tr>

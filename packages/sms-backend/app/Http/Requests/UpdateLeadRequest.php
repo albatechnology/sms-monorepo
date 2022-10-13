@@ -15,9 +15,9 @@ class UpdateLeadRequest extends FormRequest
     public function rules()
     {
         return [
-            'type'       => [
-                'required',
-            ],
+            // 'type'       => [
+            //     'required',
+            // ],
             'status'     => [
                 'required',
             ],
@@ -25,17 +25,22 @@ class UpdateLeadRequest extends FormRequest
                 'string',
                 'nullable',
             ],
-            'sales'      => [
-                'required',
-            ],
-            'channel_id' => [
-                'required',
-                'integer',
-            ],
+            'user_referral_id' => 'nullable|exists:users,id',
+            // 'sales'      => [
+            //     'required',
+            // ],
+            // 'channel_id' => [
+            //     'required',
+            //     'integer',
+            // ],
             'interest'      => [
                 'string',
                 'nullable',
             ],
+            // 'customer_id'      => [
+            //     'nullable',
+            //     'exists:customers,id',
+            // ],
         ];
     }
 }

@@ -2,33 +2,19 @@
 
 namespace App\Models;
 
-use App\Enums\ProductCategoryType;
 use App\Interfaces\Tenanted;
-use App\Traits\Auditable;
 use App\Traits\CustomInteractsWithMedia;
 use App\Traits\IsCompanyTenanted;
-use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Kalnoy\Nestedset\NodeTrait;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Spatie\Sluggable\HasSlug;
-use Spatie\Sluggable\SlugOptions;
 
 /**
  * @mixin IdeHelperProductCategory
  */
 class ProductCategory extends BaseModel implements HasMedia, Tenanted
 {
-    use SoftDeletes, CustomInteractsWithMedia, Auditable, HasSlug, NodeTrait, IsCompanyTenanted;
-
-    const TYPE_SELECT = [
-        'collection'    => 'Collection',
-        'subcollection' => 'Sub Collection',
-        'brand-type'    => 'Brand Type',
-        'brand'         => 'Brand',
-        'category'      => 'Category',
-    ];
+    use SoftDeletes, CustomInteractsWithMedia, IsCompanyTenanted;
 
     public $table = 'product_categories';
 
@@ -45,9 +31,6 @@ class ProductCategory extends BaseModel implements HasMedia, Tenanted
     protected $fillable = [
         'name',
         'description',
-        'parent_id',
-        'type',
-        'slug',
         'company_id',
         'created_at',
         'updated_at',
@@ -56,16 +39,7 @@ class ProductCategory extends BaseModel implements HasMedia, Tenanted
 
     protected $casts = [
         'company_id' => 'integer',
-        'parent_id'  => 'integer',
-        'type'       => ProductCategoryType::class
     ];
-
-    public function getSlugOptions(): SlugOptions
-    {
-        return SlugOptions::create()
-                          ->generateSlugsFrom('name')
-                          ->saveSlugsTo('slug');
-    }
 
     public function registerMediaConversions(Media $media = null): void
     {
@@ -89,15 +63,5 @@ class ProductCategory extends BaseModel implements HasMedia, Tenanted
         }
 
         return $file;
-    }
-
-    public function parent()
-    {
-        return $this->belongsTo(ProductCategory::class, 'parent_id');
-    }
-
-    protected function serializeDate(DateTimeInterface $date)
-    {
-        return $date->format('Y-m-d H:i:s');
     }
 }

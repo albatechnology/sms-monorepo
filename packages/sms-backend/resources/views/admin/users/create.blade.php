@@ -219,7 +219,7 @@
 
             if (type == 1) {
                 $('#extra-form').load("{{ url('admin/users/includes/default') }}");
-            } else if (type == 2) {
+            } else if (type == 2 || type == 8) {
                 $('#extra-form').load("{{ url('admin/users/includes/sales') }}");
             } else if (type == 3) {
                 $('#extra-form').load("{{ url('admin/users/includes/supervisor') }}");

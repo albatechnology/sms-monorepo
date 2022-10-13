@@ -149,11 +149,7 @@ class UsersController extends Controller
     }
 
     public function store(StoreUserRequest $request)
-    // public function store(Request $request)
     {
-        // dump($request->validated());
-        // dd($request->all());
-
         $user = User::create($request->validated());
         if (isset($request->company_ids) && count($request->company_ids) > 0) {
             $user->update(['company_id' => $request->company_ids[0]]);
@@ -305,15 +301,15 @@ class UsersController extends Controller
                     $users->where('supervisor_type_id', $supervisorTypeId);
                 }
             }
-            // if ($supervisorId = $request->supervisor_id) {
-            //     $users->where('supervisor_id', $supervisorId);
-            // }
-            // if ($name = $request->name) {
-            //     $users->where('name', 'like', '%' . $name . '%');
-            // }
-            // if ($email = $request->email) {
-            //     $users->where('email', 'like', '%' . $email . '%');
-            // }
+            if ($supervisorId = $request->supervisor_id) {
+                $users->where('supervisor_id', $supervisorId);
+            }
+            if ($name = $request->name) {
+                $users->where('name', 'like', '%' . $name . '%');
+            }
+            if ($email = $request->email) {
+                $users->where('email', 'like', '%' . $email . '%');
+            }
 
             return $users->get();
         }

@@ -14,6 +14,7 @@ final class LeadType extends BaseEnum
     const DEAL = 2;
     const LEADS = 3;
     const DROP = 4;
+    const CLOSED = 5;
 
     public static function getDescription($value): string
     {

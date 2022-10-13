@@ -35,31 +35,6 @@
                 <span class="help-block">{{ trans('cruds.productCategory.fields.photo_helper') }}</span>
             </div>
             <div class="form-group">
-                <label for="parent_id">{{ trans('cruds.productCategory.fields.parent') }}</label>
-                <select class="form-control select2 {{ $errors->has('parent') ? 'is-invalid' : '' }}" name="parent_id" id="parent_id">
-                    @foreach($parents as $id => $parent)
-                        <option value="{{ $id }}" {{ old('parent_id') == $id ? 'selected' : '' }}>{{ $parent }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('parent'))
-                    <span class="text-danger">{{ $errors->first('parent') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.productCategory.fields.parent_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label class="required">{{ trans('cruds.productCategory.fields.type') }}</label>
-                <select class="form-control {{ $errors->has('type') ? 'is-invalid' : '' }}" name="type" id="type" required>
-                    <option value disabled {{ old('type', null) === null ? 'selected' : '' }}>{{ trans('global.pleaseSelect') }}</option>
-                    @foreach(App\Models\ProductCategory::TYPE_SELECT as $key => $label)
-                        <option value="{{ $key }}" {{ old('type', 'category') === (string) $key ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('type'))
-                    <span class="text-danger">{{ $errors->first('type') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.productCategory.fields.type_helper') }}</span>
-            </div>
-            <div class="form-group">
                 <label class="required" for="company_id">{{ trans('cruds.productCategory.fields.company') }}</label>
                 <select class="form-control select2 {{ $errors->has('company') ? 'is-invalid' : '' }}" name="company_id" id="company_id" required>
                     @foreach($companies as $id => $company)
@@ -79,9 +54,6 @@
         </form>
     </div>
 </div>
-
-
-
 @endsection
 
 @section('scripts')

@@ -32,7 +32,7 @@ class ProductController extends Controller
 
         if ($request->ajax()) {
             $query = Product::query()
-                ->with(['categories', 'tags', 'company', 'brand', 'model', 'version', 'categoryCode'])
+                ->with(['productCategory', 'company', 'brand'])
                 ->select(sprintf('%s.*', (new Product)->table));
             $table = Datatables::of($query);
 
@@ -54,9 +54,9 @@ class ProductController extends Controller
                 ));
             });
 
-            $table->addColumn('barcode', function ($row) {
-                return '<img src="data:image/png;base64,' . \DNS2D::getBarcodePNG(env('MOVES_PRODUCT_URL') . $row->id, 'QRCODE', 3, 3) . '" alt="barcode" /> <center><a href="' . url('admin/products/generateBarcode/' . $row->id) . '" class="btn btn-primary btn-xs">Print</a></center>';
-            });
+            // $table->addColumn('barcode', function ($row) {
+            //     return '<img src="data:image/png;base64,' . \DNS2D::getBarcodePNG(env('MOVES_PRODUCT_URL') . $row->id, 'QRCODE', 3, 3) . '" alt="barcode" /> <center><a href="' . url('admin/products/generateBarcode/' . $row->id) . '" class="btn btn-primary btn-xs">Print</a></center>';
+            // });
             $table->editColumn('id', function ($row) {
                 return $row->id ? $row->id : "";
             });
@@ -64,34 +64,10 @@ class ProductController extends Controller
                 return $row->name ? $row->name : "";
             });
             $table->editColumn('category', function ($row) {
-                $labels = [];
-
-                foreach ($row->categories as $category) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $category->name);
-                }
-
-                return implode(' ', $labels);
+                return $row->productCategory?->name ?? "";
             });
             $table->editColumn('brand', function ($row) {
-                return $row->brand?->name;
-            });
-            $table->editColumn('model', function ($row) {
-                return $row->brand?->name;
-            });
-            $table->editColumn('version', function ($row) {
-                return $row->version?->name;
-            });
-            $table->editColumn('categoryCode', function ($row) {
-                return $row->categoryCode?->name;
-            });
-            $table->editColumn('tag', function ($row) {
-                $labels = [];
-
-                foreach ($row->tags as $tag) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $tag->name);
-                }
-
-                return implode(' ', $labels);
+                return $row->brand?->name ?? "";
             });
             $table->editColumn('price', function ($row) {
                 return $row->price ? $row->price : "";
@@ -125,30 +101,27 @@ class ProductController extends Controller
             return $table->make(true);
         }
 
-        $product_categories = ProductCategory::tenanted()->get();
-        $product_tags       = ProductTag::tenanted()->get();
+        $productCategories = ProductCategory::tenanted()->get();
+        $productBrands       = ProductBrand::tenanted()->get();
         $companies          = Company::tenanted()->get();
 
-        return view('admin.products.index', compact('product_categories', 'product_tags', 'companies'));
+        return view('admin.products.index', compact('productCategories', 'productBrands', 'companies'));
     }
 
     public function create()
     {
         abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $productBrands = ProductBrand::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $categories = ProductCategory::all()->pluck('name', 'id');
-        $tags = ProductTag::all()->pluck('name', 'id');
-        $companies = Company::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $productBrands = ProductBrand::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $categories = ProductCategory::tenanted()->pluck('name', 'id');
+        $companies = Company::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.products.create', compact('productBrands', 'categories', 'tags', 'companies'));
+        return view('admin.products.create', compact('productBrands', 'categories', 'companies'));
     }
 
     public function store(StoreProductRequest $request)
     {
         $product = Product::create($request->validated());
-        $product->categories()->sync($request->input('categories', []));
-        $product->tags()->sync($request->input('tags', []));
 
         foreach ($request->input('photo', []) as $file) {
             $product->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('photo');
@@ -165,27 +138,18 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $productBrands = ProductBrand::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $productModels = ProductModel::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $productVersions = ProductVersion::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $productCategoryCodes = ProductCategoryCode::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $productBrands = ProductBrand::where('company_id', $product->company_id)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $categories = ProductCategory::all()->pluck('name', 'id');
+        $categories = ProductCategory::where('company_id', $product->company_id)->pluck('name', 'id');
 
-        $tags = ProductTag::all()->pluck('name', 'id');
+        $companies = Company::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $companies = Company::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-
-        $product->load('categories', 'tags', 'company');
-
-        return view('admin.products.edit', compact('productBrands', 'productModels', 'productVersions', 'productCategoryCodes', 'categories', 'tags', 'companies', 'product'));
+        return view('admin.products.edit', compact('productBrands', 'categories', 'companies', 'product'));
     }
 
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->validated());
-        $product->categories()->sync($request->input('categories', []));
-        $product->tags()->sync($request->input('tags', []));
 
         if (count($product->photo) > 0) {
             foreach ($product->photo as $media) {
@@ -210,7 +174,7 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $product->load('categories', 'tags', 'company', 'productProductUnits', 'productsActivities');
+        $product->load('productCategory', 'company', 'brand');
 
         return view('admin.products.show', compact('product'));
     }

@@ -8,15 +8,6 @@
             <form method="POST" action="{{ route("admin.product-brands.store") }}" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
-                    <label class="required" for="name">{{ trans('cruds.productBrand.fields.name') }}</label>
-                    <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name"
-                           id="name" value="{{ old('name', '') }}" required>
-                    @if($errors->has('name'))
-                        <span class="text-danger">{{ $errors->first('name') }}</span>
-                    @endif
-                    <span class="help-block">{{ trans('cruds.productBrand.fields.name_helper') }}</span>
-                </div>
-                <div class="form-group">
                     <label class="required" for="companies">{{ trans('cruds.generic.fields.company') }}</label>
                     <select class="form-control select2 {{ $errors->has('company') ? 'is-invalid' : '' }}"
                             name="company_id" id="company">
@@ -30,6 +21,15 @@
                     <span class="help-block">{{ trans('cruds.user.fields.company_helper') }}</span>
                 </div>
                 <div class="form-group">
+                    <label class="required" for="name">{{ trans('cruds.productBrand.fields.name') }}</label>
+                    <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name"
+                           id="name" value="{{ old('name', '') }}" required>
+                    @if($errors->has('name'))
+                        <span class="text-danger">{{ $errors->first('name') }}</span>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.productBrand.fields.name_helper') }}</span>
+                </div>
+                <div class="form-group">
                     <label class="required" for="brand_category_id">{{ trans('cruds.productBrand.fields.brand_categories') }}</label>
                     <select class="form-control select2 {{ $errors->has('brand_category_id') ? 'is-invalid' : '' }}" name="brand_category_id" id="brand_category_id" required>
                         @foreach($brandCategories as $brandCategory)
@@ -41,15 +41,15 @@
                     @endif
                     <span class="help-block">{{ trans('cruds.productBrand.fields.brand_categories_helper') }}</span>
                 </div>
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="required" for="hpp_calculation">{{ trans('cruds.productBrand.fields.hpp_calculation') }}</label>
                     <input class="form-control {{ $errors->has('hpp_calculation') ? 'is-invalid' : '' }}" type="number" name="hpp_calculation" id="hpp_calculation" value="{{ old('hpp_calculation') }}" step="1" min="1" max="100" required>
                     @if($errors->has('hpp_calculation'))
                         <span class="text-danger">{{ $errors->first('hpp_calculation') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.productBrand.fields.hpp_calculation_helper') }}</span>
-                </div>
-                <div class="form-group">
+                </div> --}}
+                {{-- <div class="form-group">
                     <label class="required" for="currency_id">Currency</label>
                     <select class="form-control select2 {{ $errors->has('currency_id') ? 'is-invalid' : '' }}" name="currency_id" id="currency_id">
                         @foreach($currencies as $c)
@@ -59,7 +59,7 @@
                     @if($errors->has('currency_id'))
                         <span class="text-danger">{{ $errors->first('currency_id') }}</span>
                     @endif
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label for="photo">{{ trans('cruds.productBrand.fields.photo') }}</label>
                     <div class="needsclick dropzone {{ $errors->has('photo') ? 'is-invalid' : '' }}"

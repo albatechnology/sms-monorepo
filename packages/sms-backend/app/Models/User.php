@@ -27,6 +27,7 @@ use Illuminate\Support\Str;
 use Kalnoy\Nestedset\NodeTrait;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\NewAccessToken;
+use PDO;
 
 /**
  * @mixin IdeHelperUser
@@ -689,6 +690,17 @@ class User extends Authenticatable implements Tenanted, ReportableScope
     {
         $limit = $this->supervisorType ? (int) $this->supervisorType->discount_approval_limit_percentage : 0;
         return ($limit / 100) * $total_price;
+    }
+
+    public function getMyBrandIds(): array
+    {
+        if ($this->type->is(UserType::SALES)) {
+            return $this->productBrands->pluck('id')->all();
+        } elseif (UserType::SUPERVISOR) {
+            return ProductBrand::where('company_id', $this->company_id)->pluck('id')->all();
+        }
+
+        return ProductBrand::pluck('id')->all();
     }
 
     // public function getActivityTargetAttribute()

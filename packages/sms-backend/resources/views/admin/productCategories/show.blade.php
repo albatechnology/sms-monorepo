@@ -53,22 +53,6 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.productCategory.fields.parent') }}
-                        </th>
-                        <td>
-                            {{ $productCategory->parent->name ?? '' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            {{ trans('cruds.productCategory.fields.type') }}
-                        </th>
-                        <td>
-                            {{ App\Models\ProductCategory::TYPE_SELECT[$productCategory->type] ?? '' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
                             {{ trans('cruds.productCategory.fields.company') }}
                         </th>
                         <td>
@@ -85,23 +69,4 @@
         </div>
     </div>
 </div>
-
-<div class="card">
-    <div class="card-header">
-        {{ trans('global.relatedData') }}
-    </div>
-    <ul class="nav nav-tabs" role="tablist" id="relationship-tabs">
-        <li class="nav-item">
-            <a class="nav-link" href="#parent_product_categories" role="tab" data-toggle="tab">
-                {{ trans('cruds.productCategory.title') }}
-            </a>
-        </li>
-    </ul>
-    <div class="tab-content">
-        <div class="tab-pane" role="tabpanel" id="parent_product_categories">
-            @includeIf('admin.productCategories.relationships.parentProductCategories', ['productCategories' => $productCategory->parentProductCategories])
-        </div>
-    </div>
-</div>
-
 @endsection

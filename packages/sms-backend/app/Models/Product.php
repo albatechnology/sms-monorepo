@@ -32,15 +32,16 @@ class Product extends BaseModel implements HasMedia
     ];
 
     protected $fillable = [
+        'company_id',
+        'product_brand_id',
+        'product_category_id',
         'name',
         'price',
         'is_active',
-        'company_id',
-        'product_brand_id',
-        'product_model_id',
-        'product_version_id',
-        'product_category_code_id',
-        'product_category_id',
+        'tags',
+        // 'product_model_id',
+        // 'product_version_id',
+        // 'product_category_code_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -64,17 +65,22 @@ class Product extends BaseModel implements HasMedia
     public static function boot()
     {
         self::updated(function (self $model) {
-            if ($model->isDirty('product_brand_id')) {
-                $brandCategoryIds = $model->brand->productBrandCategories->map(function($p){
-                    return $p->brand_category_id;
-                })->toArray();
+            // if ($model->isDirty('product_brand_id')) {
+            //     $brandCategoryIds = $model->brand->productBrandCategories->map(function($p){
+            //         return $p->brand_category_id;
+            //     })->toArray();
 
-                $brandCategoryId = $brandCategoryIds[0] ?? null;
-                $model->productUnits()->update(['brand_category_id' => $brandCategoryId]);
-            }
+            //     $brandCategoryId = $brandCategoryIds[0] ?? null;
+            //     $model->productUnits()->update(['brand_category_id' => $brandCategoryId]);
+            // }
         });
 
         parent::boot();
+    }
+
+    public function setTagsAttribute($value)
+    {
+        $this->attributes['tags'] = implode(',', $value ?? []);
     }
 
     public function getSlugOptions(): SlugOptions
@@ -110,10 +116,15 @@ class Product extends BaseModel implements HasMedia
         return $this->belongsToMany(ProductCategory::class);
     }
 
-    public function tags()
+    public function productCategory()
     {
-        return $this->belongsToMany(ProductTag::class, 'product_product_tag');
+        return $this->belongsTo(ProductCategory::class);
     }
+
+    // public function tags()
+    // {
+    //     return $this->belongsToMany(ProductTag::class, 'product_product_tag');
+    // }
 
     public function brand()
     {
@@ -175,11 +186,18 @@ class Product extends BaseModel implements HasMedia
         $data = $this->loadMissing(['brand', 'model', 'version', 'category_code'])->toArray();
 
         unset(
-            $data['created_at'], $data['updated_at'], $data['deleted_at'],
-            $data['is_active'], $data['company_id'], $data['photo'],
+            $data['created_at'],
+            $data['updated_at'],
+            $data['deleted_at'],
+            $data['is_active'],
+            $data['company_id'],
+            $data['photo'],
             $data['media'],
-            $data["product_brand_id"], $data["product_model_id"], $data["product_version_id"],
-            $data["product_category_code_id"], $data["product_category_id"],
+            $data["product_brand_id"],
+            $data["product_model_id"],
+            $data["product_version_id"],
+            $data["product_category_code_id"],
+            $data["product_category_id"],
         );
 
         $data['brand']         = $this->brand->toRecord();

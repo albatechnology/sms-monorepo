@@ -23,7 +23,7 @@ class ProductCategoryController extends Controller
     {
         abort_if(Gate::denies('product_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $productCategories = ProductCategory::with(['parent', 'company', 'media'])->get();
+        $productCategories = ProductCategory::with(['company', 'media'])->get();
 
         $product_categories = ProductCategory::get();
 
@@ -36,11 +36,9 @@ class ProductCategoryController extends Controller
     {
         abort_if(Gate::denies('product_category_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $parents = ProductCategory::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-
         $companies = Company::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.productCategories.create', compact('parents', 'companies'));
+        return view('admin.productCategories.create', compact('companies'));
     }
 
     public function store(StoreProductCategoryRequest $request)
@@ -62,13 +60,11 @@ class ProductCategoryController extends Controller
     {
         abort_if(Gate::denies('product_category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $parents = ProductCategory::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-
         $companies = Company::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $productCategory->load('parent', 'company');
+        $productCategory->load('company');
 
-        return view('admin.productCategories.edit', compact('parents', 'companies', 'productCategory'));
+        return view('admin.productCategories.edit', compact('companies', 'productCategory'));
     }
 
     public function update(UpdateProductCategoryRequest $request, ProductCategory $productCategory)
@@ -94,7 +90,7 @@ class ProductCategoryController extends Controller
     {
         abort_if(Gate::denies('product_category_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $productCategory->load('parent', 'company', 'parentProductCategories');
+        $productCategory->load('company');
 
         return view('admin.productCategories.show', compact('productCategory'));
     }
@@ -125,5 +121,17 @@ class ProductCategoryController extends Controller
         $media         = $model->addMediaFromRequest('upload')->toMediaCollection('ck-media');
 
         return response()->json(['id' => $media->id, 'url' => $media->getUrl()], Response::HTTP_CREATED);
+    }
+
+    public function ajaxGetProductCategories(Request $request)
+    {
+        if ($request->ajax()) {
+            $productCategories = ProductCategory::query();
+            if ($request->company_id) {
+                $company_id = explode(',', $request->company_id);
+                $productCategories = $productCategories->whereIn('company_id', $company_id ?? []);
+            }
+            return $productCategories->get(['id', 'name']);
+        }
     }
 }

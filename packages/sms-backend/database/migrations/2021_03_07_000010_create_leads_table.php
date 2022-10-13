@@ -17,6 +17,7 @@ class CreateLeadsTable extends Migration
             $table->unsignedBigInteger('group_id')->default(0)->nullable();
 
             $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_referral_id')->nullable()->index();;
             $table->foreignId('customer_id')->constrained();
             $table->foreignId('channel_id')->constrained();
 

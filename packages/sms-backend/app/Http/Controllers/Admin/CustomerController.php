@@ -203,4 +203,25 @@ class CustomerController extends Controller
     {
         return Customer::selectRaw("id, CONCAT(first_name, ' ', last_name) as name")->where('first_name', 'LIKE', "%" . $_GET['q'] . "%")->orWhere('last_name', 'LIKE', "%" . $_GET['q'] . "%")->get();
     }
+
+    public function ajaxGetCustomers(Request $request)
+    {
+        if ($request->ajax()) {
+            $customers = Customer::selectRaw("id, IF(
+                customers.last_name IS NOT NULL,
+                CONCAT(customers.first_name, ' ', customers.last_name),
+                customers.first_name
+            ) as name");
+
+            if ($q = $request->q) {
+                $customers->whereSearch($q);
+            }
+
+            if ($request->has_address == 1) {
+                $customers->whereHas('customerAddresses');
+            }
+
+            return $customers->get();
+        }
+    }
 }

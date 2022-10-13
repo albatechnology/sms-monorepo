@@ -24,6 +24,7 @@ use App\Http\Resources\V1\Lead\SubLeadCategoryResource;
 use App\Models\Channel;
 use App\Models\Lead;
 use App\Models\LeadCategory;
+use App\Models\ProductBrand;
 use App\Models\SubLeadCategory;
 use App\Models\User;
 use App\OpenApi\Customs\Attributes as CustomOpenApi;
@@ -39,7 +40,7 @@ use Vyuldashev\LaravelOpenApi\Attributes as OpenApi;
 #[OpenApi\PathItem]
 class LeadController extends BaseApiController
 {
-    const load_relation = ['customer', 'user', 'channel', 'leadCategory', 'subLeadCategory', 'latestActivity'];
+    const load_relation = ['customer', 'user', 'channel', 'leadCategory', 'subLeadCategory', 'latestActivity', 'productBrand'];
 
     /**
      * Show all user's lead.
@@ -161,13 +162,37 @@ class LeadController extends BaseApiController
     public function store(CreateLeadRequest $request): LeadWithLatestActivityResource
     {
         $data = array_merge($request->validated(), [
-            'channel_id' => tenancy()->getActiveTenant()->id,
-            'user_id'    => tenancy()->getUser()->id,
-            'status'     => LeadStatus::GREEN()
+            'channel_id' => user()->type->is(UserType::SALES) ? user()->channel_id : ($request->validated()['channel_id'] ?? null),
+            'user_id'    => user()->id,
+            'status'     => LeadStatus::GREEN(),
+            'is_unhandled' => user()->type->is(UserType::SALES) ? false : true,
         ]);
 
+        $productBrandIds = $request->product_brand_ids ?? null;
+        $productBrands = ProductBrand::tenanted()->where(function ($q) use ($productBrandIds) {
+            if (!is_null($productBrandIds)) $q->whereIn('id', $productBrandIds);
+        })->pluck('name', 'id');
+
         $lead = Lead::create($data);
-        $lead->queueStatusChange();
+        $lead->productBrands()->sync($productBrands?->keys()?->all() ?? []);
+
+        if ($lead?->channel_id ?? false) {
+            $data = $lead->toArray();
+            foreach ($productBrands as $id => $name) {
+                $data['parent_id'] = $lead->id;
+                $data['label'] = $lead->label . ' (' . $name . ')';
+                $data['product_brand_id'] = $id;
+                $data['status_history'] = null;
+                $data['created_at'] = now();
+                $data['updated_at'] = now();
+                $data['has_activity'] = 0;
+                $newLead = Lead::create($data);
+
+                $newLead->productBrands()->sync([$id]);
+            }
+        }
+
+        if (!is_null($lead->channel_id)) $lead->queueStatusChange();
         $lead->refresh()->loadMissing(self::load_relation);
 
         return $this->show($lead);
@@ -256,8 +281,19 @@ class LeadController extends BaseApiController
     #[CustomOpenApi\Response(resource: LeadResource::class, isCollection: true)]
     public function unhandledIndex()
     {
-        $query = function ($q) {
-            return $q->myLeads()->unhandled()->assignable()->with(self::load_relation);
+        $user = user();
+
+        $query = function ($q) use ($user) {
+            if ($user->type->is(UserType::SALES)) {
+                // 1. same channel
+                // 2. sales have one of product_brand_id
+                // 3. unhandled
+                return $q->where('channel_id', $user->channel_id)->whereIn('product_brand_id', $user->getMyBrandIds())->whereChilds()->unhandled()->with(self::load_relation);
+            } elseif ($user->type->is(UserType::SUPERVISOR) && $user->supervisor_type_id == 1) {
+                return $q->whereNull('channel_id')->whereParent()->unhandled()->with(self::load_relation);
+            } else {
+                return $q->myLeads()->whereChilds()->unhandled()->assignable()->with(self::load_relation);
+            }
         };
         return CustomQueryBuilder::buildResource(Lead::class, LeadResource::class, $query);
     }
@@ -274,19 +310,41 @@ class LeadController extends BaseApiController
      */
     #[CustomOpenApi\Operation(id: 'leadAssign', tags: [Tags::Lead, Tags::V1])]
     #[OpenApi\Parameters(factory: DefaultHeaderParameters::class)]
-    #[CustomOpenApi\RequestBody(request: AssignLeadRequest::class)]
+    // #[CustomOpenApi\RequestBody(request: AssignLeadRequest::class)]
     #[CustomOpenApi\Response(resource: LeadWithLatestActivityResource::class)]
     #[CustomOpenApi\ErrorResponse(exception: UnauthorisedTenantAccessException::class)]
-    public function assign(Lead $lead, AssignLeadRequest $request): LeadWithLatestActivityResource
+    public function assign(Lead $lead): LeadWithLatestActivityResource
     {
         try {
-            app(CoreService::class)->assignLeadToUser($lead, $request->getUser());
+            // app(CoreService::class)->assignLeadToUser($lead, $request->getUser());
+            app(CoreService::class)->assignLeadToUser($lead, user());
         } catch (Exception $e) {
             throw new GenericErrorException($e->getMessage());
         }
-        return $this->show($lead->refresh()->loadMissing(self::load_relation));
-    }
 
+        $lead->refresh();
+
+        if (is_null($lead->status_change_due_at)) $lead->queueStatusChange();
+
+        $productBrands = $lead->productBrands;
+        if ($lead?->channel_id && $productBrands->count() && $lead->is_unhandled) {
+            $data = $lead->toArray();
+            foreach ($productBrands as $pb) {
+                $data['parent_id'] = $lead->id;
+                $data['label'] = $lead->label . ' (' . $pb->name . ')';
+                $data['product_brand_id'] = $pb->id;
+                $data['status_history'] = null;
+                $data['created_at'] = now();
+                $data['updated_at'] = now();
+                $data['has_activity'] = 0;
+                $newLead = Lead::create($data);
+
+                $newLead->productBrands()->sync([$pb->id]);
+            }
+        }
+
+        return $this->show($lead->loadMissing(self::load_relation));
+    }
 
     /**
      * Show all lead categories.

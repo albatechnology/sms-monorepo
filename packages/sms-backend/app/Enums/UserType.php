@@ -25,6 +25,7 @@ final class UserType extends BaseEnum
     const DIGITAL_MARKETING = 5;
     const SALES_SMS = 6;
     const SUPERVISOR_SMS = 7;
+    const SALES_REFERRAL = 8;
 
     // public static function getSMSUserType(){
     //     return [

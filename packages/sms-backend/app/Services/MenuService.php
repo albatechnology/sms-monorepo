@@ -49,13 +49,13 @@ class MenuService
             trans('cruds.activity.title'),
         );
 
-        $submenu_activity_comments = new Submenu(
-            'activity_comment_access',
-            route("admin.activity-comments.index"),
-            'admin/activity-comments',
-            'fas fa-comments',
-            trans('cruds.activityComment.title'),
-        );
+        // $submenu_activity_comments = new Submenu(
+        //     'activity_comment_access',
+        //     route("admin.activity-comments.index"),
+        //     'admin/activity-comments',
+        //     'fas fa-comments',
+        //     trans('cruds.activityComment.title'),
+        // );
 
         $submenu_customer = new Submenu(
             'customer_access',
@@ -97,23 +97,23 @@ class MenuService
             trans('cruds.interiorDesign.title'),
         );
 
-        $submenu_tax_invoice = new Submenu(
-            'tax_invoice_access',
-            route("admin.tax-invoices.index"),
-            'admin/tax-invoices',
-            'fas fa-file-invoice',
-            trans('cruds.taxInvoice.title'),
-            true,
-        );
+        // $submenu_tax_invoice = new Submenu(
+        //     'tax_invoice_access',
+        //     route("admin.tax-invoices.index"),
+        //     'admin/tax-invoices',
+        //     'fas fa-file-invoice',
+        //     trans('cruds.taxInvoice.title'),
+        //     true,
+        // );
 
-        $submenu_notification_access = new Submenu(
-            'notification_access',
-            route("admin.notifications.index"),
-            'admin/notifications',
-            'fas fa-comment-alt',
-            trans('cruds.notification.title'),
-            true,
-        );
+        // $submenu_notification_access = new Submenu(
+        //     'notification_access',
+        //     route("admin.notifications.index"),
+        //     'admin/notifications',
+        //     'fas fa-comment-alt',
+        //     trans('cruds.notification.title'),
+        //     true,
+        // );
 
         return new Menu(
             'crm_access',
@@ -123,14 +123,14 @@ class MenuService
                 $submenu_leads,
                 $submenu_unhandle_leads,
                 $submenu_activities,
-                $submenu_activity_comments,
+                // $submenu_activity_comments,
                 $submenu_customer,
                 $submenu_lead_categories,
                 $submenu_sub_lead_categories,
                 $submenu_address,
                 $submenu_interior_designs,
-                $submenu_tax_invoice,
-                $submenu_notification_access,
+                // $submenu_tax_invoice,
+                // $submenu_notification_access,
             ]
         );
     }
@@ -143,17 +143,16 @@ class MenuService
             'admin/product-categories',
             'fas fa-tags',
             trans('cruds.productCategory.title'),
-            1,
         );
 
-        $tags = new Submenu(
-            'product_tag_access',
-            route("admin.product-tags.index"),
-            'admin/product-tags',
-            'fas fa-tags',
-            trans('cruds.productTag.title'),
-            1,
-        );
+        // $tags = new Submenu(
+        //     'product_tag_access',
+        //     route("admin.product-tags.index"),
+        //     'admin/product-tags',
+        //     'fas fa-tags',
+        //     trans('cruds.productTag.title'),
+        //     1,
+        // );
 
         $products = new Submenu(
             'product_access',
@@ -171,14 +170,14 @@ class MenuService
             trans('cruds.productUnit.title'),
         );
 
-        $catalogue = new Submenu(
-            'catalogue_access',
-            route("admin.catalogues.index"),
-            'admin/catalogues',
-            'fas fa-book',
-            trans('cruds.catalogue.title'),
-            1,
-        );
+        // $catalogue = new Submenu(
+        //     'catalogue_access',
+        //     route("admin.catalogues.index"),
+        //     'admin/catalogues',
+        //     'fas fa-book',
+        //     trans('cruds.catalogue.title'),
+        //     1,
+        // );
 
         $brand_category = new Submenu(
             'brand_category_access',
@@ -196,45 +195,45 @@ class MenuService
             trans('cruds.productBrand.title'),
         );
 
-        $model = new Submenu(
-            'product_model_access',
-            route("admin.product-models.index"),
-            'admin/product-models',
-            'fas fa-tag',
-            trans('cruds.productModel.title'),
-        );
+        // $model = new Submenu(
+        //     'product_model_access',
+        //     route("admin.product-models.index"),
+        //     'admin/product-models',
+        //     'fas fa-tag',
+        //     trans('cruds.productModel.title'),
+        // );
 
-        $version = new Submenu(
-            'product_version_access',
-            route("admin.product-versions.index"),
-            'admin/product-versions',
-            'fas fa-tag',
-            trans('cruds.productVersion.title'),
-        );
+        // $version = new Submenu(
+        //     'product_version_access',
+        //     route("admin.product-versions.index"),
+        //     'admin/product-versions',
+        //     'fas fa-tag',
+        //     trans('cruds.productVersion.title'),
+        // );
 
-        $categoryCode = new Submenu(
-            'product_category_code_access',
-            route("admin.product-category-codes.index"),
-            'admin/product-category-codes',
-            'fas fa-tag',
-            trans('cruds.productCategoryCode.title'),
-        );
+        // $categoryCode = new Submenu(
+        //     'product_category_code_access',
+        //     route("admin.product-category-codes.index"),
+        //     'admin/product-category-codes',
+        //     'fas fa-tag',
+        //     trans('cruds.productCategoryCode.title'),
+        // );
 
-        $covering = new Submenu(
-            'covering_access',
-            route("admin.coverings.index"),
-            'admin/coverings',
-            'fas fa-gift',
-            trans('cruds.covering.title'),
-        );
+        // $covering = new Submenu(
+        //     'covering_access',
+        //     route("admin.coverings.index"),
+        //     'admin/coverings',
+        //     'fas fa-gift',
+        //     trans('cruds.covering.title'),
+        // );
 
-        $colour = new Submenu(
-            'colour_access',
-            route("admin.colours.index"),
-            'admin/colours',
-            'fas fa-palette',
-            trans('cruds.colour.title'),
-        );
+        // $colour = new Submenu(
+        //     'colour_access',
+        //     route("admin.colours.index"),
+        //     'admin/colours',
+        //     'fas fa-palette',
+        //     trans('cruds.colour.title'),
+        // );
 
         return new Menu(
             'product_management_access',
@@ -242,17 +241,17 @@ class MenuService
             trans('cruds.productManagement.title'),
             ...[
                 $categories,
-                $tags,
+                // $tags,
                 $products,
                 $units,
-                $catalogue,
+                // $catalogue,
                 $brand_category,
                 $brand,
-                $model,
-                $version,
-                $categoryCode,
-                $covering,
-                $colour,
+                // $model,
+                // $version,
+                // $categoryCode,
+                // $covering,
+                // $colour,
             ]
         );
     }
@@ -286,14 +285,14 @@ class MenuService
             0,
         );
 
-        $banner = new Submenu(
-            'banner_access',
-            route("admin.banners.index"),
-            'admin/banners',
-            'fas fa-flag',
-            trans('cruds.banner.title'),
-            1,
-        );
+        // $banner = new Submenu(
+        //     'banner_access',
+        //     route("admin.banners.index"),
+        //     'admin/banners',
+        //     'fas fa-flag',
+        //     trans('cruds.banner.title'),
+        //     1,
+        // );
 
         return new Menu(
             'marketing_access',
@@ -303,7 +302,7 @@ class MenuService
                 $discount,
                 $promoCategory,
                 $promo,
-                $banner,
+                // $banner,
             ]
         );
     }

@@ -17,54 +17,35 @@ class StoreProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'product_brand_id'   => [
+            'company_id'   => [
                 'required',
                 'integer',
+            ],
+            'product_brand_id'   => [
+                'required',
+                'exists:product_brands,id',
+            ],
+            'product_category_id'   => [
+                'required',
+                'exists:product_categories,id',
             ],
             'name'         => [
                 'string',
                 'required',
             ],
-            'product_model_id'   => [
+            // 'tags.*'       => [
+            //     'integer',
+            // ],
+            // 'tags'         => [
+            //     'array',
+            // ],
+            'price'     => [
                 'required',
                 'integer',
-            ],
-            'product_version_id'   => [
-                'required',
-                'integer',
-            ],
-            'product_category_code_id'   => [
-                'required',
-                'integer',
-            ],
-            'categories.*' => [
-                'integer',
-            ],
-            'categories'   => [
-                'array',
-            ],
-            'tags.*'       => [
-                'integer',
-            ],
-            'tags'         => [
-                'array',
-            ],
-            'company_id'   => [
-                'required',
-                'integer',
-            ],
-            'channels.*'   => [
-                'integer',
-            ],
-            'channels'     => [
-                'array',
             ],
             'is_active'     => [
-                'integer',
-            ],
-            'video_url' => [
-                'string',
                 'nullable',
+                'integer',
             ],
             'description' => [
                 'nullable',

@@ -37,11 +37,11 @@ class AuthController extends BaseApiController
 
         $user = User::where('email', $request->email)->first();
 
-        if($user->type->is(UserType::SALES) && ($user->orlan_user_id == null || $user->orlan_user_id == '')){
-            throw ValidationException::withMessages([
-                'error' => ['User Orlan ID is empty. Please contact admin to fill in'],
-            ]);
-        }
+        // if($user->type->is(UserType::SALES) && ($user->orlan_user_id == null || $user->orlan_user_id == '')){
+        //     throw ValidationException::withMessages([
+        //         'error' => ['User Orlan ID is empty. Please contact admin to fill in'],
+        //     ]);
+        // }
 
         if ($checkToken && ($checkToken->user->type->is(UserType::DIRECTOR) || $checkToken->user->is_admin)) {
             $validatePassword = true;

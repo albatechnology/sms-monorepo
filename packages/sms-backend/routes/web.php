@@ -101,10 +101,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
         Route::get('sales/{id?}', [UsersController::class, 'includeFormSales']);
     });
     Route::get('users/get-users', 'UsersController@ajaxGetUsers');
-    Route::get('users/create-sms', [UsersController::class, 'createSms'])->name('users.createSms');
-    Route::post('users/create-sms', [UsersController::class, 'storeSms'])->name('users.storeSms');
-    Route::get('users/{id}/edit-sms', [UsersController::class, 'editSms'])->name('users.editSms');
-    Route::put('users/{id}/update-sms', [UsersController::class, 'updateSms'])->name('users.updateSms');
+    // Route::get('users/create-sms', [UsersController::class, 'createSms'])->name('users.createSms');
+    // Route::post('users/create-sms', [UsersController::class, 'storeSms'])->name('users.storeSms');
+    // Route::get('users/{id}/edit-sms', [UsersController::class, 'editSms'])->name('users.editSms');
+    // Route::put('users/{id}/update-sms', [UsersController::class, 'updateSms'])->name('users.updateSms');
     Route::post('users/get-channels/{companyId}', [UsersController::class, 'getChannels']);
     Route::delete('users/destroy', [UsersController::class, 'massDestroy'])->name('users.massDestroy');
     Route::post('users/parse-csv-import', [UsersController::class, 'parseCsvImport'])->name('users.parseCsvImport');
@@ -113,6 +113,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('users', 'UsersController');
 
     // Product Categories
+    Route::get('product-categories/get-product-categories', 'ProductCategoryController@ajaxGetProductCategories');
     Route::delete('product-categories/destroy', [ProductCategoryController::class, 'massDestroy'])->name('product-categories.massDestroy');
     Route::post('product-categories/media', [ProductCategoryController::class, 'storeMedia'])->name('product-categories.storeMedia');
     Route::post('product-categories/ckmedia', [ProductCategoryController::class, 'storeCKEditorImages'])->name('product-categories.storeCKEditorImages');
@@ -219,6 +220,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('item-product-units', 'ItemProductUnitController');
 
     // Customers
+    Route::get('customers/ajax-get-customers', [CustomerController::class, 'ajaxGetCustomers'])->name('customers.ajaxGetCustomers');
     Route::get('customers/get-customers', [CustomerController::class, 'getCustomers'])->name('customers.getCustomers');
     Route::match(['get', 'post'], 'customers/hapus', [CustomerController::class, 'hapus'])->name('customers.hapus');
     Route::delete('customers/destroy', [CustomerController::class, 'massDestroy'])->name('customers.massDestroy');
@@ -359,7 +361,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('new-targets/destroy', [NewTargetController::class, 'massDestroy'])->name('new-targets.massDestroy');
     Route::post('new-targets/parse-csv-import', [NewTargetController::class, 'parseCsvImport'])->name('new-targets.parseCsvImport');
     Route::post('new-targets/process-csv-import', [NewTargetController::class, 'processCsvImport'])->name('new-targets.processCsvImport');
-    Route::resource('new-targets', 'NewTargetController');
+    Route::resource('new-targets', 'NewTargetController')->except(['create', 'store']);
 
     // Catalogues
     Route::delete('catalogues/destroy', [CatalogueController::class, 'massDestroy'])->name('catalogues.massDestroy');

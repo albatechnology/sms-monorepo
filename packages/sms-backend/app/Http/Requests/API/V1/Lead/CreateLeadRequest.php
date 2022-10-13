@@ -14,6 +14,9 @@ class CreateLeadRequest extends BaseApiRequest
 
     public static function data(): array
     {
+        $channelIdValidation = 'nullable|exists:channels,id';
+        // if (user()->type->value == 3 && user()->supervisor_type_id == 1) $channelIdValidation = 'required|exists:channels,id';
+
         return [
             RequestData::makeEnum('type', LeadType::class, true),
             RequestData::make('label', Schema::TYPE_STRING, 'My Leads', 'nullable|string|min:2|max:100'),
@@ -36,6 +39,9 @@ class CreateLeadRequest extends BaseApiRequest
             ),
             RequestData::make('lead_category_id', Schema::TYPE_INTEGER, 1, 'required|exists:lead_categories,id'),
             RequestData::make('interest', Schema::TYPE_STRING, 'Lagi Pengen LazyBoy', 'nullable'),
+            RequestData::make('user_referral_id', Schema::TYPE_INTEGER, 1, 'nullable|exists:users,id'),
+            RequestData::make('channel_id', Schema::TYPE_INTEGER, 1, $channelIdValidation),
+            RequestData::make('product_brand_ids', Schema::TYPE_ARRAY, [1, 2, 3], 'nullable|array'),
         ];
     }
 

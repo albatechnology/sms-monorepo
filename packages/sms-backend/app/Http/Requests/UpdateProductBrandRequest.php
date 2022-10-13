@@ -19,14 +19,14 @@ class UpdateProductBrandRequest extends FormRequest
                 'string',
                 'required',
             ],
-            'hpp_calculation' => [
-                'integer',
-                'required',
-            ],
-            'currency_id' => [
-                'required',
-                'integer',
-            ],
+            // 'hpp_calculation' => [
+            //     'integer',
+            //     'required',
+            // ],
+            // 'currency_id' => [
+            //     'required',
+            //     'integer',
+            // ],
             'brand_category_id' => [
                 'required',
                 'exists:brand_categories,id',

@@ -121,10 +121,8 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
     Route::get('new-reports/interior-designs/details', [NewReportController::class, 'interiorDesignDetails'])->name('newReports.interiorDesignDetails');
     Route::get('new-reports/brand-details', [NewReportController::class, 'brandDetails'])->name('newReports.brandDetails');
 
-    Route::get('new-reports/test', [NewReportController::class, 'test'])->name('newReports.test');
+    // Route::get('new-reports/test', [NewReportController::class, 'test'])->name('newReports.test');
     Route::get('new-reports/leads', [NewReportController::class, 'leads'])->name('newReports.leads');
-    Route::get('new-reports/quotation', [NewReportController::class, 'quotation'])->name('newReports.quotation');
-    Route::get('new-reports/deals', [NewReportController::class, 'deals'])->name('newReports.deals');
     Route::get('new-reports/invoice', [NewReportController::class, 'invoice'])->name('newReports.invoice');
 
     /** Tenanted data */

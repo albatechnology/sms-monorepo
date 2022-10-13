@@ -7,7 +7,56 @@
         <div class="card-body">
             <form method="POST" action="{{ route('admin.leads.store') }}" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="type" value="3">
                 <div class="form-group">
+                    <label class="required" for="company_id">{{ trans('cruds.user.fields.company') }}</label>
+                    <select class="form-control select2 {{ $errors->has('company_id') ? 'is-invalid' : '' }}"
+                        name="company_id" id="company_id" required>
+                        @foreach ($companies as $id => $name)
+                            <option value="{{ $id }}" {{ old('company_id') == $id ? 'selected' : '' }}>
+                                {{ $name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if ($errors->has('company_id'))
+                        <span class="text-danger">{{ $errors->first('company_id') }}</span>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.user.fields.company_helper') }}</span>
+                </div>
+                <div class="form-group">
+                    <label for="channel_id">{{ trans('cruds.user.fields.channels') }}</label>
+                    <select class="form-control select2 {{ $errors->has('channel_id') ? 'is-invalid' : '' }}"
+                        name="channel_id" id="channel_id" disabled data-placeholder="Select channel" data-allow-clear="true">
+                    </select>
+                    @if ($errors->has('channel_id'))
+                        <span class="text-danger">{{ $errors->first('channel_id') }}</span>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.user.fields.channels_helper') }}</span>
+                </div>
+                <div class="form-group">
+                    <label>Product Brand</label>
+                    <select name="product_brand_ids[]" id="product_brand_ids"
+                        class="form-control select2 @error('product_brand_ids') is-invalid @enderror" multiple disabled data-placeholder="Select Product Brands">
+                    </select>
+                    @error('product_brand_ids')
+                        <span class="error invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="form-group">
+                    <label for="user_referral_id">Sales Referral</label>
+                    <select class="form-control select2 {{ $errors->has('user_referral_id') ? 'is-invalid' : '' }}"
+                        name="user_referral_id" id="user_referral_id">
+                        @foreach ($userReferrals as $id => $name)
+                            <option value="{{ $id }}" {{ old('user_referral_id') == $id ? 'selected' : '' }}>
+                                {{ $name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if ($errors->has('user_referral_id'))
+                        <span class="text-danger">{{ $errors->first('user_referral_id') }}</span>
+                    @endif
+                </div>
+                {{-- <div class="form-group">
                     <label class="required">{{ trans('cruds.lead.fields.type') }}</label>
                     <select class="form-control {{ $errors->has('type') ? 'is-invalid' : '' }}" name="type" id="type"
                         required>
@@ -23,11 +72,11 @@
                         <span class="text-danger">{{ $errors->first('type') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.lead.fields.type_helper') }}</span>
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label for="label">{{ trans('cruds.lead.fields.label') }}</label>
-                    <input class="form-control {{ $errors->has('label') ? 'is-invalid' : '' }}" type="text" name="label"
-                        id="label" value="{{ old('label', '') }}">
+                    <input class="form-control {{ $errors->has('label') ? 'is-invalid' : '' }}" type="text"
+                        name="label" id="label" value="{{ old('label', '') }}">
                     @if ($errors->has('label'))
                         <span class="text-danger">{{ $errors->first('label') }}</span>
                     @endif
@@ -80,7 +129,8 @@
                 </div>
                 <div class="form-group" id="select_customer_id">
                     <label for="customer_id">{{ trans('cruds.lead.fields.customer') }}</label>
-                    <select class="form-control {{ $errors->has('customer_id') ? 'is-invalid' : '' }}" name="customer_id" id="customer_id"></select>
+                    <select class="form-control {{ $errors->has('customer_id') ? 'is-invalid' : '' }}" name="customer_id"
+                        id="customer_id"></select>
                     @if ($errors->has('customer'))
                         <span class="text-danger">{{ $errors->first('customer') }}</span>
                     @endif
@@ -107,8 +157,7 @@
                         <span class="help-block">{{ trans('cruds.customer.fields.title_helper') }}</span>
                     </div>
                     <div class="form-group">
-                        <label class="required"
-                            for="first_name">{{ trans('cruds.customer.fields.first_name') }}</label>
+                        <label class="required" for="first_name">{{ trans('cruds.customer.fields.first_name') }}</label>
                         <input class="form-control {{ $errors->has('first_name') ? 'is-invalid' : '' }}" type="text"
                             name="first_name" id="first_name" value="{{ old('first_name', '') }}">
                         @if ($errors->has('first_name'))
@@ -128,7 +177,8 @@
                     <div class="form-group">
                         <label for="date_of_birth">{{ trans('cruds.customer.fields.date_of_birth') }}</label>
                         <input class="form-control date {{ $errors->has('date_of_birth') ? 'is-invalid' : '' }}"
-                            type="text" name="date_of_birth" id="date_of_birth" value="{{ old('date_of_birth', '') }}">
+                            type="text" name="date_of_birth" id="date_of_birth"
+                            value="{{ old('date_of_birth', '') }}">
                         @if ($errors->has('date_of_birth'))
                             <span class="text-danger">{{ $errors->first('date_of_birth') }}</span>
                         @endif
@@ -153,8 +203,8 @@
                     </div>
                     <div class="form-group">
                         <label for="description">{{ trans('cruds.customer.fields.description') }}</label>
-                        <textarea class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}"
-                            name="description" id="description">{{ old('description') }}</textarea>
+                        <textarea class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}" name="description"
+                            id="description">{{ old('description') }}</textarea>
                         @if ($errors->has('description'))
                             <span class="text-danger">{{ $errors->first('description') }}</span>
                         @endif
@@ -165,8 +215,9 @@
                     <div class="form-group">
                         <label class="required"
                             for="address_line_1">{{ trans('cruds.address.fields.address_line_1') }}</label>
-                        <input class="form-control {{ $errors->has('address_line_1') ? 'is-invalid' : '' }}" type="text"
-                            name="address_line_1" id="address_line_1" value="{{ old('address_line_1', '') }}">
+                        <input class="form-control {{ $errors->has('address_line_1') ? 'is-invalid' : '' }}"
+                            type="text" name="address_line_1" id="address_line_1"
+                            value="{{ old('address_line_1', '') }}">
                         @if ($errors->has('address_line_1'))
                             <span class="text-danger">{{ $errors->first('address_line_1') }}</span>
                         @endif
@@ -174,8 +225,9 @@
                     </div>
                     <div class="form-group">
                         <label for="address_line_2">{{ trans('cruds.address.fields.address_line_2') }}</label>
-                        <input class="form-control {{ $errors->has('address_line_2') ? 'is-invalid' : '' }}" type="text"
-                            name="address_line_2" id="address_line_2" value="{{ old('address_line_2', '') }}">
+                        <input class="form-control {{ $errors->has('address_line_2') ? 'is-invalid' : '' }}"
+                            type="text" name="address_line_2" id="address_line_2"
+                            value="{{ old('address_line_2', '') }}">
                         @if ($errors->has('address_line_2'))
                             <span class="text-danger">{{ $errors->first('address_line_2') }}</span>
                         @endif
@@ -183,8 +235,9 @@
                     </div>
                     <div class="form-group">
                         <label for="address_line_3">{{ trans('cruds.address.fields.address_line_3') }}</label>
-                        <input class="form-control {{ $errors->has('address_line_3') ? 'is-invalid' : '' }}" type="text"
-                            name="address_line_3" id="address_line_3" value="{{ old('address_line_3', '') }}">
+                        <input class="form-control {{ $errors->has('address_line_3') ? 'is-invalid' : '' }}"
+                            type="text" name="address_line_3" id="address_line_3"
+                            value="{{ old('address_line_3', '') }}">
                         @if ($errors->has('address_line_3'))
                             <span class="text-danger">{{ $errors->first('address_line_3') }}</span>
                         @endif
@@ -243,8 +296,9 @@
                     </div>
                     <div class="form-group">
                         <label for="address_phone">{{ trans('cruds.address.fields.phone') }}</label>
-                        <input class="form-control {{ $errors->has('address_phone') ? 'is-invalid' : '' }}" type="text"
-                            name="address_phone" id="address_phone" value="{{ old('address_phone', '') }}">
+                        <input class="form-control {{ $errors->has('address_phone') ? 'is-invalid' : '' }}"
+                            type="text" name="address_phone" id="address_phone"
+                            value="{{ old('address_phone', '') }}">
                         @if ($errors->has('address_phone'))
                             <span class="text-danger">{{ $errors->first('address_phone') }}</span>
                         @endif
@@ -262,12 +316,52 @@
 @endsection
 @push('js')
     <script>
+        function getChannles(companyId) {
+            var options = '';
+            $('#channel_id').attr('disabled', true).html(options).val('').change();
+            if (companyId) {
+                $.get("{{ url('admin/channels/get-channels') }}?company_id=" + companyId, function(
+                    res) {
+                    res.forEach(data => {
+                        options += '<option value="' + data.id + '">' + data.name +
+                            '</option>';
+                    });
+                    $('#channel_id').attr('disabled', false).html(options).change();
+                })
+            } else {
+                $('#channel_id').attr('disabled', true).html(options).val('').change();
+            }
+        }
+
+        function getProductBrands(companyId) {
+            var options = '';
+            $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
+            if (companyId) {
+                $.get('{{ url('admin/product-brands/get-product-brands') }}?company_id=' + companyId,
+                    function(
+                        res) {
+                        res.forEach(data => {
+                            options += '<option value="' + data.id + '">' + data.name +
+                                '</option>';
+                        });
+                        $('#product_brand_ids').attr('disabled', false).html(options).change();
+                    })
+            } else {
+                $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
+            }
+        }
+
         $(document).ready(function() {
+            $('#company_id').on('change', function() {
+                getChannles($(this).val());
+                getProductBrands($(this).val());
+            });
+
             $('#customer_id').select2({
                 placeholder: 'Search by name, email, or phone',
                 minimumInputLength: 2,
                 ajax: {
-                    url: '{{ url('admin/unhandle-leads/get-customers') }}',
+                    url: "{{ url('admin/customers/ajax-get-customers') }}?has_address=1",
                     dataType: 'json',
                     delay: 250,
                     processResults: function(data) {

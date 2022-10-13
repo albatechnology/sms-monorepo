@@ -39,12 +39,6 @@
                             {{ trans('cruds.productCategory.fields.photo') }}
                         </th>
                         <th>
-                            {{ trans('cruds.productCategory.fields.parent') }}
-                        </th>
-                        <th>
-                            {{ trans('cruds.productCategory.fields.type') }}
-                        </th>
-                        <th>
                             {{ trans('cruds.productCategory.fields.company') }}
                         </th>
                         <th>
@@ -64,22 +58,6 @@
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
                         <td>
-                        </td>
-                        <td>
-                            <select class="search">
-                                <option value>{{ trans('global.all') }}</option>
-                                @foreach($product_categories as $key => $item)
-                                    <option value="{{ $item->name }}">{{ $item->name }}</option>
-                                @endforeach
-                            </select>
-                        </td>
-                        <td>
-                            <select class="search" strict="true">
-                                <option value>{{ trans('global.all') }}</option>
-                                @foreach(App\Models\ProductCategory::TYPE_SELECT as $key => $item)
-                                    <option value="{{ $item }}">{{ $item }}</option>
-                                @endforeach
-                            </select>
                         </td>
                         <td>
                             <select class="search">
@@ -114,12 +92,6 @@
                                         <img src="{{ $productCategory->photo->getUrl('thumb') }}">
                                     </a>
                                 @endif
-                            </td>
-                            <td>
-                                {{ $productCategory->parent->name ?? '' }}
-                            </td>
-                            <td>
-                                {{ App\Models\ProductCategory::TYPE_SELECT[$productCategory->type] ?? '' }}
                             </td>
                             <td>
                                 {{ $productCategory->company->name ?? '' }}
@@ -203,7 +175,7 @@
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
   });
-  
+
 let visibleColumnsIndexes = null;
 $('.datatable thead').on('input', '.search', function () {
       let strict = $(this).attr('strict') || false

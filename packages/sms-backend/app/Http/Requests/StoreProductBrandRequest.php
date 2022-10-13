@@ -22,14 +22,14 @@ class StoreProductBrandRequest extends FormRequest
             'company_id' => [
                 'required',
             ],
-            'hpp_calculation' => [
-                'required',
-                'integer',
-            ],
-            'currency_id' => [
-                'required',
-                'integer',
-            ],
+            // 'hpp_calculation' => [
+            //     'required',
+            //     'integer',
+            // ],
+            // 'currency_id' => [
+            //     'required',
+            //     'integer',
+            // ],
             'brand_category_id' => [
                 'required',
                 'exists:brand_categories,id',

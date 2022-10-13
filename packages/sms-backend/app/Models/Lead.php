@@ -50,6 +50,7 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         'is_unhandled',
         'group_id',
         'user_id',
+        'user_referral_id',
         'customer_id',
         'channel_id',
         'status_history',
@@ -65,6 +66,7 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         'sms_channel_id',
         'product_brand_id',
         'voucher',
+        'parent_id',
     ];
 
     protected $casts = [
@@ -73,6 +75,7 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         'has_activity'     => 'bool',
         'group_id'         => 'integer',
         'user_id'          => 'integer',
+        'user_referral_id' => 'integer',
         'customer_id'      => 'integer',
         'channel_id'       => 'integer',
         'lead_category_id' => 'integer',
@@ -236,6 +239,16 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         return $query->whereCompanyIds(user()->company_ids);
     }
 
+    public function parent()
+    {
+        return $this->belongsTo(Lead::class, 'parent_id');
+    }
+
+    public function childs()
+    {
+        return $this->hasMany(Lead::class, 'parent_id');
+    }
+
     public function leadCategory()
     {
         return $this->belongsTo(LeadCategory::class, 'lead_category_id');
@@ -283,6 +296,11 @@ class Lead extends BaseModel implements Tenanted, HasMedia
     //     });
     // }
 
+    public function scopeWhereProductBrandId($query, $id)
+    {
+        return $query->where('product_brand_id', $id);
+    }
+
     public function scopeWhereLeadCategoryId($query, $id)
     {
         return $query->where('lead_category_id', $id);
@@ -319,6 +337,11 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         return $this->belongsTo(User::class);
     }
 
+    public function userReferral()
+    {
+        return $this->belongsTo(User::class, 'user_referral_id');
+    }
+
     public function userSms()
     {
         return $this->belongsTo(User::class, 'user_sms_id');
@@ -327,6 +350,11 @@ class Lead extends BaseModel implements Tenanted, HasMedia
     public function productBrand()
     {
         return $this->belongsTo(ProductBrand::class, 'product_brand_id');
+    }
+
+    public function productBrands()
+    {
+        return $this->belongsToMany(ProductBrand::class, 'product_brand_leads');
     }
 
     public function getLatestActivityAttribute()
@@ -347,6 +375,16 @@ class Lead extends BaseModel implements Tenanted, HasMedia
     public function leadActivityOrders()
     {
         return $this->belongsToMany(Order::class, Activity::class);
+    }
+
+    public function scopeWhereParent($query)
+    {
+        return $query->whereNull('parent_id');
+    }
+
+    public function scopeWhereChilds($query)
+    {
+        return $query->whereNotNull('parent_id');
     }
 
     public function scopeWhereCompanyId($query, int $id)

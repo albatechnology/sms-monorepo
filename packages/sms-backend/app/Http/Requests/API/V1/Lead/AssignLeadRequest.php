@@ -15,7 +15,7 @@ class AssignLeadRequest extends BaseApiRequest
     public static function data(): array
     {
         return [
-            RequestData::make('user_id', Schema::TYPE_INTEGER, 1, 'required|exists:users,id'),
+            // RequestData::make('user_id', Schema::TYPE_INTEGER, 1, 'required|exists:users,id'),
         ];
     }
 
@@ -26,6 +26,6 @@ class AssignLeadRequest extends BaseApiRequest
 
     public function getUser(): User
     {
-        return User::findOrFail($this->user_id);
+        // return User::findOrFail($this->user_id);
     }
 }

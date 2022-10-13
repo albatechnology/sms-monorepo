@@ -19,6 +19,7 @@ class UpdateLeadRequest extends BaseApiRequest
             RequestData::make('label', Schema::TYPE_STRING, 'My Leads', 'nullable|string|min:2|max:100'),
             RequestData::make('customer_id', Schema::TYPE_INTEGER, 1, 'required|exists:customers,id'),
             RequestData::make('interest', Schema::TYPE_STRING, 'Lagi Pengen LazyBoy', 'nullable'),
+            RequestData::make('user_referral_id', Schema::TYPE_INTEGER, 1, 'nullable|exists:users,id'),
         ];
     }
 

@@ -99,6 +99,17 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
+                            <label>Product Brand</label>
+                            <select name="product_brand_id" id="product_brand_id" class="form-control">
+                                <option value="">- All -</option>
+                                @foreach ($productBrands as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
                             <label>Lead Sub Category</label>
                             <select name="sub_lead_category_id" id="sub_lead_category_id" class="form-control" disabled>
                                 <option value="">- All -</option>
@@ -106,17 +117,22 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Start Date</label>
-                            <input type="date" name="start_date" id="start_date" class="form-control">
+                       <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Start Date</label>
+                                <input type="date" name="start_date" id="start_date" class="form-control">
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>End Date</label>
-                            <input type="date" name="end_date" id="end_date" class="form-control">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>End Date</label>
+                                <input type="date" name="end_date" id="end_date" class="form-control">
+                            </div>
                         </div>
+                       </div>
                     </div>
+
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Filter</button>
                     </div>
@@ -148,6 +164,7 @@
                         <th>
                             {{ trans('cruds.lead.fields.status') }}
                         </th>
+                        <th>Handled?</th>
                         <th>
                             {{ trans('cruds.lead.fields.is_new_customer') }}
                         </th>
@@ -198,6 +215,7 @@
                                 @endforeach
                             </select>
                         </td>
+                        <td></td>
                         <td></td>
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
@@ -276,6 +294,7 @@
                         d.supervisor_id = $('#supervisor_id').val();
                         d.lead_category_id = $('#lead_category_id').val();
                         d.sub_lead_category_id = $('#sub_lead_category_id').val();
+                        d.product_brand_id = $('#product_brand_id').val();
                         d.start_date = $('#start_date').val();
                         d.end_date = $('#end_date').val();
                     }
@@ -299,6 +318,10 @@
                     {
                         data: 'status',
                         name: 'status'
+                    },
+                    {
+                        data: 'is_unhandled',
+                        name: 'is_unhandled'
                     },
                     {
                         data: 'is_new_customer',
@@ -379,6 +402,9 @@
                 table.ajax.reload();
             });
             $('#sub_lead_category_id').change(function() {
+                table.ajax.reload();
+            });
+            $('#product_brand_id').change(function() {
                 table.ajax.reload();
             });
             $('#start_date').change(function() {

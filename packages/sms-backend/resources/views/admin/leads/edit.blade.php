@@ -9,7 +9,7 @@
             <form method="POST" action="{{ route('admin.leads.update', [$lead->id]) }}" enctype="multipart/form-data">
                 @method('PUT')
                 @csrf
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="required">{{ trans('cruds.lead.fields.sales') }}</label>
                     <select class="form-control select2 {{ $errors->has('sales') ? 'is-invalid' : '' }}" name="sales"
                         id="sales">
@@ -23,8 +23,8 @@
                         <span class="text-danger">{{ $errors->first('sales') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.lead.fields.type_helper') }}</span>
-                </div>
-                <div class="form-group">
+                </div> --}}
+                {{-- <div class="form-group">
                     <label class="required">{{ trans('cruds.lead.fields.type') }}</label>
                     <select class="form-control {{ $errors->has('type') ? 'is-invalid' : '' }}" name="type" id="type"
                         required>
@@ -40,6 +40,40 @@
                         <span class="text-danger">{{ $errors->first('type') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.lead.fields.type_helper') }}</span>
+                </div> --}}
+                <div class="form-group">
+                    <label class="required">Company</label>
+                    <input type="text" class="form-control" value="{{ $lead->channel?->company->name ?? "" }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="required">Channel</label>
+                    <input type="text" class="form-control" value="{{ $lead->channel?->name ?? "" }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="required">{{ trans('cruds.lead.fields.type') }}</label>
+                    <input type="text" class="form-control" value="{{ $lead->type?->description ?? "" }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="required">Product Brand</label>
+                    <input type="text" class="form-control" value="{{ $lead->productBrand?->name ?? "" }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="user_referral_id">Sales Referral</label>
+                    <select class="form-control select2 {{ $errors->has('user_referral_id') ? 'is-invalid' : '' }}"
+                        name="user_referral_id" id="user_referral_id">
+                        @foreach ($userReferrals as $id => $name)
+                            <option value="{{ $id }}" {{ $lead->user_referral_id == $id ? 'selected' : '' }}>
+                                {{ $name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if ($errors->has('user_referral_id'))
+                        <span class="text-danger">{{ $errors->first('user_referral_id') }}</span>
+                    @endif
+                </div>
+                <div class="form-group">
+                    <label class="required">Customer</label>
+                    <input type="text" class="form-control" value="{{ $lead->customer?->fullName ?? "" }}" disabled>
                 </div>
                 <div class="form-group">
                     <label class="required">{{ trans('cruds.lead.fields.status') }}</label>
@@ -58,7 +92,7 @@
                     @endif
                     <span class="help-block">{{ trans('cruds.lead.fields.status_helper') }}</span>
                 </div>
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <div class="form-check {{ $errors->has('is_new_customer') ? 'is-invalid' : '' }}">
                         <input type="hidden" name="is_new_customer" value="0">
                         <input class="form-check-input" type="checkbox" name="is_new_customer" id="is_new_customer"
@@ -70,7 +104,7 @@
                         <span class="text-danger">{{ $errors->first('is_new_customer') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.lead.fields.is_new_customer_helper') }}</span>
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label for="label">{{ trans('cruds.lead.fields.label') }}</label>
                     <input class="form-control {{ $errors->has('label') ? 'is-invalid' : '' }}" type="text" name="label"
@@ -88,7 +122,7 @@
                         <span class="text-danger">{{ $errors->first('interest') }}</span>
                     @endif
                 </div>
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label for="customer_id">{{ trans('cruds.lead.fields.customer') }}</label>
                     <select class="form-control select2 {{ $errors->has('customer') ? 'is-invalid' : '' }}" name="customer_id" id="customer_id">
                             <option value="{{ $lead->customer->id }}" selected>{{ $lead->customer->first_name .' '.$lead->customer->last_name }}</option>
@@ -97,8 +131,8 @@
                         <span class="text-danger">{{ $errors->first('customer') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.lead.fields.customer_helper') }}</span>
-                </div>
-                <div class="form-group">
+                </div> --}}
+                {{-- <div class="form-group">
                     <label class="required" for="channel_id">{{ trans('cruds.lead.fields.channel') }}</label>
                     <select class="form-control select2 {{ $errors->has('channel') ? 'is-invalid' : '' }}"
                         name="channel_id" id="channel_id" required>
@@ -112,7 +146,7 @@
                         <span class="text-danger">{{ $errors->first('channel') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.lead.fields.channel_helper') }}</span>
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <button class="btn btn-danger" type="submit">
                         {{ trans('global.save') }}
@@ -129,7 +163,7 @@
                 placeholder: 'Search by name, email, or phone',
                 minimumInputLength: 2,
                 ajax: {
-                    url: '{{ url('admin/unhandle-leads/get-customers') }}',
+                    url: "{{ url('admin/customers/ajax-get-customers') }}?has_address=1",
                     dataType: 'json',
                     delay: 250,
                     processResults: function(data) {

@@ -229,16 +229,22 @@ class CoreService
             throw new Exception('Attempting to assign lead that is already handled not allowed.');
         }
 
+        if ($lead->user_id == $user->id) {
+            throw new Exception('Lead already taken by you.');
+        }
+
         // check permission
-        if (!$this->loggedInUserCanAssignLead()) {
+        // if (!$this->loggedInUserCanAssignLead()) {
+        if (!$this->loggedInUserCanAssignLead() && $user->type->isNot(UserType::SALES)) {
             throw new Exception('This user does not have privilege to assign an unhandled lead.', 403);
         }
+        // if ($lead->company_id !== $user->company_id) {
+        //     throw new Exception("User {$user->name} does not belong to the same company as lead {$lead->label}");
+        // }
 
-        if ($lead->company_id !== $user->company_id) {
-            throw new Exception("User {$user->name} does not belong to the same company as lead {$lead->label}");
-        }
+        // $channel_id = User::findOrFail($user->id)->getDefaultChannel();
+        $channel_id = $user->getDefaultChannel();
 
-        $channel_id = User::findOrFail($user->id)->getDefaultChannel();
         if (!$channel_id || $channel_id == null) {
             $channel_id = $lead->channel_id;
         }

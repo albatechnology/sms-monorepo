@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddHppCalculationToProductBrandsTable extends Migration
+class AddParentIdToLeadsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AddHppCalculationToProductBrandsTable extends Migration
      */
     public function up()
     {
-        Schema::table('product_brands', function (Blueprint $table) {
-            $table->unsignedTinyInteger('hpp_calculation');
-            $table->integer('currency_id')->nullable();
+        Schema::table('leads', function (Blueprint $table) {
+            $table->foreignId('parent_id')->nullable();
         });
     }
 
@@ -26,8 +25,8 @@ class AddHppCalculationToProductBrandsTable extends Migration
      */
     public function down()
     {
-        Schema::table('product_brands', function (Blueprint $table) {
-            $table->dropColumn(['hpp_calculation']);
+        Schema::table('leads', function (Blueprint $table) {
+            $table->dropColumn(['parent_id']);
         });
     }
 }

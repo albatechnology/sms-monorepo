@@ -30,12 +30,12 @@
                         {{ trans('cruds.productBrand.fields.name') }}
                     </th>
                     <th>Brand Category</th>
-                    <th>
+                    {{-- <th>
                         {{ trans('cruds.productBrand.fields.hpp_calculation') }}
-                    </th>
-                    <th>Currency</th>
-                    <th>Show in Moves</th>
-                    <th>Show in SMS</th>
+                    </th> --}}
+                    {{-- <th>Currency</th> --}}
+                    {{-- <th>Show in Moves</th>
+                    <th>Show in SMS</th> --}}
                     <th>
                         {{ trans('cruds.productBrand.fields.photo') }}
                     </th>
@@ -55,10 +55,10 @@
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    {{-- <td></td> --}}
+                    {{-- <td></td> --}}
+                    {{-- <td></td> --}}
+                    {{-- <td></td> --}}
                     <td></td>
                 </tr>
                 </thead>
@@ -113,10 +113,10 @@
                     {data: 'id', name: 'id'},
                     {data: 'name', name: 'name'},
                     {data: 'brand_category', name: 'brandCategory.name'},
-                    {data: 'hpp_calculation', name: 'hpp_calculation'},
-                    {data: 'currency_id', name: 'currency_id'},
-                    {data: 'show_in_moves', name: 'show_in_moves'},
-                    {data: 'show_in_sms', name: 'show_in_sms'},
+                    // {data: 'hpp_calculation', name: 'hpp_calculation'},
+                    // {data: 'currency_id', name: 'currency_id'},
+                    // {data: 'show_in_moves', name: 'show_in_moves'},
+                    // {data: 'show_in_sms', name: 'show_in_sms'},
                     {data: 'photo', name: 'photo', sortable: false, searchable: false},
                     {data: 'actions', name: '{{ trans('global.actions') }}'}
                 ],

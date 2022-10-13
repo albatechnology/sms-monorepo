@@ -110,10 +110,10 @@ class ProductBrandController extends Controller
     public function store(StoreProductBrandRequest $request)
     {
         $productBrand = ProductBrand::create($request->all());
-        ProductBrandCategory::create([
-            'product_brand_id' => $productBrand->id,
-            'brand_category_id' => $request->brand_category_id,
-        ]);
+        // ProductBrandCategory::create([
+        //     'product_brand_id' => $productBrand->id,
+        //     'brand_category_id' => $request->brand_category_id,
+        // ]);
 
         foreach ($request->input('photo', []) as $file) {
             $productBrand->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('photo');
@@ -139,12 +139,12 @@ class ProductBrandController extends Controller
     public function update(UpdateProductBrandRequest $request, ProductBrand $productBrand)
     {
         $productBrand->update($request->validated());
-        $productBrand->productBrandCategories()->forceDelete();
+        // $productBrand->productBrandCategories()->forceDelete();
 
-        ProductBrandCategory::create([
-            'product_brand_id' => $productBrand->id,
-            'brand_category_id' => $request->brand_category_id,
-        ]);
+        // ProductBrandCategory::create([
+        //     'product_brand_id' => $productBrand->id,
+        //     'brand_category_id' => $request->brand_category_id,
+        // ]);
 
         if (count($productBrand->photo) > 0) {
             foreach ($productBrand->photo as $media) {
@@ -232,7 +232,7 @@ class ProductBrandController extends Controller
     public function ajaxGetProductBrands(Request $request)
     {
         if ($request->ajax()) {
-            $productBrands = ProductBrand::tenanted();
+            $productBrands = ProductBrand::query();
             if ($request->company_id) {
                 $company_id = explode(',', $request->company_id);
                 $productBrands = $productBrands->whereIn('company_id', $company_id ?? []);
