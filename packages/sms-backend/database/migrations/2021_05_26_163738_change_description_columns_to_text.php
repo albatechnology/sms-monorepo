@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class ChangeDescriptionColumnsToText extends Migration
 {
-    const tables = ['product_models', 'discounts', 'colours'];
+    const tables = ['discounts'];
 
     public function up()
     {
