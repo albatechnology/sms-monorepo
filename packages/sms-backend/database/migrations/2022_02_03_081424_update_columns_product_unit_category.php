@@ -16,9 +16,9 @@ class UpdateColumnsProductUnitCategory extends Migration
         Schema::table('discounts', function (Blueprint $table) {
             $table->unsignedSmallInteger('product_unit_category')->nullable()->change();
         });
-        Schema::table('product_units', function (Blueprint $table) {
-            $table->unsignedSmallInteger('product_unit_category')->nullable()->change();
-        });
+        // Schema::table('product_units', function (Blueprint $table) {
+        //     $table->unsignedSmallInteger('product_unit_category')->nullable()->change();
+        // });
     }
 
     /**
@@ -31,8 +31,8 @@ class UpdateColumnsProductUnitCategory extends Migration
         Schema::table('discounts', function (Blueprint $table) {
             $table->dropColumn(['product_unit_category']);
         });
-        Schema::table('product_units', function (Blueprint $table) {
-            $table->dropColumn(['product_unit_category']);
-        });
+        // Schema::table('product_units', function (Blueprint $table) {
+        //     $table->dropColumn(['product_unit_category']);
+        // });
     }
 }

@@ -8,9 +8,9 @@ class IndexProductUnitsName extends Migration
 {
     public function up()
     {
-        Schema::table('product_units', function (Blueprint $table) {
-            $table->index('name');
-        });
+        // Schema::table('product_units', function (Blueprint $table) {
+        //     $table->index('name');
+        // });
 
         Schema::table('products', function (Blueprint $table) {
             $table->index('name');
@@ -23,8 +23,8 @@ class IndexProductUnitsName extends Migration
             $table->dropIndex(['name']);
         });
 
-        Schema::table('product_units', function (Blueprint $table) {
-            $table->dropIndex(['name']);
-        });
+        // Schema::table('product_units', function (Blueprint $table) {
+        //     $table->dropIndex(['name']);
+        // });
     }
 }
