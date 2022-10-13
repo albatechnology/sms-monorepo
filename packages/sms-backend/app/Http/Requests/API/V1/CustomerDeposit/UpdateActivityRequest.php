@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\API\V1\Activity;
+namespace App\Http\Requests\API\V1\CustomerDeposit;
 
 use App\Classes\DocGenerator\BaseApiRequest;
 use App\Classes\DocGenerator\Interfaces\ApiDataExample;
