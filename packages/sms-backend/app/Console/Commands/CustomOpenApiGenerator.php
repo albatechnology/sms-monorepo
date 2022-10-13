@@ -22,7 +22,7 @@ class CustomOpenApiGenerator extends Command
 
             return;
         }
-        dd($generator);
+
         Storage::disk('open-api')->put($filename, $generator
             ->generate('default')
             ->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
