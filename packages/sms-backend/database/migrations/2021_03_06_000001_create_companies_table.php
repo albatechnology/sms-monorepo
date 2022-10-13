@@ -11,6 +11,8 @@ class CreateCompaniesTable extends Migration
         Schema::create('companies', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->foreignId('company_account_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->json('options')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
