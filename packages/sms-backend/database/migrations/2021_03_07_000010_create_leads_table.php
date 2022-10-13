@@ -10,6 +10,7 @@ class CreateLeadsTable extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('parent_id')->nullable();
             $table->unsignedTinyInteger('type')->index();
             $table->unsignedTinyInteger('status')->index();
             $table->string('label')->nullable();
