@@ -13,10 +13,10 @@ class CreateOldStocksTable extends Migration
         //     $table->integer('stock')->default(0);
         //     $table->foreignId('channel_id')->constrained();
         //     $table->foreignId('company_id')->constrained();
-        //     $table->foreignId('product_unit_id')->constrained();
+        //     $table->foreignId('product_id')->constrained();
         //     $table->timestamps();
 
-        //     $table->unique(['channel_id', 'product_unit_id']);
+        //     $table->unique(['channel_id', 'product_id']);
         // });
     }
 }

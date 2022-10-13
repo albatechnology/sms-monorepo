@@ -14,7 +14,7 @@ class EditProductUnitIdsToLongtext extends Migration
     public function up()
     {
         Schema::table('discounts', function (Blueprint $table) {
-            $table->mediumText('product_unit_ids')->change();
+            $table->mediumText('product_ids')->change();
         });
     }
 
@@ -26,7 +26,7 @@ class EditProductUnitIdsToLongtext extends Migration
     public function down()
     {
         Schema::table('discounts', function (Blueprint $table) {
-            $table->dropColumn(['product_unit_ids']);
+            $table->dropColumn(['product_ids']);
         });
     }
 }

@@ -22,7 +22,7 @@ class UpdateStockTransfersTable extends Migration
 
             $table->foreignId('from_channel_id')->constrained('channels');
             $table->foreignId('to_channel_id')->constrained('channels');
-            // $table->foreignId('product_unit_id')->constrained('product_units');
+            $table->foreignId('product_id')->constrained();
         });
     }
 
@@ -42,7 +42,7 @@ class UpdateStockTransfersTable extends Migration
 
             $table->dropConstrainedForeignId('from_channel_id');
             $table->dropConstrainedForeignId('to_channel_id');
-            $table->dropConstrainedForeignId('product_unit_id');
+            $table->dropConstrainedForeignId('product_id');
         });
     }
 }

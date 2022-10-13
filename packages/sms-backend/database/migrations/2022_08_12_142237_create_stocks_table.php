@@ -16,14 +16,14 @@ class CreateStocksTable extends Migration
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('location_id')->constrained()->cascadeOnDelete();
-            // $table->foreignId('product_unit_id')->constrained();
-            $table->integer('product_unit_id')->index();
+            // $table->foreignId('product_id')->constrained();
+            $table->integer('product_id')->index();
             $table->integer('stock')->default(0);
             $table->integer('indent')->default(0);
             $table->integer('total_stock')->default(0);
             $table->timestamps();
 
-            $table->unique(['location_id', 'product_unit_id']);
+            $table->unique(['location_id', 'product_id']);
         });
     }
 

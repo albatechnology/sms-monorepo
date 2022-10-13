@@ -26,7 +26,7 @@ class CreateOrderDetailDemandsTable extends Migration
             $table->bigInteger('total_discount')->default(0);
             $table->bigInteger('total_price')->default(0);
 
-            $table->foreignId('product_unit_id')->nullable();
+            $table->foreignId('product_id')->nullable();
             $table->foreignId('order_id')->constrained();
             $table->foreignId('company_id')->constrained();
             $table->unsignedSmallInteger('shipment_status')->default(0);

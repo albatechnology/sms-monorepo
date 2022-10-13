@@ -19,13 +19,14 @@ class CreateProductsTable extends Migration
             $table->foreignId('product_category_id')->constrained();
             $table->foreignId('product_brand_id')->constrained();
             $table->smallInteger('brand_category_id')->nullable();
-            $table->string('name');
+            $table->string('name')->index();
             $table->string('description')->nullable();
             $table->string('sku')->index()->nullable();
             $table->bigInteger('price')->nullable();
             $table->boolean('is_active')->default(0)->nullable();
             $table->integer('uom')->default(1);
             $table->unsignedBigInteger('production_cost')->default(0);
+            $table->unsignedSmallInteger('product_unit_category')->nullable();
             $table->float('volume')->nullable();
             $table->text('tags')->nullable();
             $table->timestamps();
