@@ -29,6 +29,7 @@ class CreateProductsTable extends Migration
             $table->unsignedSmallInteger('product_unit_category')->nullable();
             $table->float('volume')->nullable();
             $table->text('tags')->nullable();
+            $table->string('video_url')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
