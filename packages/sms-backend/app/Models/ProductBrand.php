@@ -75,6 +75,11 @@ class ProductBrand extends BaseModel implements HasMedia
         return $this->belongsToMany(Activity::class);
     }
 
+    public function productBrandLeads()
+    {
+        return $this->hasMany(ProductBrandLead::class, 'product_brand_id');
+    }
+
     public function colours()
     {
         return $this->hasMany(Colour::class, 'product_brand_id');

@@ -38,6 +38,7 @@ use App\Models\Payment;
 use App\Models\PaymentCategory;
 use App\Models\PaymentType;
 use App\Models\Product;
+use App\Models\ProductBrand;
 use App\Models\ProductCategory;
 use App\Models\ProductCategoryCode;
 use App\Models\ProductModel;
@@ -266,6 +267,11 @@ class CustomQueryBuilder extends QueryBuilder
                 self::id('company_id'),
                 self::string('name', 'Toko ABC'),
                 self::scope('supervisor_id', 'whereSupervisorId'),
+            ],
+            ProductBrand::class             => [
+                self::ids(),
+                self::id('company_id'),
+                self::string('name', 'Toko ABC'),
             ],
             SmsChannel::class             => [
                 self::ids(),

@@ -56,6 +56,8 @@ Route::resource('sms-channels', SmsChannelController::class)->only(['index', 'sh
 Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
     /** Users */
     Route::get('/users/me', [UserController::class, 'me'])->name('users.me');
+    Route::get('/users/channels', [UserController::class, 'channels'])->name('users.channels');
+    Route::get('/users/product-brands', [UserController::class, 'productBrands'])->name('users.productBrands');
     Route::get('/users/supervisor-types', [UserController::class, 'supervisorTypes'])->name('users.supervisor.types');
     Route::get('/users/supervisor', [UserController::class, 'supervisor'])->name('users.supervisor');
     Route::get('/users/supervised', [UserController::class, 'supervised'])->name('users.supervised');

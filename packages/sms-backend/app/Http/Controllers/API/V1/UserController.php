@@ -7,15 +7,22 @@ use App\Classes\DocGenerator\Enums\Tags;
 use App\Exceptions\SupervisorDoesNotExistException;
 use App\Exceptions\UnauthorisedTenantAccessException;
 use App\Http\Requests\API\V1\User\ChangePasswordRequest;
+use App\Http\Resources\V1\Channel\ChannelResource;
+use App\Http\Resources\V1\Product\BaseProductBrandResource;
+use App\Http\Resources\V1\Product\ProductBrandResource;
 use App\Http\Resources\V1\User\SupervisorTypeResource;
 use App\Http\Resources\V1\User\UserResource;
 use App\Models\Channel;
+use App\Models\ProductBrand;
 use App\Models\SupervisorType;
 use App\Models\User;
 use App\OpenApi\Customs\Attributes as CustomOpenApi;
 use App\OpenApi\Parameters\DefaultHeaderParameters;
+use App\OpenApi\Parameters\User\UserProductBrandsParameter;
 use App\OpenApi\Responses\Custom\GenericSuccessMessageResponse;
 use Illuminate\Http\JsonResponse;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 use Vyuldashev\LaravelOpenApi\Attributes as OpenApi;
 
 #[OpenApi\PathItem]
@@ -123,7 +130,7 @@ class UserController extends BaseApiController
     #[CustomOpenApi\Response(resource: UserResource::class, isCollection: true)]
     public function index()
     {
-        $query = fn($q) => $q->with(self::load_relation);
+        $query = fn ($q) => $q->with(self::load_relation);
         return CustomQueryBuilder::buildResource(User::class, UserResource::class, $query);
     }
 
@@ -139,7 +146,7 @@ class UserController extends BaseApiController
     #[CustomOpenApi\Response(resource: UserResource::class, isCollection: true)]
     public function supervised()
     {
-        $filter = fn($query) => $query->whereDescendantOf(auth()->user())->with(self::load_relation);
+        $filter = fn ($query) => $query->whereDescendantOf(auth()->user())->with(self::load_relation);
         return CustomQueryBuilder::buildResource(User::class, UserResource::class, $filter);
     }
 
@@ -156,7 +163,7 @@ class UserController extends BaseApiController
     {
         $filter = function ($query) {
 
-           $query->with(self::load_relation);
+            $query->with(self::load_relation);
 
             // full access
             if (user()->is_admin || user()->is_director) {
@@ -192,4 +199,82 @@ class UserController extends BaseApiController
         auth()->user()->update($request->validated());
         return GenericSuccessMessageResponse::getResponse();
     }
+
+    /**
+     * Get user channels
+     *
+     * Get user channels by company
+     *
+     * @return ChannelResource
+     * @throws UnauthorisedTenantAccessException
+     */
+    #[CustomOpenApi\Operation(id: 'userChannels', tags: [Tags::User, Tags::V1])]
+    #[CustomOpenApi\Parameters(model: Channel::class)]
+    #[CustomOpenApi\Response(resource: ChannelResource::class)]
+    #[CustomOpenApi\ErrorResponse(exception: UnauthorisedTenantAccessException::class)]
+    public function channels()
+    {
+        $user = user();
+        $channelIds = $user->is_sales ? [$user->channel_id] : $user->channels->pluck('id');
+
+        $query = function ($q) use ($channelIds) {
+            return $q->whereIn('id', $channelIds);
+        };
+        return CustomQueryBuilder::buildResource(Channel::class, ChannelResource::class, $query);
+    }
+
+    /**
+     * Get user product brands
+     *
+     * Get user product brands
+     *
+     * @return BaseProductBrandResource
+     */
+    #[CustomOpenApi\Operation(id: 'userProductBrands', tags: [Tags::User, Tags::V1])]
+    // #[CustomOpenApi\Parameters(model: ProductBrand::class)]
+    #[OpenApi\Parameters(factory: UserProductBrandsParameter::class)]
+    #[CustomOpenApi\Response(resource: BaseProductBrandResource::class)]
+    public function productBrands()
+    {
+        $request = request();
+
+        $user = user();
+        $productBrandIds = [];
+        $companyId = $request->filter['company_id'] ?? $user->company_id;
+
+        if ($user->is_sales)  $productBrandIds = $user->productBrands->pluck('id')->all();
+
+        $data = QueryBuilder::for(ProductBrand::class)
+            ->selectRaw('id,name')
+            ->where('company_id', $companyId)
+            ->whereIn('id', $productBrandIds)
+            ->allowedFilters([
+                'name',
+                AllowedFilter::exact('id'),
+                AllowedFilter::exact('company_id'),
+                AllowedFilter::callback('lead_id', function ($q, $value) {
+                    $q->whereHas('productBrandLeads', fn ($q) => $q->where('lead_id', $value));
+                }),
+            ])
+            ->simplePaginate();
+
+        return BaseProductBrandResource::collection($data);
+    }
+    // public function productBrands()
+    // {
+    //     $user = user();
+    //     $productBrandIds = [];
+    //     // $companyId = $request->company_id ?? $user->company_id;
+    //     // dd(request()->all());
+    //     if ($user->is_sales) {
+    //         $productBrandIds = $user->productBrands->pluck('id')->all();
+    //     }
+
+    //     $query = function ($q) use ($productBrandIds) {
+    //         if (count($productBrandIds) > 0) $q->whereIn('id', $productBrandIds);
+    //         return $q;
+    //     };
+
+    //     return CustomQueryBuilder::buildResource(ProductBrand::class, BaseProductBrandResource::class, $query);
+    // }
 }

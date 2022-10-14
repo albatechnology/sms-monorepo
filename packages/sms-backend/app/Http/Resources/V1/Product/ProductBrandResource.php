@@ -11,7 +11,6 @@ class ProductBrandResource extends BaseResource
     public static function data(): array
     {
         return [
-            ResourceData::make("id", Schema::TYPE_INTEGER, 1),
             ResourceData::make("estimated_value", Schema::TYPE_INTEGER, 1, value: function($data){
                 return $data?->pivot?->estimated_value ?? 0;
             }),

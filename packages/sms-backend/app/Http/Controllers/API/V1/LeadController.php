@@ -161,11 +161,12 @@ class LeadController extends BaseApiController
     #[CustomOpenApi\ErrorResponse(exception: SalesOnlyActionException::class)]
     public function store(CreateLeadRequest $request): LeadWithLatestActivityResource
     {
+        $user = user();
         $data = array_merge($request->validated(), [
-            'channel_id' => user()->type->is(UserType::SALES) ? user()->channel_id : ($request->validated()['channel_id'] ?? null),
-            'user_id'    => user()->id,
+            'channel_id' => $user->type->is(UserType::SALES) ? $user->channel_id : ($request->validated()['channel_id'] ?? null),
+            'user_id'    => $user->id,
             'status'     => LeadStatus::GREEN(),
-            'is_unhandled' => user()->type->is(UserType::SALES) ? false : true,
+            'is_unhandled' => $user->type->is(UserType::SALES) ? false : true,
         ]);
 
         $productBrandIds = $request->product_brand_ids ?? null;
@@ -176,7 +177,7 @@ class LeadController extends BaseApiController
         $lead = Lead::create($data);
         $lead->productBrands()->sync($productBrands?->keys()?->all() ?? []);
 
-        if ($lead?->channel_id ?? false) {
+        if ($lead?->channel_id && $user->type->isNot(UserType::SALES)) {
             $data = $lead->toArray();
             foreach ($productBrands as $id => $name) {
                 $data['parent_id'] = $lead->id;

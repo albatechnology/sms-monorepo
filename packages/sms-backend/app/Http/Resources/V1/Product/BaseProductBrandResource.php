@@ -11,6 +11,7 @@ class BaseProductBrandResource extends BaseResource
     public static function data(): array
     {
         return [
+            ResourceData::make("id", Schema::TYPE_INTEGER, 1),
             ResourceData::make("name", Schema::TYPE_STRING, 'Product ABC')->sortable(),
         ];
     }
