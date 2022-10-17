@@ -16,7 +16,7 @@ class UpdateLeadsTable extends Migration
         Schema::table('leads', function (Blueprint $table) {
             $table->integer('user_sms_id')->nullable();
             $table->integer('sms_channel_id')->nullable();
-            $table->integer('product_brand_id')->nullable();
+            // $table->integer('product_brand_id')->nullable();
 
             $table->foreignId('user_id')->nullable()->change();
             $table->foreignId('channel_id')->nullable()->change();
@@ -31,7 +31,7 @@ class UpdateLeadsTable extends Migration
     public function down()
     {
         Schema::table('leads', function (Blueprint $table) {
-            $table->dropColumn(['user_sms_id', 'sms_channel_id', 'product_brand_id']);
+            $table->dropColumn(['user_sms_id', 'sms_channel_id']);
 
             $table->foreignId('user_id')->nullable('false')->change();
             $table->foreignId('channel_id')->nullable('false')->change();

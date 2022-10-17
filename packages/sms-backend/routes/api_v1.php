@@ -139,6 +139,7 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
         Route::get('/leads/unhandled', [LeadController::class, 'unhandledIndex'])->name('leads.unhandled');
         Route::get('/leads/categories', [LeadController::class, 'categories'])->name('leads.categories');
         Route::get('/leads/sub-categories/{leadCategory}', [LeadController::class, 'subCategories'])->name('leads.subCategories');
+        Route::get('/leads/{lead}/product-brands', [LeadController::class, 'productBrands']);
         Route::put('/leads/{lead}/assign', [LeadController::class, 'assign']);
         Route::resource('leads', LeadController::class);
 

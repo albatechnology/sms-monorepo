@@ -215,21 +215,21 @@ class LeadsController extends Controller
             return $lead;
         });
 
-        if ($lead?->channel_id ?? false) {
-            $data = $lead->toArray();
-            foreach ($productBrands as $id => $name) {
-                $data['parent_id'] = $lead->id;
-                $data['label'] = $lead->label . ' (' . $name . ')';
-                $data['product_brand_id'] = $id;
-                $data['status_history'] = null;
-                $data['created_at'] = now();
-                $data['updated_at'] = now();
-                $data['has_activity'] = 0;
-                $newLead = Lead::create($data);
+        // if ($lead?->channel_id ?? false) {
+        //     $data = $lead->toArray();
+        //     foreach ($productBrands as $id => $name) {
+        //         $data['parent_id'] = $lead->id;
+        //         $data['label'] = $lead->label . ' (' . $name . ')';
+        //         $data['product_brand_id'] = $id;
+        //         $data['status_history'] = null;
+        //         $data['created_at'] = now();
+        //         $data['updated_at'] = now();
+        //         $data['has_activity'] = 0;
+        //         $newLead = Lead::create($data);
 
-                $newLead->productBrands()->sync([$id]);
-            }
-        }
+        //         $newLead->productBrands()->sync([$id]);
+        //     }
+        // }
 
         return redirect()->route('admin.leads.index')->with('message', 'Lead Created Successfully');
     }

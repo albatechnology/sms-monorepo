@@ -64,7 +64,7 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         'deleted_at',
         'user_sms_id',
         'sms_channel_id',
-        'product_brand_id',
+        // 'product_brand_id',
         'voucher',
         'parent_id',
     ];
@@ -85,7 +85,7 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         'status'           => LeadStatus::class,
         'user_sms_id' => 'integer',
         'sms_channel_id' => 'integer',
-        'product_brand_id' => 'integer',
+        // 'product_brand_id' => 'integer',
     ];
 
     /**
@@ -289,6 +289,11 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         return $this->label;
     }
 
+    public function getIsParentAttribute(): bool
+    {
+        return is_null($this->parent_id) ? true : false;
+    }
+
     // public function scopeUserName($query, $name)
     // {
     //     return $query->whereHas('user', function ($query) use ($name) {
@@ -296,10 +301,10 @@ class Lead extends BaseModel implements Tenanted, HasMedia
     //     });
     // }
 
-    public function scopeWhereProductBrandId($query, $id)
-    {
-        return $query->where('product_brand_id', $id);
-    }
+    // public function scopeWhereProductBrandId($query, $id)
+    // {
+    //     return $query->where('product_brand_id', $id);
+    // }
 
     public function scopeWhereLeadCategoryId($query, $id)
     {
@@ -347,10 +352,10 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         return $this->belongsTo(User::class, 'user_sms_id');
     }
 
-    public function productBrand()
-    {
-        return $this->belongsTo(ProductBrand::class, 'product_brand_id');
-    }
+    // public function productBrand()
+    // {
+    //     return $this->belongsTo(ProductBrand::class, 'product_brand_id');
+    // }
 
     public function productBrands()
     {
@@ -546,5 +551,14 @@ class Lead extends BaseModel implements Tenanted, HasMedia
     public function activityBrandValues(): HasMany
     {
         return $this->hasMany(ActivityBrandValue::class);
+    }
+
+    public function updateProductBrandsAvailable(array $productBrandIds): void
+    {
+        if (!$this->is_parent) throw new Exception('only parent leads can update product brand availability');
+
+        $this->productBrands()->updateExistingPivot($productBrandIds, [
+            'is_available' => 0
+        ]);
     }
 }

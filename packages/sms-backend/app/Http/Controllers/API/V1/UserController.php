@@ -231,7 +231,6 @@ class UserController extends BaseApiController
      * @return BaseProductBrandResource
      */
     #[CustomOpenApi\Operation(id: 'userProductBrands', tags: [Tags::User, Tags::V1])]
-    // #[CustomOpenApi\Parameters(model: ProductBrand::class)]
     #[OpenApi\Parameters(factory: UserProductBrandsParameter::class)]
     #[CustomOpenApi\Response(resource: BaseProductBrandResource::class)]
     public function productBrands()

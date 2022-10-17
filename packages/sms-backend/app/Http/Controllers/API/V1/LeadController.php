@@ -21,26 +21,31 @@ use App\Http\Resources\V1\Lead\LeadResource;
 use App\Http\Resources\V1\Lead\LeadSmsResource;
 use App\Http\Resources\V1\Lead\LeadWithLatestActivityResource;
 use App\Http\Resources\V1\Lead\SubLeadCategoryResource;
+use App\Http\Resources\V1\Product\BaseProductBrandResource;
 use App\Models\Channel;
 use App\Models\Lead;
 use App\Models\LeadCategory;
 use App\Models\ProductBrand;
+use App\Models\ProductBrandLead;
 use App\Models\SubLeadCategory;
 use App\Models\User;
 use App\OpenApi\Customs\Attributes as CustomOpenApi;
 use App\OpenApi\Parameters\DefaultHeaderParameters;
+use App\OpenApi\Parameters\Lead\LeadProductBrandsParameter;
 use App\OpenApi\Responses\Custom\GenericSuccessMessageResponse;
 use App\Services\CoreService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 use Vyuldashev\LaravelOpenApi\Attributes as OpenApi;
 
 #[OpenApi\PathItem]
 class LeadController extends BaseApiController
 {
-    const load_relation = ['customer', 'user', 'channel', 'leadCategory', 'subLeadCategory', 'latestActivity', 'productBrand'];
+    const load_relation = ['customer', 'user', 'channel', 'leadCategory', 'subLeadCategory', 'latestActivity', 'productBrands'];
 
     /**
      * Show all user's lead.
@@ -177,21 +182,21 @@ class LeadController extends BaseApiController
         $lead = Lead::create($data);
         $lead->productBrands()->sync($productBrands?->keys()?->all() ?? []);
 
-        if ($lead?->channel_id && $user->type->isNot(UserType::SALES)) {
-            $data = $lead->toArray();
-            foreach ($productBrands as $id => $name) {
-                $data['parent_id'] = $lead->id;
-                $data['label'] = $lead->label . ' (' . $name . ')';
-                $data['product_brand_id'] = $id;
-                $data['status_history'] = null;
-                $data['created_at'] = now();
-                $data['updated_at'] = now();
-                $data['has_activity'] = 0;
-                $newLead = Lead::create($data);
+        // if ($lead?->channel_id && $user->type->isNot(UserType::SALES)) {
+        //     $data = $lead->toArray();
+        //     foreach ($productBrands as $id => $name) {
+        //         $data['parent_id'] = $lead->id;
+        //         $data['label'] = $lead->label . ' (' . $name . ')';
+        //         $data['product_brand_id'] = $id;
+        //         $data['status_history'] = null;
+        //         $data['created_at'] = now();
+        //         $data['updated_at'] = now();
+        //         $data['has_activity'] = 0;
+        //         $newLead = Lead::create($data);
 
-                $newLead->productBrands()->sync([$id]);
-            }
-        }
+        //         $newLead->productBrands()->sync([$id]);
+        //     }
+        // }
 
         if (!is_null($lead->channel_id)) $lead->queueStatusChange();
         $lead->refresh()->loadMissing(self::load_relation);
@@ -289,7 +294,8 @@ class LeadController extends BaseApiController
                 // 1. same channel
                 // 2. sales have one of product_brand_id
                 // 3. unhandled
-                return $q->where('channel_id', $user->channel_id)->whereIn('product_brand_id', $user->getMyBrandIds())->whereChilds()->unhandled()->with(self::load_relation);
+                return $q->whereHas('productBrands', fn ($q) => $q->whereIn('product_brand_id', $user->getMyBrandIds())->where('is_available', 1))
+                    ->where('channel_id', $user->channel_id)->whereParent()->unhandled()->with(self::load_relation)->groupBy('leads.id');
             } elseif ($user->type->is(UserType::SUPERVISOR) && $user->supervisor_type_id == 1) {
                 return $q->whereNull('channel_id')->whereParent()->unhandled()->with(self::load_relation);
             } else {
@@ -311,38 +317,80 @@ class LeadController extends BaseApiController
      */
     #[CustomOpenApi\Operation(id: 'leadAssign', tags: [Tags::Lead, Tags::V1])]
     #[OpenApi\Parameters(factory: DefaultHeaderParameters::class)]
-    // #[CustomOpenApi\RequestBody(request: AssignLeadRequest::class)]
+    #[CustomOpenApi\RequestBody(request: AssignLeadRequest::class)]
     #[CustomOpenApi\Response(resource: LeadWithLatestActivityResource::class)]
     #[CustomOpenApi\ErrorResponse(exception: UnauthorisedTenantAccessException::class)]
-    public function assign(Lead $lead): LeadWithLatestActivityResource
+    public function assign(Lead $lead, AssignLeadRequest $request)
     {
+        $user = user();
+
+        if ($user->is_sales) {
+            $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+                'product_brand_ids' => 'required|array',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    "message" => "The given data was invalid.",
+                    "errors" => $validator->errors()
+                ], 422);
+            }
+        }
+
+        $productBrandIds = $request->product_brand_ids ?? [];
+
+        if ($user->is_sales && $lead->is_parent) {
+
+            $checkAvaibility = ProductBrandLead::where('lead_id', $lead->id)->whereIn('product_brand_id', $productBrandIds)
+                ->get()
+                ->every(function ($l) {
+                    return $l->is_available == 1;
+                });
+
+            if (!$checkAvaibility) throw new Exception('Invalid product brand. One of the product brands has been chosen by another sales!');
+
+            $parentLead = $lead;
+            $data = $lead->toArray();
+
+            $data['parent_id'] = $lead->id;
+            $data['label'] = $lead->label;
+            $data['status_history'] = null;
+            $data['created_at'] = now();
+            $data['updated_at'] = now();
+            $data['has_activity'] = 0;
+            $lead = Lead::create($data);
+
+            $lead->productBrands()->sync($productBrandIds);
+
+            $parentLead->updateProductBrandsAvailable($productBrandIds);
+        }
+
         try {
-            // app(CoreService::class)->assignLeadToUser($lead, $request->getUser());
-            app(CoreService::class)->assignLeadToUser($lead, user());
+            app(CoreService::class)->assignLeadToUser($lead, $user);
         } catch (Exception $e) {
             throw new GenericErrorException($e->getMessage());
         }
 
         $lead->refresh();
 
-        if (is_null($lead->status_change_due_at)) $lead->queueStatusChange();
+        if (!$lead->is_parent && is_null($lead->status_change_due_at)) $lead->queueStatusChange();
 
-        $productBrands = $lead->productBrands;
-        if ($lead?->channel_id && $productBrands->count() && $lead->is_unhandled) {
-            $data = $lead->toArray();
-            foreach ($productBrands as $pb) {
-                $data['parent_id'] = $lead->id;
-                $data['label'] = $lead->label . ' (' . $pb->name . ')';
-                $data['product_brand_id'] = $pb->id;
-                $data['status_history'] = null;
-                $data['created_at'] = now();
-                $data['updated_at'] = now();
-                $data['has_activity'] = 0;
-                $newLead = Lead::create($data);
+        // $productBrands = $lead->productBrands;
+        // if ($lead?->channel_id && $productBrands->count() && $lead->is_unhandled) {
+        //     $data = $lead->toArray();
+        //     foreach ($productBrands as $pb) {
+        //         $data['parent_id'] = $lead->id;
+        //         $data['label'] = $lead->label . ' (' . $pb->name . ')';
+        //         $data['product_brand_id'] = $pb->id;
+        //         $data['status_history'] = null;
+        //         $data['created_at'] = now();
+        //         $data['updated_at'] = now();
+        //         $data['has_activity'] = 0;
+        //         $newLead = Lead::create($data);
 
-                $newLead->productBrands()->sync([$pb->id]);
-            }
-        }
+        //         $newLead->productBrands()->sync([$pb->id]);
+        //     }
+        // }
 
         return $this->show($lead->loadMissing(self::load_relation));
     }
@@ -608,5 +656,42 @@ class LeadController extends BaseApiController
         }
 
         return new LeadSmsResource($lead->refresh()->loadMissing(['userSms']));
+    }
+
+    /**
+     * Get user available lead product brands based on user product brand ids
+     *
+     * Get user available lead product brands based on user product brand ids
+     *
+     * @return BaseProductBrandResource
+     */
+    #[CustomOpenApi\Operation(id: 'leadProductBrands', tags: [Tags::Lead, Tags::V1])]
+    #[OpenApi\Parameters(factory: LeadProductBrandsParameter::class)]
+    #[CustomOpenApi\Response(resource: BaseProductBrandResource::class)]
+    public function productBrands(Lead $lead)
+    {
+        $user = user();
+        $userProductBrandIds = [];
+        if ($user->is_sales) $userProductBrandIds = $user->getMyBrandIds();
+
+        $isAvailableProductBrands = request()->available_product_brands;
+
+        $data = QueryBuilder::for(ProductBrand::class)
+            ->whereHas('productBrandLeads', function ($q) use ($lead, $userProductBrandIds, $isAvailableProductBrands) {
+                $q->where('lead_id', $lead->id)->whereIn('product_brand_id', $userProductBrandIds);
+                if ($isAvailableProductBrands) $q->where('is_available', 1);
+            })
+            ->allowedFilters([
+                // AllowedFilter::callback('avalilable_product_brands', function ($q, $value) use ($userProductBrandIds) {
+                //     if ($value == 1 || $value == true) {
+                //         $q->whereHas('productBrandLeads', function ($q) use ($userProductBrandIds) {
+                //             $q->where('is_available', 1)->whereIn('product_brand_id', $userProductBrandIds);
+                //         });
+                //     }
+                // }),
+            ])
+            ->simplePaginate();
+
+        return BaseProductBrandResource::collection($data);
     }
 }

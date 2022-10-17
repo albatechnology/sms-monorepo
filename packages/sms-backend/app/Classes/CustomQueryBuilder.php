@@ -297,7 +297,7 @@ class CustomQueryBuilder extends QueryBuilder
                 self::string('label', 'my lead'),
                 self::id('lead_category_id', 'whereLeadCategoryId'),
                 self::id('sub_lead_category_id', 'whereSubLeadCategoryId'),
-                self::id('product_brand_id', 'whereProductBrandId'),
+                // self::id('product_brand_id', 'whereProductBrandId'),
                 // self::scope('user_name', 'userName', 'Difa Supervisor'),
                 self::scope('customer_name', 'customerName', 'Customer A'),
                 self::scope('customer_search', 'customerSearch', 'Customer A', 'Search by customer name, email and phone'),

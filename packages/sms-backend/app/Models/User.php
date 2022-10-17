@@ -700,7 +700,7 @@ class User extends Authenticatable implements Tenanted, ReportableScope
             return ProductBrand::where('company_id', $this->company_id)->pluck('id')->all();
         }
 
-        return ProductBrand::pluck('id')->all();
+        return ProductBrand::pluck('id')?->all() ?? [];
     }
 
     // public function getActivityTargetAttribute()
