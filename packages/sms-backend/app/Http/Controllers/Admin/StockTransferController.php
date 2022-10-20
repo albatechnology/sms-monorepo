@@ -6,7 +6,7 @@ use App\Enums\StockTransferStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Channel;
 use App\Models\Company;
-use App\Models\ProductUnit;
+use App\Models\Product;
 use App\Models\Stock;
 use App\Models\StockTransfer;
 use App\Models\User;
@@ -30,8 +30,8 @@ class StockTransferController extends Controller
             $table->editColumn('company_id', function ($row) {
                 return $row->company->name ?? "-";
             });
-            $table->editColumn('product_unit_id', function ($row) {
-                return $row->productUnit->name ?? "-";
+            $table->editColumn('product_id', function ($row) {
+                return $row->product->name ?? "-";
             });
             $table->editColumn('from_channel_id', function ($row) {
                 return $row->fromChannel->name ?? "-";
@@ -78,12 +78,12 @@ class StockTransferController extends Controller
         $validated = $request->validate([
             'company_id' => 'required|numeric',
             'from_channel_id' => 'required|numeric',
-            'product_unit_id' => 'required|numeric',
+            'product_id' => 'required|numeric',
             'amount' => 'required|numeric',
             'to_channel_id' => 'required|numeric|different:from_channel_id',
         ]);
 
-        $stock = Stock::where('channel_id', $validated['from_channel_id'])->where('company_id', $validated['company_id'])->where('product_unit_id', $validated['product_unit_id'])->first();
+        $stock = Stock::where('channel_id', $validated['from_channel_id'])->where('company_id', $validated['company_id'])->where('product_id', $validated['product_id'])->first();
 
         if ($validated['amount'] > $stock->stock) {
             return redirect()->back()->withInput()->with('message', 'Not enough stock');
@@ -96,7 +96,7 @@ class StockTransferController extends Controller
 
             $stock->deductStockWithRefreshTotalStock($validated['amount']);
 
-            $transferTo = Stock::where('channel_id', $validated['to_channel_id'])->where('company_id', $validated['company_id'])->where('product_unit_id', $validated['product_unit_id'])->first();
+            $transferTo = Stock::where('channel_id', $validated['to_channel_id'])->where('company_id', $validated['company_id'])->where('product_id', $validated['product_id'])->first();
             $transferTo->addStockNew($validated['amount'], $cut_indent);
         });
         return redirect()->route('admin.stock-transfers.index');
@@ -128,14 +128,14 @@ class StockTransferController extends Controller
         $data = [];
         if ($request->has('q')) {
             $search = $request->q;
-            $data = ProductUnit::whereActive()->select("id", "name")->where('company_id', $request->company_id)->where('name', 'LIKE', "%$search%")->get();
+            $data = Product::whereActive()->select("id", "name")->where('company_id', $request->company_id)->where('name', 'LIKE', "%$search%")->get();
         }
         return response()->json($data);
     }
 
-    public function detailStock($companyId, $fromChannelId, $toChannelId, $productUnitId)
+    public function detailStock($companyId, $fromChannelId, $toChannelId, $productId)
     {
-        $stocks = Stock::where('company_id', $companyId)->whereIn('channel_id', [$fromChannelId, $toChannelId])->where('product_unit_id', $productUnitId)->select('channel_id', 'stock')->get();
+        $stocks = Stock::where('company_id', $companyId)->whereIn('channel_id', [$fromChannelId, $toChannelId])->where('product_id', $productId)->select('channel_id', 'stock')->get();
         $data = [];
         foreach ($stocks as $stock) {
             // array_push($data, [

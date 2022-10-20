@@ -23,7 +23,7 @@ class OrderDetailController extends Controller
         abort_if(Gate::denies('order_detail_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = OrderDetail::with(['product_unit', 'order'])->select(sprintf('%s.*', (new OrderDetail)->table));
+            $query = OrderDetail::with(['product', 'order'])->select(sprintf('%s.*', (new OrderDetail)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -45,8 +45,8 @@ class OrderDetailController extends Controller
             $table->editColumn('id', function ($row) {
                 return $row->id ?? "";
             });
-            $table->addColumn('product_unit_name', function ($row) {
-                return $row->product_unit?->name ?? '';
+            $table->addColumn('product_name', function ($row) {
+                return $row->product?->name ?? '';
             });
 
             $table->addColumn('order_invoice_number', function ($row) {
@@ -72,7 +72,7 @@ class OrderDetailController extends Controller
                 return $row->status?->description ?? "";
             });
 
-            $table->rawColumns(['actions', 'placeholder', 'product_unit', 'order']);
+            $table->rawColumns(['actions', 'placeholder', 'product', 'order']);
 
             return $table->make(true);
         }
@@ -108,7 +108,7 @@ class OrderDetailController extends Controller
     public function show(OrderDetail $orderDetail)
     {
         abort_if(Gate::denies('order_detail_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $orderDetail->load('product_unit', 'order');
+        $orderDetail->load('product', 'order');
 
         return view('admin.orderDetails.show', compact('orderDetail'));
     }

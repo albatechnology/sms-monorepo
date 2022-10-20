@@ -25,7 +25,7 @@ class BackupCalculateDiscountForDiscountableLineClass
     {
         if (!$discount = $discountable->getDiscount()) return $next($discountable);
 
-        if ($discount->applyToProductUnit()) {
+        if ($discount->applyToProduct()) {
             $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount) {
                 $line->setTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalPrice($line->getTotalPrice() - $line->getTotalDiscount());

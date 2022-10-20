@@ -354,7 +354,7 @@ class Activity extends BaseModel implements Tenanted, Reportable
      */
     public function scopeWhereHasAnyBrands($query, ...$ids)
     {
-        return $query->whereHas('order.order_details.product_unit.product', function ($q) use ($ids) {
+        return $query->whereHas('order.order_details.product', function ($q) use ($ids) {
             return $q->whereIn('product_brand_id', $ids);
         });
     }

@@ -4,10 +4,10 @@ namespace App\Classes;
 
 use App\Enums\DiscountError;
 use App\Interfaces\DiscountableLine;
-use App\Models\Colour;
-use App\Models\Covering;
+// use App\Models\Colour;
+// use App\Models\Covering;
 use App\Models\Discount;
-use App\Models\ProductUnit;
+use App\Models\Product;
 use App\Traits\IsDiscountable;
 use Database\Factories\CartItemLineFactory;
 use Illuminate\Contracts\Support\Arrayable;
@@ -35,8 +35,8 @@ class CartItemLine implements JsonSerializable, Arrayable, DiscountableLine
     public ?DiscountError $discount_error      = null;
 
     // record properties
-    public ?Colour   $colour;
-    public ?Covering $covering;
+    // public ?Colour   $colour;
+    // public ?Covering $covering;
 
     public function __construct($attributes)
     {
@@ -49,11 +49,11 @@ class CartItemLine implements JsonSerializable, Arrayable, DiscountableLine
         $this->unit_price     = $attributes['unit_price'] ?? 0;
         $this->total_discount = $attributes['total_discount'] ?? 0;
         $this->total_price    = $attributes['total_price'] ?? 0;
-        $this->colour         = isset($attributes['colour']) ? (new Colour())->forceFill($attributes['colour']) : null;
-        $this->covering       = isset($attributes['covering']) ? (new Covering())->forceFill($attributes['covering']) : null;
+        // $this->colour         = isset($attributes['colour']) ? (new Colour())->forceFill($attributes['colour']) : null;
+        // $this->covering       = isset($attributes['covering']) ? (new Covering())->forceFill($attributes['covering']) : null;
     }
 
-    public static function fromProductUnit(ProductUnit $unit, int $quantity): self
+    public static function fromProduct(Product $unit, int $quantity): self
     {
         return new self(
             [
@@ -64,8 +64,8 @@ class CartItemLine implements JsonSerializable, Arrayable, DiscountableLine
                 'name'        => $unit->name,
                 'unit_price'  => $unit->price,
                 'total_price' => $unit->price,
-                'colour'      => $unit->colour->toArray(),
-                'covering'    => $unit->covering->toArray(),
+                // 'colour'      => $unit->colour->toArray(),
+                // 'covering'    => $unit->covering->toArray(),
             ]
         );
     }
@@ -86,7 +86,7 @@ class CartItemLine implements JsonSerializable, Arrayable, DiscountableLine
      */
     public function fillData()
     {
-        $unit              = ProductUnit::findOrFail($this->id);
+        $unit              = Product::findOrFail($this->id);
         $this->name        = $unit->name;
         $this->sku        = $unit->sku;
         $this->unit_price  = $unit->unit_price;
@@ -111,8 +111,8 @@ class CartItemLine implements JsonSerializable, Arrayable, DiscountableLine
             'unit_price'     => $this->unit_price,
             'total_discount' => $this->total_discount,
             'total_price'    => $this->total_price,
-            'colour'         => $this->colour?->toRecord() ?? null,
-            'covering'       => $this->covering?->toRecord() ?? null,
+            // 'colour'         => $this->colour?->toRecord() ?? null,
+            // 'covering'       => $this->covering?->toRecord() ?? null,
         ];
     }
 
@@ -153,7 +153,7 @@ class CartItemLine implements JsonSerializable, Arrayable, DiscountableLine
     /**
      * get product id if applicable
      */
-    public function getProductUnitId(): int
+    public function getProductId(): int
     {
         return $this->product_id;
     }

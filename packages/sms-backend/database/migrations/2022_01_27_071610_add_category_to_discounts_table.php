@@ -14,7 +14,7 @@ class AddCategoryToDiscountsTable extends Migration
     public function up()
     {
         Schema::table('discounts', function (Blueprint $table) {
-            $table->string('product_unit_category')->nullable();
+            $table->string('product_category')->nullable();
             $table->foreignId('product_brand_id')->nullable()->constrained();
         });
     }
@@ -27,7 +27,7 @@ class AddCategoryToDiscountsTable extends Migration
     public function down()
     {
         Schema::table('discounts', function (Blueprint $table) {
-            $table->dropColumn(['product_unit_category']);
+            $table->dropColumn(['product_category']);
             $table->dropColumn(['product_brand_id']);
         });
     }

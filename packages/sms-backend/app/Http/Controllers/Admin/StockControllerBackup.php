@@ -34,7 +34,7 @@ class StockControllerBackup extends Controller
             ->tenanted()
             ->with(['channel' => function ($query) {
                 return $query->select(['id', 'name']);
-            }, 'productUnit' => function ($query) {
+            }, 'product' => function ($query) {
                 return $query->select(['id', 'name']);
             }])
             ->select(sprintf('%s.*', (new Stock)->table));
@@ -63,7 +63,7 @@ class StockControllerBackup extends Controller
             return $row->channel ? $row->channel->name : '';
         });
         $table->addColumn('product_unit_name', function ($row) {
-            return $row->productUnit ? $row->productUnit->name : '';
+            return $row->product ? $row->product->name : '';
         });
         $table->editColumn('stock', function ($row) {
             return $row->stock;
@@ -83,7 +83,7 @@ class StockControllerBackup extends Controller
     {
         abort_if(Gate::denies('stock_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $stock->load('channel', 'productUnit');
+        $stock->load('channel', 'product');
 
         return view('admin.stocks.edit', compact('stock'));
     }
@@ -112,7 +112,7 @@ class StockControllerBackup extends Controller
     {
         abort_if(Gate::denies('stock_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $stock->load('channel', 'productUnit');
+        $stock->load('channel', 'product');
         $outstandingOrder = \App\Services\StockService::outstandingOrder($stock->company_id, $stock->channel_id, $stock->product_unit_id);
         $outstandingShipment = \App\Services\StockService::outstandingShipment($stock->company_id, $stock->channel_id, $stock->product_unit_id);
 

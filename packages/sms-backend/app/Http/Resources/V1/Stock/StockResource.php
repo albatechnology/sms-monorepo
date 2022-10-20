@@ -19,7 +19,7 @@ class StockResource extends BaseResource
             //     return $q->select(DB::raw('sum(stock) as total_stock'))->groupBy('product_unit_id', 'channel_id')->first();
             // }),
             ResourceData::channel(),
-            ResourceData::make('product_unit_id', Schema::TYPE_INTEGER, 1),
+            ResourceData::make('product_id', Schema::TYPE_INTEGER, 1),
             ...ResourceData::timestamps()
         ];
     }

@@ -70,19 +70,19 @@
 				<span class="help-block">{{ trans('cruds.discount.fields.discount_by_products_helper') }}</span>
 			</div>
 
-			<div wire:ignore class="form-group" id="product_unit_category_div" style="{{ $discount->scope == \App\Enums\DiscountScope::CATEGORY() ? null : 'display: none;' }}">
-				<label class="" id="product_unit_category_label" for="product_unit_category">{{ trans('cruds.discount.fields.product_unit_category') }}</label>
-				<select class="form-control {{ $errors->has('product_unit_category') ? 'is-invalid' : '' }}"
-					name="product_unit_category" id="product_unit_category" style="width: 100%">
+			<div wire:ignore class="form-group" id="product_category_div" style="{{ $discount->scope == \App\Enums\DiscountScope::CATEGORY() ? null : 'display: none;' }}">
+				<label class="" id="product_category_label" for="product_category">{{ trans('cruds.discount.fields.product_category') }}</label>
+				<select class="form-control {{ $errors->has('product_category') ? 'is-invalid' : '' }}"
+					name="product_category" id="product_category" style="width: 100%">
 					<option value="">-- Select Product Unit Category --</option>
 					@foreach(\App\Enums\ProductUnitCategory::getInstances() as $productUnitCategory)
-						<option value="{{ $productUnitCategory->value }}" {{ $productUnitCategory == old('product_unit_category', $discount->product_unit_category) ? 'selected' : '' }}>{{ $productUnitCategory->description }}</option>
+						<option value="{{ $productUnitCategory->value }}" {{ $productUnitCategory == old('product_category', $discount->product_category) ? 'selected' : '' }}>{{ $productUnitCategory->description }}</option>
 					@endforeach
 				</select>
-				@if($errors->has('product_unit_category'))
-				<span class="text-danger">{{ $errors->first('product_unit_category') }}</span>
+				@if($errors->has('product_category'))
+				<span class="text-danger">{{ $errors->first('product_category') }}</span>
 				@endif
-				<span class="help-block">{{ trans('cruds.discount.fields.product_unit_category_helper') }}</span>
+				<span class="help-block">{{ trans('cruds.discount.fields.product_category_helper') }}</span>
 			</div>
 
 			<x-input key='start_time' :model='$discount' type="datetime"></x-input>
@@ -127,14 +127,14 @@
             }
 
             if($(this).val() == 3){
-                $('#product_unit_category_div').show();
-                $('#product_unit_category_label').addClass('required');
-                $('#product_unit_category').attr('required');
+                $('#product_category_div').show();
+                $('#product_category_label').addClass('required');
+                $('#product_category').attr('required');
             } else {
-                $('#product_unit_category').val('').change();
-                $('#product_unit_category_label').removeClass('required');
-                $('#product_unit_category').removeAttr('required');
-                $('#product_unit_category_div').hide();
+                $('#product_category').val('').change();
+                $('#product_category_label').removeClass('required');
+                $('#product_category').removeAttr('required');
+                $('#product_category_div').hide();
             }
 
             if($(this).val() == 4){

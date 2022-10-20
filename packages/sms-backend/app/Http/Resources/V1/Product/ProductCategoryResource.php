@@ -15,12 +15,12 @@ class ProductCategoryResource extends BaseResource
         return [
             ResourceData::make("id", Schema::TYPE_INTEGER, 1),
             ResourceData::make("name", Schema::TYPE_STRING, 'Category A'),
-            ResourceData::make("slug", Schema::TYPE_STRING, 'category-a'),
+            // ResourceData::make("slug", Schema::TYPE_STRING, 'category-a'),
             ResourceData::make("description", Schema::TYPE_STRING, 'This is a product category, plain text.'),
-            ResourceData::make("parent_id", Schema::TYPE_INTEGER, 1)->nullable(),
-            ResourceData::make("level", Schema::TYPE_INTEGER, 0)->nullable(),
-            ResourceData::makeEnum('type', ProductCategoryType::class),
-            ResourceData::images(),
+            // ResourceData::make("parent_id", Schema::TYPE_INTEGER, 1)->nullable(),
+            // ResourceData::make("level", Schema::TYPE_INTEGER, 0)->nullable(),
+            // ResourceData::makeEnum('type', ProductCategoryType::class),
+            // ResourceData::images(),
         ];
     }
 }

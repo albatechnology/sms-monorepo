@@ -26,7 +26,7 @@ class CalculateDiscountForDiscountableLineClass
     public function handle(Discountable $discountable, Closure $next)
     {
         if (!$discount = $discountable->getDiscount()) return $next($discountable);
-        if ($discount->applyToProductUnit()) {
+        if ($discount->applyToProduct()) {
 
             if ($discount->scope->is(DiscountScope::TYPE)) {
                 $discountable = $this->discountScopeType($discountable, $discount);
@@ -46,12 +46,12 @@ class CalculateDiscountForDiscountableLineClass
         return $next($discountable);
     }
 
-    public function checkAllowedProductUnitIdsByProductBrand(Discountable $discountable, Discount $discount)
+    public function checkAllowedProductIdsByProductBrand(Discountable $discountable, Discount $discount)
     {
-        $allowedProductUnitIds = $discountable->getDiscountableLines()->filter(function ($line) use ($discount) {
-            return $discount->product_brand_id == $line->product_unit->product->brand->id;
-        })->pluck('product_unit_id')->toArray();
-        return $allowedProductUnitIds;
+        $allowedProductIds = $discountable->getDiscountableLines()->filter(function ($line) use ($discount) {
+            return $discount->product_brand_id == $line->product->brand->id;
+        })->pluck('product_id')->toArray();
+        return $allowedProductIds;
     }
 
     /**
@@ -61,14 +61,14 @@ class CalculateDiscountForDiscountableLineClass
      */
     public function discountScopeQuantity(Discountable $discountable, Discount $discount)
     {
-        $allowedProductUnitIds = $discountable->order_details->pluck('product_unit_id')->all();
+        $allowedProductIds = $discountable->order_details->pluck('product_id')->all();
         if (!empty($discount->product_brand_id)) {
-            $allowedProductUnitIds = $this->checkAllowedProductUnitIdsByProductBrand($discountable, $discount);
+            $allowedProductIds = $this->checkAllowedProductIdsByProductBrand($discountable, $discount);
         }
-        $discountable->allowed_product_unit_ids = $allowedProductUnitIds;
+        $discountable->allowed_product_ids = $allowedProductIds;
 
-        $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductUnitIds) {
-            if (in_array($line->product_unit_id, $allowedProductUnitIds)) {
+        $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductIds) {
+            if (in_array($line->product_id, $allowedProductIds)) {
                 $line->setTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalPrice($line->getTotalPrice() - $line->getTotalDiscount());
             }
@@ -85,22 +85,22 @@ class CalculateDiscountForDiscountableLineClass
     public function discountScopeType(Discountable $discountable, Discount $discount)
     {
         // allowed product unit id to give discount. By default all product unit get discount
-        // but if this discount have product_unit_ids, only permitted product units can be discounted
-        $allowedProductUnitIds = $discountable->order_details->pluck('product_unit_id')->all();
-        if (!empty($discount->product_unit_ids)) {
-            $allowedProductUnitIds = $discount->product_unit_ids;
+        // but if this discount have product_ids, only permitted product units can be discounted
+        $allowedProductIds = $discountable->order_details->pluck('product_id')->all();
+        if (!empty($discount->product_ids)) {
+            $allowedProductIds = $discount->product_ids;
         }
 
-        $checkAllowedProductUnitIds = $allowedProductUnitIds;
+        $checkAllowedProductIds = $allowedProductIds;
         if (!empty($discount->product_brand_id)) {
-            $checkAllowedProductUnitIds = $this->checkAllowedProductUnitIdsByProductBrand($discountable, $discount);
+            $checkAllowedProductIds = $this->checkAllowedProductIdsByProductBrand($discountable, $discount);
         }
 
-        $allowedProductUnitIds = array_intersect($checkAllowedProductUnitIds, $allowedProductUnitIds);
-        $discountable->allowed_product_unit_ids = $allowedProductUnitIds;
+        $allowedProductIds = array_intersect($checkAllowedProductIds, $allowedProductIds);
+        $discountable->allowed_product_ids = $allowedProductIds;
 
-        $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductUnitIds) {
-            if (in_array($line->product_unit_id, $allowedProductUnitIds)) {
+        $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductIds) {
+            if (in_array($line->product_id, $allowedProductIds)) {
                 $line->setTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalPrice($line->getTotalPrice() - $line->getTotalDiscount());
             }
@@ -116,20 +116,20 @@ class CalculateDiscountForDiscountableLineClass
      */
     public function discountScopeCategory(Discountable $discountable, Discount $discount)
     {
-        $allowedProductUnitIds = [];
-        if ($discount->product_unit_category == null) {
-            $discountable->allowed_product_unit_ids = $allowedProductUnitIds;
+        $allowedProductIds = [];
+        if ($discount->product_category == null) {
+            $discountable->allowed_product_ids = $allowedProductIds;
             return $discountable;
         }
 
-        $allowedProductUnitIds = $discountable->order_details->pluck('product_unit_id')->all();
+        $allowedProductIds = $discountable->order_details->pluck('product_id')->all();
         if (!empty($discount->product_brand_id)) {
-            $allowedProductUnitIds = $this->checkAllowedProductUnitIdsByProductBrand($discountable, $discount);
+            $allowedProductIds = $this->checkAllowedProductIdsByProductBrand($discountable, $discount);
         }
-        $discountable->allowed_product_unit_ids = $allowedProductUnitIds;
+        $discountable->allowed_product_ids = $allowedProductIds;
 
-        $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductUnitIds) {
-            if (in_array($line->product_unit_id, $allowedProductUnitIds) && ($discount->product_unit_category == $line->product_unit->product_unit_category)) {
+        $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductIds) {
+            if (in_array($line->product_id, $allowedProductIds) && ($discount->product_category == $line->product->product_category)) {
                 $line->setTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalPrice($line->getTotalPrice() - $line->getTotalDiscount());
             }
@@ -145,35 +145,35 @@ class CalculateDiscountForDiscountableLineClass
      */
     public function discountScopeSecondPlaceBrandPrice(Discountable $discountable, Discount $discount)
     {
-        $allowedProductUnitIds = [];
+        $allowedProductIds = [];
         if ($discount->product_brand_id == null) {
-            $discountable->allowed_product_unit_ids = $allowedProductUnitIds;
+            $discountable->allowed_product_ids = $allowedProductIds;
             return $discountable;
         }
 
-        // $allowedProductUnits = $discountable->getDiscountableLines()->filter(function (DiscountableLine $line) use ($discount) {
-        //     return $discount->product_brand_id == $line->product_unit->product->brand->id;
+        // $allowedProducts = $discountable->getDiscountableLines()->filter(function (DiscountableLine $line) use ($discount) {
+        //     return $discount->product_brand_id == $line->product->brand->id;
         // })->sortBy();
 
-        $allowedProductUnits = collect();
+        $allowedProducts = collect();
         dd($discountable);
-        $allowedProductUnits = $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductUnits) {
-            if ($discount->product_brand_id == $line->product_unit->product->brand->id) {
-                $allowedProductUnits->push($line);
+        $allowedProducts = $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProducts) {
+            if ($discount->product_brand_id == $line->product->brand->id) {
+                $allowedProducts->push($line);
             }
         })->sortByDesc('unit_price')->all();
 
-        dd($allowedProductUnits);
+        dd($allowedProducts);
 
         // ->pluck('id')->all();
 
         if (count($discount->product_brand_id) <= 0) {
-            $discountable->allowed_product_unit_ids = $allowedProductUnitIds;
+            $discountable->allowed_product_ids = $allowedProductIds;
             return $discountable;
         }
 
-        $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductUnitIds) {
-            if (in_array($line->product_unit_id, $allowedProductUnitIds)) {
+        $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductIds) {
+            if (in_array($line->product_id, $allowedProductIds)) {
                 $line->setTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalPrice($line->getTotalPrice() - $line->getTotalDiscount());
             }

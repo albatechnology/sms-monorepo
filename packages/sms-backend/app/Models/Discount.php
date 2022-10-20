@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\ProductUnitCategory;
+use App\Enums\ProductCategory;
 use App\Enums\DiscountScope;
 use App\Enums\DiscountType;
 use App\Interfaces\Tenanted;
@@ -42,8 +42,8 @@ class Discount extends BaseModel implements Tenanted
         'promo_id'                     => 'integer',
         'type'                         => DiscountType::class,
         'scope'                        => DiscountScope::class,
-        'product_unit_category'        => ProductUnitCategory::class,
-        'product_unit_ids'             => 'array',
+        'product_category'        => ProductCategory::class,
+        'product_ids'             => 'array',
     ];
 
     /**
@@ -171,7 +171,7 @@ class Discount extends BaseModel implements Tenanted
      * Does this discount apply to the
      * @return bool
      */
-    public function applyToProductUnit(): bool
+    public function applyToProduct(): bool
     {
         return !$this->applyToOrder();
     }

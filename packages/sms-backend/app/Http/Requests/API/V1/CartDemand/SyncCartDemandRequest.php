@@ -16,7 +16,7 @@ class SyncCartDemandRequest extends BaseApiRequest
         return [
             Schema::array('items')->items(
                 Schema::object()->properties(
-                    Schema::string('name')->example('Lazy Girl')->description('Name of product unit'),
+                    Schema::string('name')->example('Lazy Girl')->description('Name of product'),
                     Schema::integer('price')->example(50000),
                     Schema::integer('quantity')->example(1),
                 ),

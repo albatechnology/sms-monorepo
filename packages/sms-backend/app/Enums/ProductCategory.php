@@ -10,7 +10,7 @@ namespace App\Enums;
  * @method static static INCOMING_CONTAINER()
  * @method static static PRODUCT_HIGHLIGHT()
  */
-final class ProductUnitCategory extends BaseEnum
+final class ProductCategory extends BaseEnum
 {
     const INDENT_PREMIUM        = 0;
     const INDENT_REGULAR        = 1;

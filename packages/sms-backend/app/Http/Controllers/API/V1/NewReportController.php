@@ -13,7 +13,7 @@ use App\Models\Channel;
 use App\Models\Lead;
 use App\Models\Order;
 use App\Models\ProductBrand;
-use App\Models\ProductUnit;
+use App\Models\Product;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -32,7 +32,7 @@ class NewReportController extends BaseApiController
         }
 
         $orders = Order::selectRaw('id, total_price, additional_discount, created_at, deal_at')
-            ->with('order_details', fn ($q) => $q->selectRaw('id, order_id, total_price, product_unit_id'))
+            ->with('order_details', fn ($q) => $q->selectRaw('id, order_id, total_price, product_id'))
             ->whereHas('activityBrandValues')
             ->whereHas('order_details')
             ->whereDate('created_at', '>=', '2022-09-01')
@@ -45,8 +45,8 @@ class NewReportController extends BaseApiController
             $sumActivityDatas = $order->order_details->sum('total_price');
             $activityDatas = [];
             foreach ($order->order_details as $detail) {
-                $productUnit = ProductUnit::find($detail->product_unit_id);
-                $activityDatas[] = [$productUnit->product->product_brand_id => $detail->total_price];
+                $product = Product::find($detail->product_id);
+                $activityDatas[] = [$product->product->product_brand_id => $detail->total_price];
             }
 
             $activityDatas = collect($activityDatas)

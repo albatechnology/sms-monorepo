@@ -64,12 +64,12 @@ class CreateActivity
                 'product_brand_id' => $product_brand_id,
                 'order_value' => $value,
                 'total_discount' => $totalDiscount,
-                'total_order_value' => $value - $totalDiscount
+                'total_order_value' => $value - $totalDiscount,
+                'order_id' => $order->id
             ]);
         }
 
-        // ActivityBrandValue::where('user_id', $activity->user_id)->where('lead_id', $activity->lead_id)->where('product_brand_id', $product_brand_id)->update(['order_id' => $order->id, 'activity_id' => $activity->id]);
-        ActivityBrandValue::where('user_id', $activity->user_id)->where('lead_id', $activity->lead_id)->update(['order_id' => $order->id]);
+        // ActivityBrandValue::where('user_id', $activity->user_id)->where('lead_id', $activity->lead_id)->update(['order_id' => $order->id]);
         unset($order->activity_datas);
 
         return $next($order);

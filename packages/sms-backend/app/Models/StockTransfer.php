@@ -26,7 +26,7 @@ class StockTransfer extends BaseModel
         'company_id',
         'from_channel_id',
         'to_channel_id',
-        'product_unit_id',
+        'product_id',
         'stock_from_id',
         'stock_to_id',
         'requested_by_id',
@@ -45,7 +45,7 @@ class StockTransfer extends BaseModel
         'order_id'   => 'integer',
         'from_channel_id'   => 'integer',
         'to_channel_id'   => 'integer',
-        'product_unit_id'   => 'integer',
+        'product_id'   => 'integer',
         'stock_from_id'   => 'integer',
         'stock_to_id'     => 'integer',
         'requested_by_id' => 'integer',
@@ -55,9 +55,9 @@ class StockTransfer extends BaseModel
         'status'          => StockTransferStatus::class,
     ];
 
-    public function productUnit()
+    public function product()
     {
-        return $this->belongsTo(ProductUnit::class, 'product_unit_id');
+        return $this->belongsTo(Product::class, 'product_id');
     }
 
     public function company()

@@ -42,7 +42,7 @@
                         {{ trans('cruds.discount.fields.scope') }}
                     </th>
                     <th>
-                        {{ trans('cruds.discount.fields.product_unit_category') }}
+                        {{ trans('cruds.discount.fields.product_category') }}
                     </th>
                     <th>
                         {{ trans('cruds.discount.fields.product_brand') }}
@@ -131,7 +131,7 @@
                             {{ $discount->scope->description ?? '' }}
                         </td>
                         <td>
-                            {{ $discount->product_unit_category->description ?? '' }}
+                            {{ $discount->product_category->description ?? '' }}
                         </td>
                         <td>
                             {{ $discount->productBrand->name ?? '' }}

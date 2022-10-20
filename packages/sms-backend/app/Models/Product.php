@@ -53,9 +53,9 @@ class Product extends BaseModel implements HasMedia
         'price'                    => 'integer',
         'company_id'               => 'integer',
         'product_brand_id'         => 'integer',
-        'product_model_id'         => 'integer',
-        'product_version_id'       => 'integer',
-        'product_category_code_id' => 'integer',
+        // 'product_model_id'         => 'integer',
+        // 'product_version_id'       => 'integer',
+        // 'product_category_code_id' => 'integer',
         'product_category_id'      => 'integer',
     ];
 
@@ -131,25 +131,25 @@ class Product extends BaseModel implements HasMedia
         return $this->belongsTo(ProductBrand::class, 'product_brand_id');
     }
 
-    public function model()
-    {
-        return $this->belongsTo(ProductModel::class, 'product_model_id');
-    }
+    // public function model()
+    // {
+    //     return $this->belongsTo(ProductModel::class, 'product_model_id');
+    // }
 
-    public function version()
-    {
-        return $this->belongsTo(ProductVersion::class, 'product_version_id');
-    }
+    // public function version()
+    // {
+    //     return $this->belongsTo(ProductVersion::class, 'product_version_id');
+    // }
 
-    public function categoryCode()
-    {
-        return $this->category_code();
-    }
+    // public function categoryCode()
+    // {
+    //     return $this->category_code();
+    // }
 
-    public function category_code()
-    {
-        return $this->belongsTo(ProductCategoryCode::class, 'product_category_code_id');
-    }
+    // public function category_code()
+    // {
+    //     return $this->belongsTo(ProductCategoryCode::class, 'product_category_code_id');
+    // }
 
     public function productListPivot()
     {
@@ -173,17 +173,22 @@ class Product extends BaseModel implements HasMedia
         return $query->where('is_active', 1);
     }
 
-    public function scopeWhereTags($query, $csv_tags)
+    // public function scopeWhereTags($query, $csv_tags)
+    // {
+    //     return $query->whereHas('tags', function ($query) use ($csv_tags) {
+    //         $query->whereIn('slug', explode(',', $csv_tags));
+    //     });
+    // }
+
+    public function scopeWhereTags($query, $tag)
     {
-        return $query->whereHas('tags', function ($query) use ($csv_tags) {
-            $query->whereIn('slug', explode(',', $csv_tags));
-        });
+        return $query->where('tags', 'like', '%' . $tag . '%');
     }
 
     public function toRecord()
     {
 
-        $data = $this->loadMissing(['brand', 'model', 'version', 'category_code'])->toArray();
+        $data = $this->loadMissing(['brand'])->toArray();
 
         unset(
             $data['created_at'],
@@ -194,25 +199,30 @@ class Product extends BaseModel implements HasMedia
             $data['photo'],
             $data['media'],
             $data["product_brand_id"],
-            $data["product_model_id"],
-            $data["product_version_id"],
-            $data["product_category_code_id"],
+            // $data["product_model_id"],
+            // $data["product_version_id"],
+            // $data["product_category_code_id"],
             $data["product_category_id"],
         );
 
         $data['brand']         = $this->brand->toRecord();
-        $data['model']         = $this->model->toRecord();
-        $data['version']       = $this->version->toRecord();
-        $data['category_code'] = $this->category_code->toRecord();
+        // $data['model']         = $this->model->toRecord();
+        // $data['version']       = $this->version->toRecord();
+        // $data['category_code'] = $this->category_code->toRecord();
 
         // unset the nested product
 
         return $data;
     }
 
-    public function scopeWhereProductModelId($query, ...$ids)
+    // public function scopeWhereProductModelId($query, ...$ids)
+    // {
+    //     return $query->whereIn('product_model_id', $ids);
+    // }
+
+    public function scopeWhereProductCategoryId($query, ...$ids)
     {
-        return $query->whereIn('product_model_id', $ids);
+        return $query->whereIn('product_category_id', $ids);
     }
 
     public function scopeWhereProductBrandId($query, ...$ids)
@@ -220,15 +230,15 @@ class Product extends BaseModel implements HasMedia
         return $query->whereIn('product_brand_id', $ids);
     }
 
-    public function scopeWhereProductVersionId($query, ...$ids)
-    {
-        return $query->whereIn('product_version_id', $ids);
-    }
+    // public function scopeWhereProductVersionId($query, ...$ids)
+    // {
+    //     return $query->whereIn('product_version_id', $ids);
+    // }
 
-    public function scopeWhereProductCategoryCodeId($query, ...$ids)
-    {
-        return $query->whereIn('product_category_code_id', $ids);
-    }
+    // public function scopeWhereProductCategoryCodeId($query, ...$ids)
+    // {
+    //     return $query->whereIn('product_category_code_id', $ids);
+    // }
 
     protected function serializeDate(DateTimeInterface $date)
     {

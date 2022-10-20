@@ -167,11 +167,13 @@ class CustomQueryBuilder extends QueryBuilder
             Product::class             => [
                 self::ids(),
                 self::ids('product_brand_id', 'whereProductBrandId'),
-                self::ids('product_model_id', 'whereProductModelId'),
-                self::ids('product_version_id', 'whereProductVersionId'),
-                self::ids('product_category_code_id'),
+                self::ids('product_category_id', 'whereProductCategoryId'),
+                // self::ids('product_brand_id', 'whereProductBrandId'),
+                // self::ids('product_model_id', 'whereProductModelId'),
+                // self::ids('product_version_id', 'whereProductVersionId'),
+                // self::ids('product_category_code_id'),
                 self::scope('name', 'whereNameSearch', 'Product ABC', 'Search by product name'),
-                self::scope('tags', 'whereTags', 'tag1,tag2,tag3', 'Searches tags by slug. Allow multiple tags separated by comma'),
+                self::scope('tags', 'whereTags', 'tag1', 'Searches product by tags'),
             ],
             ProductUnit::class         => [
                 self::ids(),
@@ -386,8 +388,8 @@ class CustomQueryBuilder extends QueryBuilder
                 self::ids(),
                 self::string('name', 'test category'),
                 self::string('description'),
-                self::enum('type', ProductCategoryType::class),
-                self::id('parent_id'),
+                // self::enum('type', ProductCategoryType::class),
+                // self::id('parent_id'),
             ],
             Promo::class           => [
                 self::ids(),

@@ -32,7 +32,7 @@ class Stock extends BaseModel implements Tenanted
         'indent'           => 'integer',
         'total_stock'           => 'integer',
         'location_id'      => 'integer',
-        'product_unit_id' => 'integer',
+        'product_id' => 'integer',
     ];
 
     protected function serializeDate(DateTimeInterface $date)
@@ -55,9 +55,9 @@ class Stock extends BaseModel implements Tenanted
         return $this->belongsTo(Location::class, 'location_id');
     }
 
-    public function productUnit()
+    public function product()
     {
-        return $this->belongsTo(ProductUnit::class);
+        return $this->belongsTo(Product::class);
     }
 
     /**
@@ -170,9 +170,9 @@ class Stock extends BaseModel implements Tenanted
         $this->addTotalStock($value);
     }
 
-    public function scopeWhereProductUnitId($query, ...$ids)
+    public function scopeWhereProductId($query, ...$ids)
     {
-        return $query->whereIn('product_unit_id', $ids);
+        return $query->whereIn('product_id', $ids);
     }
 
     public function scopeWhereChannelId($query, ...$ids)
@@ -180,18 +180,18 @@ class Stock extends BaseModel implements Tenanted
         return $query->whereIn('channel_id', $ids);
     }
 
-    public function scopeOutstandingShipment($query, $companyId, $channelId, $productUnitId)
+    public function scopeOutstandingShipment($query, $companyId, $channelId, $productId)
     {
         $total = DB::table('orders')->join('order_details', 'order_details.order_id', '=', 'orders.id')
-            ->where('orders.payment_status', OrderPaymentStatus::SETTLEMENT())->where('orders.status', OrderStatus::SHIPMENT())->where('orders.company_id', $companyId)->where('orders.channel_id', $channelId)->where('order_details.product_unit_id', $productUnitId)->select(DB::raw('sum(order_details.quantity) as outstanding_shipment'))->groupBy('orders.id')->get()->sum('outstanding_shipment');
+            ->where('orders.payment_status', OrderPaymentStatus::SETTLEMENT())->where('orders.status', OrderStatus::SHIPMENT())->where('orders.company_id', $companyId)->where('orders.channel_id', $channelId)->where('order_details.product_id', $productId)->select(DB::raw('sum(order_details.quantity) as outstanding_shipment'))->groupBy('orders.id')->get()->sum('outstanding_shipment');
         return $total;
         // return $total->outstanding_shipment ?? 0;
     }
 
-    public function scopeOutstandingShipmentDetail($query, $companyId, $channelId, $productUnitId)
+    public function scopeOutstandingShipmentDetail($query, $companyId, $channelId, $productId)
     {
-        return Order::with('order_details')->where('orders.payment_status', OrderPaymentStatus::SETTLEMENT())->where('orders.status', OrderStatus::SHIPMENT())->where('company_id', $companyId)->where('channel_id', $channelId)->whereHas('order_details', function ($query) use ($productUnitId) {
-            $query->where('product_unit_id', $productUnitId);
+        return Order::with('order_details')->where('orders.payment_status', OrderPaymentStatus::SETTLEMENT())->where('orders.status', OrderStatus::SHIPMENT())->where('company_id', $companyId)->where('channel_id', $channelId)->whereHas('order_details', function ($query) use ($productId) {
+            $query->where('product_id', $productId);
         })->get();
     }
 }

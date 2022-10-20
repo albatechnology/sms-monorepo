@@ -41,7 +41,7 @@
                             {{ trans('cruds.discount.fields.scope') }}
                         </th>
                         <th>
-                            {{ trans('cruds.discount.fields.product_unit_category') }}
+                            {{ trans('cruds.discount.fields.product_category') }}
                         </th>
                         <th>
                             {{ trans('cruds.discount.fields.product_brand') }}
@@ -186,8 +186,8 @@
                         name: 'scope'
                     },
                     {
-                        data: 'product_unit_category',
-                        name: 'product_unit_category'
+                        data: 'product_category',
+                        name: 'product_category'
                     },
                     {
                         data: 'product_brand',

@@ -18,13 +18,13 @@ class OrderDetailApiController extends Controller
     {
         abort_if(Gate::denies('order_detail_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return new OrderDetailResource(OrderDetail::with(['product_unit', 'order'])->get());
+        return new OrderDetailResource(OrderDetail::with(['product', 'order'])->get());
     }
 
     public function show(OrderDetail $orderDetail)
     {
         abort_if(Gate::denies('order_detail_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return new OrderDetailResource($orderDetail->load(['product_unit', 'order']));
+        return new OrderDetailResource($orderDetail->load(['product', 'order']));
     }
 }

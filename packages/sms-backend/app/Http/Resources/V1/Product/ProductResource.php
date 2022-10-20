@@ -11,16 +11,15 @@ class ProductResource extends BaseResource
     public static function data(): array
     {
         return [
-            ResourceData::make("id", Schema::TYPE_INTEGER, 1),
             ...BaseProductResource::data(),
-            ResourceData::makeRelationshipCollection('categories', ProductCategoryResource::class),
-            ResourceData::makeRelationshipCollection('tags', TagResource::class),
+            ResourceData::makeRelationship('product_category', ProductCategoryResource::class, 'productCategory'),
+            // ResourceData::makeRelationshipCollection('tags', TagResource::class),
             ResourceData::images(),
 
-            ResourceData::makeRelationship('brand', ProductBrandResource::class),
-            ResourceData::makeRelationship('model', ProductModelResource::class),
-            ResourceData::makeRelationship('version', ProductVersionResource::class),
-            ResourceData::makeRelationship('category_code', ProductCategoryCodeResource::class),
+            // ResourceData::makeRelationship('brand', ProductBrandResource::class),
+            // ResourceData::makeRelationship('model', ProductModelResource::class),
+            // ResourceData::makeRelationship('version', ProductVersionResource::class),
+            // ResourceData::makeRelationship('category_code', ProductCategoryCodeResource::class),
         ];
     }
 }

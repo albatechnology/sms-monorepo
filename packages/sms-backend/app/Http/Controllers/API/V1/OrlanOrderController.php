@@ -37,10 +37,10 @@ class OrlanOrderController extends BaseApiController
             $taxAmt = $netAmt - $taxable;
 
             $dataOrderDetaiil = [
-                "itemId" => $detail->product_unit->sku,
+                "itemId" => $detail->product->sku,
                 "qt" => $detail->quantity,
                 "unitId" => "PCS",
-                "description" => $detail->product_unit->name,
+                "description" => $detail->product->name,
                 "unitPrice" => $detail->unit_price,
                 "grossAmt" => $grossAmt,
                 "discAmt" => $discAmt,

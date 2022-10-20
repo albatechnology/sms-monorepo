@@ -313,11 +313,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('orders/getproduct', [OrderController::class, 'getproduct'])->name('orders.getproduct');
     Route::get('orders/get/product-brand', [OrderController::class, 'getProductBrand'])->name('orders.get.product-brand');
     Route::get('orders/getsales', [OrderController::class, 'getsales'])->name('orders.getsales');
-    Route::get('orders/detailproductunit/{productId}', [OrderController::class, 'detailproductunit']);
+    // Route::get('orders/detailproductunit/{productId}', [OrderController::class, 'detailproductunit']);
     Route::get('orders/get-payment-type/{id}', [OrderController::class, 'getPaymentType']);
     Route::get('orders/get-leads/{id}', [OrderController::class, 'getLeads']);
-    Route::post('orders/{cartDemandId}/update-product-unit', [OrderController::class, 'updateProductUnit'])->name('orders.updateProductUnit');
-    Route::post('orders/{cartDemandId}/product-unit', [OrderController::class, 'createProductUnit'])->name('orders.createProductUnit');
+    // Route::post('orders/{cartDemandId}/update-product-unit', [OrderController::class, 'updateProductUnit'])->name('orders.updateProductUnit');
+    // Route::post('orders/{cartDemandId}/product-unit', [OrderController::class, 'createProductUnit'])->name('orders.createProductUnit');
     Route::post('orders/preview', [OrderController::class, 'preview'])->name('orders.preview');
     Route::match(['get', 'post'], 'orders/payment/{id}', [OrderController::class, 'payment'])->name('orders.payment');
     Route::resource('orders', 'OrderController');

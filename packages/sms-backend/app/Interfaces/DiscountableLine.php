@@ -12,7 +12,7 @@ namespace App\Interfaces;
  */
 interface DiscountableLine extends DiscountableBase
 {
-    public function getProductUnitId(): int;
+    public function getProductId(): int;
 
     public function setTotalCascadedDiscount(int $price);
 }

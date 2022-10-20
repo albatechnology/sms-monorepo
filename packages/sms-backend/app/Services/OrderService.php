@@ -357,9 +357,9 @@ class OrderService
             $discountedPercentage = $totalDiscountIncludingAdditionalDiscount / ($discountable->getTotalPrice() + $totalDiscountIncludingAdditionalDiscount);
         }
 
-        $allowedProductUnitIds = $discountable->allowed_product_unit_ids ?? [];
-        $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discountedPercentage, $allowedProductUnitIds, $save) {
-            if (in_array($line->product_unit_id, $allowedProductUnitIds)) {
+        $allowedProductIds = $discountable->allowed_product_ids ?? [];
+        $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discountedPercentage, $allowedProductIds, $save) {
+            if (in_array($line->product_id, $allowedProductIds)) {
                 $line->setTotalCascadedDiscount((int)round($line->getTotalPrice() * $discountedPercentage));
 
                 if ($save) {

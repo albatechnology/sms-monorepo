@@ -19,7 +19,7 @@ class CreateStockTransferRequest extends BaseApiRequest
             RequestData::make('company_id', Schema::TYPE_INTEGER, 1, 'required|exists:companies,id'),
             RequestData::make('from_channel_id', Schema::TYPE_INTEGER, 1, 'required|exists:channels,id'),
             RequestData::make('to_channel_id', Schema::TYPE_INTEGER, 1, 'required|exists:channels,id'),
-            RequestData::make('product_unit_id', Schema::TYPE_INTEGER, 1, 'required|exists:product_units,id'),
+            RequestData::make('product_id', Schema::TYPE_INTEGER, 1, 'required|exists:products,id'),
             RequestData::make('cart_id', Schema::TYPE_INTEGER, 1, 'nullable|exists:carts,id'),
             RequestData::makeEnum('status', StockTransferStatus::class, true),
         ];

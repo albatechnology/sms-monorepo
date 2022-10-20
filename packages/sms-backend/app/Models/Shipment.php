@@ -73,7 +73,7 @@ class Shipment extends BaseModel
         $allowedRestoreStockStatus = [ShipmentStatus::PREPARING, ShipmentStatus::CANCELLED];
         $shipQty = intval($data['quantity']);
         $orderDetail = OrderDetail::find($data['id']);
-        $stock = Stock::where('channel_id', $orderDetail->order->channel_id)->where('company_id', $orderDetail->company_id)->where('product_unit_id', $orderDetail->product_unit_id)->first();
+        $stock = Stock::where('channel_id', $orderDetail->order->channel_id)->where('company_id', $orderDetail->company_id)->where('product_id', $orderDetail->product_id)->first();
 
         if ($this->status->in($allowedCutStockStatus) && !in_array($originalStatus, $allowedCutStockStatus)) {
             if ($stock->stock >= $shipQty) {

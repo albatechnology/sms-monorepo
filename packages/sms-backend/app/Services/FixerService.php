@@ -9,7 +9,7 @@ use App\Models\Channel;
 use App\Models\Customer;
 use App\Models\Lead;
 use App\Models\ProductModel;
-use App\Models\ProductUnit;
+use App\Models\Product;
 use App\Models\Stock;
 use App\Models\User;
 use BenSampo\Enum\Enum;
@@ -56,17 +56,17 @@ class FixerService
     }
 
     /**
-     * Create an instance of stock for all product unit.
+     * Create an instance of stock for all product.
      * @param Channel $channel
      */
     public static function createStocksForChannel(Channel $channel)
     {
 
-        ProductUnit::query()
+        Product::query()
             ->select(['id', 'company_id'])
             ->where('company_id', $channel->company_id)
-            ->chunk(500, function ($units) use ($channel) {
-                $ids = $units->pluck('id');
+            ->chunk(500, function ($products) use ($channel) {
+                $ids = $products->pluck('id');
 
                 // check existing stock to prevent duplicate
                 $existingStockIds = Stock::query()
@@ -77,7 +77,7 @@ class FixerService
                     ->map(function (int $id) use ($channel) {
                         return [
                             'channel_id'      => $channel->id,
-                            'product_unit_id' => $id,
+                            'product_id' => $id,
                             'company_id'      => $channel->company_id,
                         ];
                     });
@@ -87,26 +87,26 @@ class FixerService
     }
 
     /**
-     * Create an instance of stock of a product unit for all channel
+     * Create an instance of stock of a product for all channel
      * in the company.
-     * @param ProductUnit $unit
+     * @param Product $product
      */
-    public static function createStocksForProductUnit(ProductUnit $unit)
+    public static function createStocksForProduct(Product $product)
     {
         $ids = Channel::query()
-            ->where('company_id', $unit->company_id)
+            ->where('company_id', $product->company_id)
             ->pluck('id');
 
         $existingId = Stock::query()
-            ->where('product_unit_id', $unit->id)
+            ->where('product_id', $product->id)
             ->pluck('id');
 
         $stockData = $ids->diff($existingId)
-            ->map(function (int $id) use ($unit) {
+            ->map(function (int $id) use ($product) {
                 return [
                     'channel_id'      => $id,
-                    'product_unit_id' => $unit->id,
-                    'company_id'      => $unit->company_id,
+                    'product_id' => $product->id,
+                    'company_id'      => $product->company_id,
                 ];
             });
 

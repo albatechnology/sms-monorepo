@@ -71,10 +71,10 @@ class Cart extends BaseModel implements Discountable
         return $this->customer_id;
     }
 
-    public function addProductUnit(ProductUnit $unit, int $quantity = 1)
+    public function addProduct(Product $unit, int $quantity = 1)
     {
         $this->resetDiscount();
-        $this->items->addProductUnitItem($unit, $quantity);
+        $this->items->addProductItem($unit, $quantity);
         $this->updatePricesFromItemLine();
     }
 

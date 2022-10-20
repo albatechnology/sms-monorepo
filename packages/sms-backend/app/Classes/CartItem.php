@@ -3,7 +3,7 @@
 namespace App\Classes;
 
 use App\Http\Requests\API\V1\Cart\SyncCartRequest;
-use App\Models\ProductUnit;
+use App\Models\Product;
 use Database\Factories\CartItemFactory;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -44,20 +44,20 @@ class CartItem implements JsonSerializable, Arrayable
      */
     public function fillItemLineData(): static
     {
-        $product_unit_ids = $this->cart_item_lines->map(fn (CartItemLine $itemLine) => $itemLine->id);
-        $product_units = ProductUnit::whereIn('id', $product_unit_ids)
-            ->with(['product', 'colour', 'covering'])
+        $product_ids = $this->cart_item_lines->map(fn (CartItemLine $itemLine) => $itemLine->id);
+        $products = Product::whereIn('id', $product_ids)
+            // ->with(['product', 'colour', 'covering'])
             ->get()
             ->keyBy('id');
 
-        $this->cart_item_lines = $this->cart_item_lines->map(function (CartItemLine $itemLine) use ($product_units) {
-            $product_unit          = $product_units[$itemLine->id];
-            $itemLine->name        = $product_unit->name;
-            $itemLine->sku        = $product_unit->sku;
-            $itemLine->unit_price  = $product_unit->price;
-            $itemLine->total_price = $product_unit->price * $itemLine->quantity;
-            $itemLine->colour      = $product_unit->colour;
-            $itemLine->covering    = $product_unit->covering;
+        $this->cart_item_lines = $this->cart_item_lines->map(function (CartItemLine $itemLine) use ($products) {
+            $product          = $products[$itemLine->id];
+            $itemLine->name        = $product->name;
+            $itemLine->sku        = $product->sku;
+            $itemLine->unit_price  = $product->price;
+            $itemLine->total_price = $product->price * $itemLine->quantity;
+            // $itemLine->colour      = $product->colour;
+            // $itemLine->covering    = $product->covering;
             return $itemLine;
         });
 
@@ -74,9 +74,9 @@ class CartItem implements JsonSerializable, Arrayable
         return new CartItemFactory();
     }
 
-    public function addProductUnitItem(ProductUnit $unit, int $quantity): void
+    public function addProductItem(Product $product, int $quantity): void
     {
-        $this->cart_item_lines = $this->cart_item_lines->push(CartItemLine::fromProductUnit($unit, $quantity));
+        $this->cart_item_lines = $this->cart_item_lines->push(CartItemLine::fromProduct($product, $quantity));
     }
 
     public function jsonSerialize(): array

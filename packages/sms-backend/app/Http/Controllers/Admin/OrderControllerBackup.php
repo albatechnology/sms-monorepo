@@ -10,14 +10,14 @@ use App\Enums\OrderStockStatus;
 use App\Enums\OrderDetailStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroyOrderRequest;
-use App\Http\Requests\StoreProductUnitRequest;
+use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Models\Channel;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\User;
 use App\Models\Address;
-use App\Models\ProductUnit;
+use App\Models\Product;
 use App\Models\ProductBrand;
 use App\Models\PaymentCategory;
 use App\Models\Lead;
@@ -177,7 +177,7 @@ class OrderControllerBackup extends Controller
 
         // Starts by grabbing all the product unit model
         $items = collect($items);
-        $units = ProductUnit::whereIn('id', $items->pluck('id'))
+        $units = Product::whereIn('id', $items->pluck('id'))
             ->with(['product', 'colour', 'covering'])
             ->get()
             ->keyBy('id');
@@ -185,7 +185,7 @@ class OrderControllerBackup extends Controller
         $company_id = $order->company_id;
         $order_details = $items->map(function ($data) use ($units, $company_id) {
 
-            /** @var ProductUnit $product_unit */
+            /** @var Product $product_unit */
             $product_unit = $units[$data['id']];
 
             $order_detail             = new OrderDetail();
@@ -337,7 +337,7 @@ class OrderControllerBackup extends Controller
         return response(null, Response::HTTP_NO_CONTENT);
     }
 
-    public function createProductUnit(StoreProductUnitRequest $request, $cartDemandId)
+    public function createProduct(StoreProductRequest $request, $cartDemandId)
     {
         $cartDemand = CartDemand::findOrFail($cartDemandId);
         $tmp_product_unit_id = $request->input('tmp_product_unit_id');
@@ -356,7 +356,7 @@ class OrderControllerBackup extends Controller
         })->toArray();
         $remainingItems = array_values($remainingItems);
 
-        $productUnit = ProductUnit::create($request->validated());
+        $product = Product::create($request->validated());
 
         // insert into order detail
         $detail = new OrderDetail();
@@ -364,14 +364,14 @@ class OrderControllerBackup extends Controller
         $detail->order_id = $cartDemand->order->id;
         $detail->company_id = $cartDemand->order->company_id;
         $detail->quantity = (int)$item['quantity'];
-        $detail->product_unit_id = $productUnit->id;
-        $detail->unit_price = $productUnit->price;
+        $detail->product_unit_id = $product->id;
+        $detail->unit_price = $product->price;
         $detail->total_discount = 0;
-        $detail->total_price = $productUnit->price * (int)$item['quantity'];
+        $detail->total_price = $product->price * (int)$item['quantity'];
         $detail->records = [
-            'product_unit' => $productUnit->toRecord(),
-            'product'      => $productUnit->product->toRecord(),
-            'images'       => $productUnit->product->version->getRecordImages()
+            'product_unit' => $product->toRecord(),
+            'product'      => $product->product->toRecord(),
+            'images'       => $product->product->version->getRecordImages()
         ];
         $detail->save();
 
@@ -402,7 +402,7 @@ class OrderControllerBackup extends Controller
     {
         $data = [];
         if ($request->has('q') && $request->input('q') != '') {
-            $data = ProductUnit::whereActive()->select("id", "name");
+            $data = Product::whereActive()->select("id", "name");
             if ($request->has('company_id') && $request->input('company_id') != '' && $request->input('company_id') != null && $request->input('company_id') != 'null') {
                 $data = $data->where('company_id', $request->input('company_id'));
             }
@@ -433,9 +433,9 @@ class OrderControllerBackup extends Controller
         return User::whereIsSales()->select("id", "name")->where('name', 'LIKE', "%" . $_GET['q'] . "%")->get();
     }
 
-    public function detailproductunit($id)
+    public function detailproduct($id)
     {
-        return ProductUnit::select('price')->where('id', $id)->first()->price;
+        return Product::select('price')->where('id', $id)->first()->price;
     }
 
     public function getPaymentType($payment_category_id)

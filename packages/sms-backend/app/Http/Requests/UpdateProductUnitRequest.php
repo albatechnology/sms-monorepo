@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ProductUnitCategory;
+use App\Enums\ProductCategory;
 use BenSampo\Enum\Rules\EnumValue;
 use Gate;
 use Illuminate\Foundation\Http\FormRequest;
@@ -50,7 +50,7 @@ class UpdateProductUnitRequest extends FormRequest
             ],
             'product_unit_category'        => [
                 'nullable',
-                new EnumValue(ProductUnitCategory::class, 0)
+                new EnumValue(ProductCategory::class, 0)
             ],
         ];
     }

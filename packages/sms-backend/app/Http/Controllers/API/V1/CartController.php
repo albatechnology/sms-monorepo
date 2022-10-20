@@ -68,14 +68,14 @@ class CartController extends BaseApiController
     // #[CustomOpenApi\Operation(id: 'CartChannelStockIndex', tags: [Tags::Cart, Tags::V1])]
     // #[OpenApi\Parameters(factory: DefaultHeaderParameters::class)]
     // #[CustomOpenApi\Response(resource: CartChannelStockResource::class, statusCode: 200)]
-    public function stockIndex(Request $request, $productUnitId)
+    public function stockIndex(Request $request, $productId)
     {
         // return CustomQueryBuilder::buildResource(
         //     Channel::class,
         //     CartChannelStockResource::class,
-        //     fn($query) => $query->stocks(Stock::where('product_unit_id', $productUnitId)->get()->pluck('channel_id')->toArray())
-        //       ->withSum('channelStocks', 'stock', function($q) use($productUnitId) {
-        //         $q->where('product_unit_id', $productUnitId);
+        //     fn($query) => $query->stocks(Stock::where('product_id', $productId)->get()->pluck('channel_id')->toArray())
+        //       ->withSum('channelStocks', 'stock', function($q) use($productId) {
+        //         $q->where('product_id', $productId);
         //       }),
         //     null,
         //     0
@@ -84,19 +84,19 @@ class CartController extends BaseApiController
         $user = tenancy()->getUser();
         $cartQuantity = $user->cart->item_lines->sum('quantity');
 
-        $stockIds = Stock::where('product_unit_id', $productUnitId)->get()->pluck('channel_id')->toArray();
+        $stockIds = Stock::where('product_id', $productId)->get()->pluck('channel_id')->toArray();
 
         $currentChannel = Channel::find($user->channel_id);
         $channels = Channel::where(function ($q) use ($currentChannel, $stockIds) {
             $q->whereNotIn('id', [$currentChannel->id]);
             $q->whereIn('id', $stockIds);
-        })->withSum('channelStocks', 'stock', function ($q) use ($productUnitId) {
-            $q->where('product_unit_id', $productUnitId);
+        })->withSum('channelStocks', 'stock', function ($q) use ($productId) {
+            $q->where('product_id', $productId);
         })->orderBy('id', 'asc')
             ->get();
 
-        $currentChannelStock = (int)$currentChannel->withSum('channelStocks', 'stock', function ($q) use ($productUnitId) {
-            $q->where('product_unit_id', $productUnitId);
+        $currentChannelStock = (int)$currentChannel->withSum('channelStocks', 'stock', function ($q) use ($productId) {
+            $q->where('product_id', $productId);
         })->first()->channel_stocks_sum_stock;
 
         $unfilledCurrentChannelStockQuantity = ($currentChannelStock - $cartQuantity) > 0 ? 0 : abs($currentChannelStock - $cartQuantity);
@@ -115,7 +115,7 @@ class CartController extends BaseApiController
             if (in_array($channel->id, $user->cart->stockTransfers->pluck('from_channel_id')->toArray())) {
                 $channelCartQuantity = $user->cart->stockTransfers()
                     ->where('from_channel_id', $channel->id)
-                    ->where('product_unit_id', $productUnitId)
+                    ->where('product_id', $productId)
                     ->where('status', StockTransferStatus::PENDING)
                     ->first()->amount ?? 0;
             } else {
@@ -160,7 +160,7 @@ class CartController extends BaseApiController
     {
         $stockTransfer = StockTransfer::where(function ($q) use ($request) {
             $q->where('cart_id', tenancy()->getUser()->cart->id);
-            $q->where('product_unit_id', $request->product_unit_id);
+            $q->where('product_id', $request->product_id);
         })->forceDelete();
 
         foreach ($request->stocks as $stock) {
@@ -168,7 +168,7 @@ class CartController extends BaseApiController
                 StockTransfer::create([
                     'cart_id' => tenancy()->getUser()->cart->id,
                     'from_channel_id' => $stock['channel_id'],
-                    'product_unit_id' => $request->product_unit_id,
+                    'product_id' => $request->product_id,
                     'company_id' => tenancy()->getUser()->company_id,
                     'to_channel_id' => tenancy()->getUser()->channel_id,
                     'amount' => $stock['amount'],

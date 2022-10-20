@@ -8,7 +8,7 @@ use App\Enums\LeadType;
 use App\Models\Address;
 use App\Models\Lead;
 use App\Models\Order;
-use App\Models\ProductUnit;
+use App\Models\Product;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\Schema;
 use Illuminate\Validation\Rule;
 
@@ -21,10 +21,10 @@ class CreateOrderRequest extends BaseApiRequest
         return [
             Schema::array('items')->items(
                 Schema::object()->properties(
-                    Schema::integer('id')->example(1)->description('The product unit id to add to cart'),
+                    Schema::integer('id')->example(1)->description('The product id to add to cart'),
                     Schema::integer('quantity')->example(1),
                     Schema::boolean('is_ready')->example(1),
-                    Schema::string('location_id')
+                    // Schema::string('location_id')
                 ),
             ),
             Schema::array('discount_ids')->example([1, 2, 3]),
@@ -61,27 +61,26 @@ class CreateOrderRequest extends BaseApiRequest
 
         return [
             'items'            => 'nullable|array',
-            'items.*.location_id' => 'nullable|exists:locations,orlan_id',
+            // 'items.*.location_id' => 'nullable|exists:locations,orlan_id',
             'items.*.is_ready' => 'nullable|boolean',
             'items.*.id'       => [
                 Rule::requiredIf(!empty(request()->input('items'))),
                 function ($attribute, $value, $fail) {
-                    $unit = ProductUnit::tenanted()->whereActive()->where('id', $value)->first();
-
+                    $unit = Product::tenanted()->whereActive()->where('id', $value)->first();
                     if (!$unit) {
                         $fail('Invalid or inactive product unit.');
                         return;
                     }
 
-                    if (is_null($unit->colour_id)) {
-                        $unit->update(['is_active' => 0]);
-                        $fail("Product unit {$unit->id} does not have colour");
-                    }
+                    // if (is_null($unit->colour_id)) {
+                    //     $unit->update(['is_active' => 0]);
+                    //     $fail("Product unit {$unit->id} does not have colour");
+                    // }
 
-                    if (is_null($unit->covering_id)) {
-                        $unit->update(['is_active' => 0]);
-                        $fail("Product unit {$unit->id} does not have covering");
-                    }
+                    // if (is_null($unit->covering_id)) {
+                    //     $unit->update(['is_active' => 0]);
+                    //     $fail("Product unit {$unit->id} does not have covering");
+                    // }
                 }
             ],
             'items.*.quantity' => [Rule::requiredIf(!empty(request()->input('items'))), 'integer', 'min:1'],
@@ -146,7 +145,7 @@ class CreateOrderRequest extends BaseApiRequest
     public function messages()
     {
         return [
-            'items.*.location_id.required' => 'Location is required',
+            // 'items.*.location_id.required' => 'Location is required',
             'shipping_address_id.required' => 'Shipping address is required',
             'billing_address_id.required' => 'Billing address is required',
             'expected_shipping_datetime.required' => 'Expected delivery date is required',

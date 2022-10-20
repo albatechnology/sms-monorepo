@@ -24,7 +24,7 @@ class SaveOrder
             unset($order->order_details);
             unset($order->order_discounts);
             unset($order->discount);
-            unset($order->allowed_product_unit_ids);
+            unset($order->allowed_product_ids);
 
             // collect($details)->each(function (OrderDetail $detail) use($activityDatas) {
             //     $activityDatas[] = [$detail->product_brand_id => $detail->total_price];

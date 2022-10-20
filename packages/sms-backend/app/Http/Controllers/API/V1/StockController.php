@@ -70,7 +70,7 @@ class StockController extends BaseApiController
     #[CustomOpenApi\Response(resource: StockExtendedResource::class, isCollection: true)]
     public function indexExtended()
     {
-        $loadRelation = ['productUnit.product.brand', 'productUnit.colour', 'productUnit.covering'];
+        $loadRelation = ['product.product.brand', 'product.colour', 'product.covering'];
 
         return CustomQueryBuilder::buildResource(
             Stock::class,
@@ -93,16 +93,16 @@ class StockController extends BaseApiController
         $stocks = Stock::query()
             ->with(['channel' => function ($query) {
                 return $query->select(['id', 'name']);
-            }, 'productUnit' => function ($query) {
+            }, 'product' => function ($query) {
                 return $query->select(['id', 'name', 'product_id']);
-            }, 'productUnit.product' => function ($query) {
+            }, 'product.product' => function ($query) {
                 return $query->select(['id', 'name', 'product_brand_id']);
-            }, 'productUnit.product.brand' => function ($query) {
+            }, 'product.product.brand' => function ($query) {
                 return $query->select(['id', 'name']);
             }])->where('channel_id', $channelId)
-            ->whereHas('productUnit', function ($query) use ($name) {
+            ->whereHas('product', function ($query) use ($name) {
                 $query->where('name', 'like', '%' . $name . '%');
-            })->orWhereHas('productUnit.product.brand', function ($query) use ($name) {
+            })->orWhereHas('product.product.brand', function ($query) use ($name) {
                 $query->where('name', 'like', '%' . $name . '%');
             })->select(sprintf('%s.*', (new Stock)->table))->simplePaginate($this->perPage);
 
@@ -118,8 +118,8 @@ class StockController extends BaseApiController
         $data['data'] = [];
 
         foreach ($stocks as $stock) {
-            $stock['outstanding_order'] = (int) \App\Services\StockService::outstandingOrder($stock->company_id, $stock->channel_id, $stock->product_unit_id);;
-            $stock['outstanding_shipment'] = (int) \App\Services\StockService::outstandingShipment($stock->company_id, $stock->channel_id, $stock->product_unit_id);
+            $stock['outstanding_order'] = (int) \App\Services\StockService::outstandingOrder($stock->company_id, $stock->channel_id, $stock->product_id);;
+            $stock['outstanding_shipment'] = (int) \App\Services\StockService::outstandingShipment($stock->company_id, $stock->channel_id, $stock->product_id);
             $stock['real_stock'] = ($stock->stock + $stock['outstanding_shipment']) - $stock->indent;
             $data['data'][] = $stock;
         }
@@ -127,22 +127,22 @@ class StockController extends BaseApiController
         return response()->json($data);
     }
 
-    public function productChannel(Request $request, $productUnitId)
+    public function productChannel(Request $request, $productId)
     {
         $data = Stock::with(['channel' => function ($query) {
             $query->select('id', 'name');
-        }, 'productUnit' => function ($query) {
+        }, 'product' => function ($query) {
             $query->select('id', 'name');
-        }])->where('product_unit_id', $productUnitId)->select('id', 'stock', 'channel_id', 'product_unit_id')->get();
+        }])->where('product_id', $productId)->select('id', 'stock', 'channel_id', 'product_id')->get();
 
         if ($request->has('channel_id')) $data = $data->where('channel_id', $request->channel_id);
 
         return response()->json($data);
     }
 
-    public function extendedDetail($companyId, $channelId, $productUnitId)
+    public function extendedDetail($companyId, $channelId, $productId)
     {
-        $details = Stock::outstandingShipmentDetail($companyId, $channelId, $productUnitId);
+        $details = Stock::outstandingShipmentDetail($companyId, $channelId, $productId);
         $data = [];
         foreach ($details as $d) {
             array_push($data, [

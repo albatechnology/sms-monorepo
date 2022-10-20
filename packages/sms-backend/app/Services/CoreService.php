@@ -6,7 +6,7 @@ use App\Enums\UserType;
 use App\Exports\ModelExport;
 use App\Models\Channel;
 use App\Models\Lead;
-use App\Models\ProductUnit;
+use App\Models\Product;
 use App\Models\Stock;
 use App\Models\User;
 use BenSampo\Enum\Enum;
@@ -52,17 +52,17 @@ class CoreService
     }
 
     /**
-     * Create an instance of stock for all product unit.
+     * Create an instance of stock for all product.
      * @param Channel $channel
      */
     public static function createStocksForChannel(Channel $channel)
     {
 
-        ProductUnit::query()
+        Product::query()
             ->select(['id', 'company_id'])
             ->where('company_id', $channel->company_id)
-            ->chunk(500, function ($units) use ($channel) {
-                $ids = $units->pluck('id');
+            ->chunk(500, function ($products) use ($channel) {
+                $ids = $products->pluck('id');
 
                 // check existing stock to prevent duplicate
                 $existingStockIds = Stock::query()
@@ -73,7 +73,7 @@ class CoreService
                     ->map(function (int $id) use ($channel) {
                         return [
                             'channel_id'      => $channel->id,
-                            'product_unit_id' => $id,
+                            'product_id' => $id,
                             'company_id'      => $channel->company_id,
                         ];
                     });
@@ -83,16 +83,16 @@ class CoreService
     }
 
     /**
-     * Create an instance of stock for all product unit.
+     * Create an instance of stock for all product.
      * @param Location $location
      */
     public static function createStocksForLocation(Location $location)
     {
 
-        ProductUnit::query()
+        Product::query()
             ->select(['id', 'company_id'])
-            ->chunk(500, function ($units) use ($location) {
-                $ids = $units->pluck('id');
+            ->chunk(500, function ($products) use ($location) {
+                $ids = $products->pluck('id');
 
                 // check existing stock to prevent duplicate
                 $existingStockIds = Stock::query()
@@ -104,7 +104,7 @@ class CoreService
                         return [
                             // 'channel_id'      => $channel->id,
                             'location_id' => $location->id,
-                            'product_unit_id' => $id,
+                            'product_id' => $id,
                             // 'company_id'      => $channel->company_id,
                         ];
                     });
@@ -114,29 +114,29 @@ class CoreService
     }
 
     /**
-     * Create an instance of stock of a product unit for all channel
+     * Create an instance of stock of a product for all channel
      * in the company.
-     * @param ProductUnit $unit
+     * @param Product $product
      */
-    public static function createStocksForProductUnit(ProductUnit $unit)
+    public static function createStocksForProduct(Product $product)
     {
         // $ids = Channel::query()
-        //     ->where('company_id', $unit->company_id)
+        //     ->where('company_id', $product->company_id)
         //     ->pluck('id');
 
         $ids = Location::pluck('id');
 
         $existingId = Stock::query()
-            ->where('product_unit_id', $unit->id)
+            ->where('product_id', $product->id)
             ->pluck('id');
 
         $stockData = $ids->diff($existingId)
-            ->map(function (int $id) use ($unit) {
+            ->map(function (int $id) use ($product) {
                 return [
                     // 'channel_id' => $id,
                     'location_id' => $id,
-                    'product_unit_id' => $unit->id,
-                    // 'company_id' => $unit->company_id,
+                    'product_id' => $product->id,
+                    // 'company_id' => $product->company_id,
                 ];
             });
 
@@ -144,19 +144,19 @@ class CoreService
     }
 
     /**
-     * Calculating product unit calculated_hpp
-     * @param ProductUnit $unit
+     * Calculating product calculated_hpp
+     * @param Product $product
      */
-    public static function calculatingHPP(ProductUnit $productUnit)
+    public static function calculatingHPP(Product $product)
     {
-        $productBrand = $productUnit->product->brand;
+        $productBrand = $product->brand;
 
         $productBrandHppCalculation = $productBrand->hpp_calculation;
         $currency = $productBrand->currency;
         if ($currency && $productBrandHppCalculation != 0) {
-            $calculatedHpp = ($productUnit->purchase_price * $currency->value) + ($productUnit->purchase_price * ($productBrandHppCalculation / 100) * $currency->value);
-            $productUnit->calculated_hpp = (int)round($calculatedHpp) ?? 0;
-            $productUnit->save();
+            $calculatedHpp = ($product->purchase_price * $currency->value) + ($product->purchase_price * ($productBrandHppCalculation / 100) * $currency->value);
+            $product->calculated_hpp = (int)round($calculatedHpp) ?? 0;
+            $product->save();
         }
     }
 

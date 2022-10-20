@@ -8,7 +8,7 @@ use App\Http\Requests\StoreDiscountRequest;
 use App\Http\Requests\UpdateDiscountRequest;
 use App\Models\Company;
 use App\Models\Discount;
-use App\Models\ProductUnit;
+use App\Models\Product;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -98,7 +98,7 @@ class DiscountController extends Controller
 
 		$selectedProducts = [];
 		if (isset($discount->product_unit_ids) && !empty($discount->product_unit_ids)) {
-			$selectedProducts = ProductUnit::whereActive()->whereIn('id', $discount->product_unit_ids)->pluck('name', 'id')->all();
+			$selectedProducts = Product::whereActive()->whereIn('id', $discount->product_unit_ids)->pluck('name', 'id')->all();
 		}
 
 		return view('admin.discounts.edit', compact('companies', 'discount', 'selectedProducts'));

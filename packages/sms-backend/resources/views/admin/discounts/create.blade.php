@@ -34,14 +34,14 @@
             }
 
             if($(this).val() == 3){
-                $('#product_unit_category_div').show();
-                $('#product_unit_category_label').addClass('required');
-                $('#product_unit_category').attr('required');
+                $('#product_category_div').show();
+                $('#product_category_label').addClass('required');
+                $('#product_category').attr('required');
             } else {
-                $('#product_unit_category').val('').change();
-                $('#product_unit_category_label').removeClass('required');
-                $('#product_unit_category').removeAttr('required');
-                $('#product_unit_category_div').hide();
+                $('#product_category').val('').change();
+                $('#product_category_label').removeClass('required');
+                $('#product_category').removeAttr('required');
+                $('#product_category_div').hide();
             }
 
             if($(this).val() == 4){

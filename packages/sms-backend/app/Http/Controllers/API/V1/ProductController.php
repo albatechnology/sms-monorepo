@@ -23,7 +23,8 @@ use Vyuldashev\LaravelOpenApi\Attributes as OpenApi;
 #[OpenApi\PathItem]
 class ProductController extends BaseApiController
 {
-    const load_relation = ['brand', 'model', 'version', 'category_code'];
+    // const load_relation = ['brand', 'model', 'version', 'category_code'];
+    const load_relation = ['brand', 'productCategory'];
 
     /**
      * Get product

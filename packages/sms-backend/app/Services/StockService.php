@@ -10,7 +10,7 @@ use App\Enums\StockTransferStatus;
 use App\Models\Channel;
 use App\Models\Order;
 use App\Models\OrderDetail;
-use App\Models\ProductUnit;
+use App\Models\Product;
 use App\Models\Stock;
 use App\Models\StockHistory;
 use App\Models\StockTransfer;
@@ -24,14 +24,14 @@ class StockService
     /**
      * @param Channel $channelFrom
      * @param Channel $channelTo
-     * @param ProductUnit $unit
+     * @param Product $product
      * @param int $amount
      * @return MessageBag|StockTransfer
      */
     public static function createStockTransfer(
         Channel $channelFrom,
         Channel $channelTo,
-        ProductUnit $unit,
+        Product $product,
         int $amount
     ) {
         $message = new MessageBag();
@@ -42,21 +42,21 @@ class StockService
         //     return $message;
         // }
 
-        // // product unit stock must exist on both channels
-        // $stockFrom = Stock::where('product_unit_id', $unit)
+        // // product product stock must exist on both channels
+        // $stockFrom = Stock::where('product_id', $product)
         //     ->where('channel_id', $channelFrom)
         //     ->first();
 
-        // $stockTo = Stock::where('product_unit_id', $unit)
+        // $stockTo = Stock::where('product_id', $product)
         //     ->where('channel_id', $channelTo)
         //     ->first();
 
         // if (!$stockFrom) {
-        //     $message->add('channel_from', 'Product unit doesn\'t exist on the selected channel.');
+        //     $message->add('channel_from', 'Product product doesn\'t exist on the selected channel.');
         // }
 
         // if (!$stockTo) {
-        //     $message->add('channel_to', 'Product unit doesn\'t exist on the selected channel.');
+        //     $message->add('channel_to', 'Product product doesn\'t exist on the selected channel.');
         // }
 
         // // check the sender channel has the stock amount
@@ -148,7 +148,7 @@ class StockService
         $stock = Stock::query()
             // ->where('channel_id', $order->channel_id)
             ->where('location_id', $detail->location_id)
-            ->where('product_unit_id', $detail->product_unit_id)
+            ->where('product_id', $detail->product_id)
             ->first();
 
         if (!$stock) {
@@ -163,11 +163,11 @@ class StockService
             $stock->deductStock($fulfilAmount);
 
             // start sync stock transfer
-            // $stockTransfers = $order->stockTransfers()->where('product_unit_id', $detail->product_unit_id)->where('status', StockTransferStatus::PENDING)->get();
+            // $stockTransfers = $order->stockTransfers()->where('product_id', $detail->product_id)->where('status', StockTransferStatus::PENDING)->get();
             // $amount = 0;
 
             // foreach ($stockTransfers as $stockTransfer) {
-            //     $sourceStock = $stockTransfer->fromChannel->channelStocks()->where('product_unit_id', $stockTransfer->product_unit_id)->first();
+            //     $sourceStock = $stockTransfer->fromChannel->channelStocks()->where('product_id', $stockTransfer->product_id)->first();
             //     $sourceStock->deductStock($stockTransfer->amount);
 
             //     $stockTransfer->update([
@@ -183,7 +183,7 @@ class StockService
             // $stock = Stock::query()
             //     // ->where('channel_id', $order->channel_id)
             //     ->where('location_id', $detail->location_id)
-            //     ->where('product_unit_id', $detail->product_unit_id)
+            //     ->where('product_id', $detail->product_id)
             //     ->first();
 
             // $stock->deductStock($quantityRequired);
@@ -269,17 +269,17 @@ class StockService
         return $transfer;
     }
 
-    public static function outstandingOrder($companyId, $channelId, $productUnitId)
+    public static function outstandingOrder($companyId, $channelId, $productId)
     {
         $total = DB::table('orders')->join('order_details', 'order_details.order_id', '=', 'orders.id')
-            ->whereIn('orders.payment_status', [OrderPaymentStatus::NONE(), OrderPaymentStatus::PARTIAL(), OrderPaymentStatus::DOWN_PAYMENT()])->where('orders.company_id', $companyId)->where('orders.channel_id', $channelId)->where('order_details.product_unit_id', $productUnitId)->select(DB::raw('sum((order_details.quantity - order_details.quantity_fulfilled)) as outstanding_order'))->groupBy('orders.id')->get()->sum('outstanding_order');
+            ->whereIn('orders.payment_status', [OrderPaymentStatus::NONE(), OrderPaymentStatus::PARTIAL(), OrderPaymentStatus::DOWN_PAYMENT()])->where('orders.company_id', $companyId)->where('orders.channel_id', $channelId)->where('order_details.product_id', $productId)->select(DB::raw('sum((order_details.quantity - order_details.quantity_fulfilled)) as outstanding_order'))->groupBy('orders.id')->get()->sum('outstanding_order');
         return $total;
     }
 
-    public static function outstandingShipment($companyId, $channelId, $productUnitId)
+    public static function outstandingShipment($companyId, $channelId, $productId)
     {
         $total = DB::table('orders')->join('order_details', 'order_details.order_id', '=', 'orders.id')
-            ->where('orders.payment_status', OrderPaymentStatus::SETTLEMENT())->where('orders.status', OrderStatus::SHIPMENT())->where('orders.company_id', $companyId)->where('orders.channel_id', $channelId)->where('order_details.product_unit_id', $productUnitId)->select(DB::raw('sum(order_details.quantity) as outstanding_shipment'))->groupBy('orders.id')->get()->sum('outstanding_shipment');
+            ->where('orders.payment_status', OrderPaymentStatus::SETTLEMENT())->where('orders.status', OrderStatus::SHIPMENT())->where('orders.company_id', $companyId)->where('orders.channel_id', $channelId)->where('order_details.product_id', $productId)->select(DB::raw('sum(order_details.quantity) as outstanding_shipment'))->groupBy('orders.id')->get()->sum('outstanding_shipment');
         return $total;
     }
 }

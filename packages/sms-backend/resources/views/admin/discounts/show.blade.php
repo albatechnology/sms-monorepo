@@ -35,7 +35,7 @@
                 <x-show-row :model="$discount" key="min_order_price" type="price"></x-show-row>
                 <x-show-row :model="$discount" key="company" value="{{ $discount->company->name }}"></x-show-row>
                 <x-show-row :model="$discount" key="product_brand" value="{{ $discount->productBrand?->name }}"></x-show-row>
-                <x-show-row :model="$discount" key="product_unit_category" value="{{ $discount->product_unit_category?->description }}"></x-show-row>
+                <x-show-row :model="$discount" key="product_category" value="{{ $discount->product_category?->description }}"></x-show-row>
                 @if (!empty($discount->product_unit_ids))
                     <tr>
                         <th>Product Units</th>

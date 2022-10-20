@@ -7,7 +7,7 @@ use App\Models\CartDemand;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\OrderDetailDemand;
-use App\Models\ProductUnit;
+use App\Models\Product;
 use Closure;
 
 class MakeOrderLinesBackup
@@ -16,14 +16,14 @@ class MakeOrderLinesBackup
     {
         // Starts by grabbing all the product unit model
         $items = collect($order->raw_source['items']);
-        $units = ProductUnit::whereIn('id', $items->pluck('id'))
+        $units = Product::whereIn('id', $items->pluck('id'))
             ->with(['product', 'colour', 'covering'])
             ->get()
             ->keyBy('id');
 
         $order_details = $items->map(function ($data) use ($units) {
 
-            /** @var ProductUnit $product_unit */
+            /** @var Product $product_unit */
             $product_unit = $units[$data['id']];
 
             $order_detail             = new OrderDetail();

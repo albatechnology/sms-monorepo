@@ -24,11 +24,11 @@ class CalculateStock
         collect($order->order_details)->each(function (OrderDetail $detail) use ($company_id, $channel_id) {
             $stock = Stock::where('company_id', $company_id)
                 ->where('channel_id', $channel_id)
-                ->where('product_unit_id', $detail->product_unit_id)
+                ->where('product_id', $detail->product_id)
                 ->first();
 
-            $outstandingOrder = StockService::outstandingOrder($company_id, $channel_id, $detail->product_unit_id);
-            $outstandingShipment = StockService::outstandingShipment($company_id, $channel_id, $detail->product_unit_id);
+            $outstandingOrder = StockService::outstandingOrder($company_id, $channel_id, $detail->product_id);
+            $outstandingShipment = StockService::outstandingShipment($company_id, $channel_id, $detail->product_id);
 
             // order qty dihapus karena sudah ke cover di outstanding order
             // $incomingIndent = $stock->stock - ($detail->quantity + $outstandingOrder + $outstandingShipment);

@@ -26,7 +26,7 @@ class CreateProductsTable extends Migration
             $table->boolean('is_active')->default(0)->nullable();
             $table->integer('uom')->default(1);
             $table->unsignedBigInteger('production_cost')->default(0);
-            $table->unsignedSmallInteger('product_unit_category')->nullable();
+            $table->unsignedSmallInteger('product_category')->nullable();
             $table->float('volume')->nullable();
             $table->text('tags')->nullable();
             $table->string('video_url')->nullable();

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ProductUnitCategory;
+use App\Enums\ProductCategory;
 use App\Enums\DiscountScope;
 use App\Enums\DiscountType;
 use App\Models\Promo;
@@ -65,9 +65,9 @@ class StoreDiscountRequest extends FormRequest
 				'required',
 				new EnumValue(DiscountScope::class, 0)
 			],
-			'product_unit_category'        => [
+			'product_category'        => [
 				'nullable',
-				new EnumValue(ProductUnitCategory::class, 0)
+				new EnumValue(ProductCategory::class, 0)
 			],
 			'product_brand_id'        => [
 				'nullable',
@@ -106,7 +106,7 @@ class StoreDiscountRequest extends FormRequest
 				'required',
 				new HasCompanyAccess(),
 			],
-			'product_unit_ids'             => [
+			'product_ids'             => [
 				'nullable',
 				'array',
 			],

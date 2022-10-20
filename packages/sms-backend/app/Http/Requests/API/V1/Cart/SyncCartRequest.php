@@ -16,7 +16,7 @@ class SyncCartRequest extends BaseApiRequest
         return [
             Schema::array('items')->items(
                 Schema::object()->properties(
-                    Schema::integer('id')->example(1)->description('The product unit id to add to cart'),
+                    Schema::integer('id')->example(1)->description('The product id to add to cart'),
                     Schema::string('sku')->example('1441068311742')->description('sku of product unit'),
                     Schema::integer('quantity')->example(1)
                 ),
@@ -36,12 +36,12 @@ class SyncCartRequest extends BaseApiRequest
             'items'            => 'required|array',
             'items.*.id'       => [
                 'required',
-                Rule::exists('product_units', 'id')->where(function ($query) {
+                Rule::exists('products', 'id')->where(function ($query) {
                     return $query->tenanted();
                 }),
             ],
             'items.*.quantity' => 'required|integer|min:1',
-            'sku' => ['nullable', 'exists:product_units,sku'],
+            'sku' => ['nullable', 'exists:products,sku'],
             'discount_id'     => [
                 'nullable', 'integer',
                 Rule::exists('discounts', 'id')->where(function ($query) {

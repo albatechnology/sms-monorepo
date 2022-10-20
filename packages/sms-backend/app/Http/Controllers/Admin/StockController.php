@@ -28,7 +28,7 @@ class StockController extends Controller
                 ->tenanted()
                 ->with(['location' => function ($query) {
                     return $query->select(['id', 'name']);
-                }, 'productUnit' => function ($query) {
+                }, 'product' => function ($query) {
                     return $query->select(['id', 'name']);
                 }])
                 ->select(sprintf('%s.*', (new Stock)->table));
@@ -54,17 +54,17 @@ class StockController extends Controller
             $table->addColumn('location_name', function ($row) {
                 return $row->location ? $row->location->name : '';
             });
-            $table->addColumn('product_unit_name', function ($row) {
-                return $row->productUnit ? $row->productUnit->name : '';
+            $table->addColumn('product_name', function ($row) {
+                return $row->product ? $row->product->name : '';
             });
             $table->editColumn('stock', function ($row) {
                 return $row->stock;
             });
             // $table->addColumn('outstanding_order', function ($row) {
-            //     return \App\Services\StockService::outstandingOrder($row->company_id, $row->location_id, $row->product_unit_id);
+            //     return \App\Services\StockService::outstandingOrder($row->company_id, $row->location_id, $row->product_id);
             // });
             // $table->addColumn('outstanding_shipment', function ($row) {
-            //     return \App\Services\StockService::outstandingShipment($row->company_id, $row->location_id, $row->product_unit_id);
+            //     return \App\Services\StockService::outstandingShipment($row->company_id, $row->location_id, $row->product_id);
             // });
             $table->rawColumns(['actions', 'placeholder']);
 
@@ -78,7 +78,7 @@ class StockController extends Controller
     public function refresh($offset = 0, $limit = 1000)
     {
         $productIds = [];
-        $products = DB::table('product_units')->select('id')->offset($offset)->limit($limit)->get();
+        $products = DB::table('products')->select('id')->offset($offset)->limit($limit)->get();
         if (isset($products) && count($products) <= 0) dd('selesai brok');
         $locations = DB::table('locations')->select('id')->get();
         foreach ($products as $product) {
@@ -87,13 +87,13 @@ class StockController extends Controller
                 Stock::firstOrCreate(
                     [
                         'location_id' => $location->id,
-                        'product_unit_id' => $product->id
+                        'product_id' => $product->id
                     ],
                     ['stock' => 0]
                 );
                 // DB::table('stocks')->insert([
                 //     'location_id' => $location->id,
-                //     'product_unit_id' => $product->id,
+                //     'product_id' => $product->id,
                 //     'stock' => 0
                 // ]);
             }
@@ -123,7 +123,7 @@ class StockController extends Controller
     {
         abort_if(Gate::denies('stock_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $stock->load('location', 'productUnit');
+        $stock->load('location', 'product');
 
         return view('admin.stocks.edit', compact('stock'));
     }
@@ -152,9 +152,9 @@ class StockController extends Controller
     {
         abort_if(Gate::denies('stock_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $stock->load('location', 'productUnit');
-        $outstandingOrder = \App\Services\StockService::outstandingOrder($stock->company_id, $stock->location_id, $stock->product_unit_id);
-        $outstandingShipment = \App\Services\StockService::outstandingShipment($stock->company_id, $stock->location_id, $stock->product_unit_id);
+        $stock->load('location', 'product');
+        $outstandingOrder = \App\Services\StockService::outstandingOrder($stock->company_id, $stock->location_id, $stock->product_id);
+        $outstandingShipment = \App\Services\StockService::outstandingShipment($stock->company_id, $stock->location_id, $stock->product_id);
 
         return view('admin.stocks.show', compact('stock', 'outstandingOrder', 'outstandingShipment'));
     }

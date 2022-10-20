@@ -21,7 +21,7 @@ class SaveOrder
             $details = $order->order_details;
             unset($order->order_details);
             unset($order->discount);
-            unset($order->allowed_product_unit_ids);
+            unset($order->allowed_product_ids);
 
             $order->save();
             $order_id = $order->id;

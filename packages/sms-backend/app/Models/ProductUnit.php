@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\ProductUnitCategory;
+use App\Enums\ProductCategory;
 use App\Services\CoreService;
 use App\Traits\Auditable;
 use App\Traits\CustomInteractsWithMedia;
@@ -64,7 +64,7 @@ class ProductUnit extends BaseModel implements HasMedia
         'colour_id'       => 'integer',
         'covering_id'     => 'integer',
         'company_id'      => 'integer',
-        'product_unit_category' => ProductUnitCategory::class,
+        'product_unit_category' => ProductCategory::class,
         'brand_category_id' => 'integer',
         'volume' => 'float',
     ];

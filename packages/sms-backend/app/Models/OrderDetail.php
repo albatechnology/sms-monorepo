@@ -35,7 +35,7 @@ class OrderDetail extends BaseModel implements HasMedia, DiscountableLine, Repor
     ];
 
     protected $fillable = [
-        'product_unit_id',
+        'product_id',
         'records',
         'order_id',
         'product_detail',
@@ -93,9 +93,9 @@ class OrderDetail extends BaseModel implements HasMedia, DiscountableLine, Repor
         return $this->belongsToMany(Target::class);
     }
 
-    public function product_unit()
+    public function product()
     {
-        return $this->belongsTo(ProductUnit::class, 'product_unit_id');
+        return $this->belongsTo(Product::class, 'product_id');
     }
 
     public function order()
@@ -108,9 +108,9 @@ class OrderDetail extends BaseModel implements HasMedia, DiscountableLine, Repor
         return $this->belongsToMany(Shipment::class)->withPivot('quantity');
     }
 
-    public function getProductUnitId(): int
+    public function getProductId(): int
     {
-        return $this->product_unit_id;
+        return $this->product_id;
     }
 
     public function refreshStatus(): static
