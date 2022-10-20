@@ -20,7 +20,7 @@ class ProductCategoryResource extends BaseResource
             // ResourceData::make("parent_id", Schema::TYPE_INTEGER, 1)->nullable(),
             // ResourceData::make("level", Schema::TYPE_INTEGER, 0)->nullable(),
             // ResourceData::makeEnum('type', ProductCategoryType::class),
-            ResourceData::image(),
+            ResourceData::image('photo'),
         ];
     }
 }
