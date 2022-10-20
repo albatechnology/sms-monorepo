@@ -121,6 +121,11 @@ class Product extends BaseModel implements HasMedia
         return $this->belongsTo(ProductCategory::class);
     }
 
+    public function productBrand()
+    {
+        return $this->belongsTo(ProductBrand::class);
+    }
+
     // public function tags()
     // {
     //     return $this->belongsToMany(ProductTag::class, 'product_product_tag');

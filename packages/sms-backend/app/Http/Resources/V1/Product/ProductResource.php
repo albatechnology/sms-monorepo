@@ -4,7 +4,6 @@ namespace App\Http\Resources\V1\Product;
 
 use App\Classes\DocGenerator\BaseResource;
 use App\Classes\DocGenerator\ResourceData;
-use GoldSpecDigital\ObjectOrientedOAS\Objects\Schema;
 
 class ProductResource extends BaseResource
 {
@@ -13,6 +12,7 @@ class ProductResource extends BaseResource
         return [
             ...BaseProductResource::data(),
             ResourceData::makeRelationship('product_category', ProductCategoryResource::class, 'productCategory'),
+            ResourceData::makeRelationship('product_brand', BaseProductBrandResource::class, 'productBrand'),
             // ResourceData::makeRelationshipCollection('tags', TagResource::class),
             ResourceData::images(),
 
