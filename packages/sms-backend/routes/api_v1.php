@@ -53,7 +53,7 @@ use Illuminate\Support\Facades\Route;
 Route::put('/notifications/{code}/unsubscribe', [PushNotificationController::class, 'unsubscribe'])->name('push-notification.unsubscribe');
 
 Route::resource('sms-channels', SmsChannelController::class)->only(['index', 'show']);
-Route::get('/orders/export-quotation', [OrderController::class, 'exportQuotation'])->name('orders.export-quotation');
+// Route::get('/orders/export-quotation', [OrderController::class, 'exportQuotation'])->name('orders.export-quotation');
 Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
     /** Users */
     Route::get('/users/me', [UserController::class, 'me'])->name('users.me');
@@ -189,7 +189,7 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
         Route::get('discounts', [DiscountController::class, 'index'])->name('discounts.index');
         Route::get('discounts/{code}', [DiscountController::class, 'discountGetByCode'])->name('discounts.code');
 
-        // Route::get('/orders/export-quotation', [OrderController::class, 'exportQuotation'])->name('orders.export-quotation');
+        Route::get('/orders/export-quotation', [OrderController::class, 'exportQuotation'])->name('orders.export-quotation');
         Route::post('/orders/preview', [OrderController::class, 'preview'])->name('orders.preview');
         Route::post('/orders/preview-update/{order}', [OrderController::class, 'previewUpdate'])->name('orders.previewUpdate');
         Route::get('/orders/waiting-approval', [OrderController::class, 'indexWaitingApproval'])->name('orders.waiting-approval');

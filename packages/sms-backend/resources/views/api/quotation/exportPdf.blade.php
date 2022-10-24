@@ -285,7 +285,7 @@
                     <img src="{{ $photo }}" alt="productImage"
                         style="width: 126px; height: auto; display: block; margin-left: auto; margin-right: auto;" />
                 </td>
-                <td style="text-align: left;">{{ $item->product_unit?->name }}</td>
+                <td style="text-align: left;">{{ $item->product?->name }}</td>
                 <td>{{ $item->is_ready == 1 ? 'ready' : 'indent' }}</td>
                 <td>{{ $item->quantity }}</td>
                 <td>{{ rupiah($item->unit_price) }}</td>

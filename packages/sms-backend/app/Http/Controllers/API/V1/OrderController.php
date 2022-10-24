@@ -400,7 +400,8 @@ class OrderController extends BaseApiController
             ], 422);
         }
 
-        switch (auth()->user()->company_id) {
+        $user = auth()->user();
+        switch ($user->company_id) {
             case (1):
                 $logo = 'melandas.png';
                 break;
@@ -415,7 +416,7 @@ class OrderController extends BaseApiController
         $params['logo'] = asset("images/logo/$logo");
         $params['type'] = $request->type;
         $params['order'] = Order::findOrFail($request->order_id);
-        $params['user'] = auth()->user();
+        $params['user'] = $user;
         $pdf = PDF::loadView('api.quotation.exportPdf', ['params' => $params])->setPaper('a3', 'potrait');
 
         return $pdf->download("$request->type.pdf");
