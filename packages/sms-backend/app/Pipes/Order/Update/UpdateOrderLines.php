@@ -14,6 +14,7 @@ class UpdateOrderLines
         if ($order->order_details && count($order->order_details) > 0) {
             $order_details = $order->order_details->map(function (OrderDetail $detail) {
                 $detail->total_cascaded_discount = 0;
+                $detail->sum_total_discount  = 0; // will be unset before save
                 $detail->total_discount = 0;
                 $detail->total_price = $detail->unit_price * $detail->quantity;
 

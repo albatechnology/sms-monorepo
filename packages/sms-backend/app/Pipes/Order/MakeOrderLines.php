@@ -42,6 +42,7 @@ class MakeOrderLines
                 $order_detail->quantity        = (int)$data['quantity'];
                 $order_detail->product_id = $product->id;
                 $order_detail->unit_price      = $product->price;
+                $order_detail->sum_total_discount  = 0; // will be unset before save
                 $order_detail->total_discount  = 0;
                 $order_detail->total_price     = $product->price * $data['quantity'];
 

@@ -43,6 +43,7 @@ class FillOrderAttributes
         $order->channel_id                     = $user->channel_id;
         $order->company_id                     = $user->company_id;
         $order->interior_design_id             = $order->raw_source['interior_design_id'] ?? null;
+        $order->sum_total_discount             = 0;
         $order->total_discount                 = 0;
         $order->status                         = OrderStatus::QUOTATION();
         $order->stock_status                   = OrderStockStatus::INDENT();

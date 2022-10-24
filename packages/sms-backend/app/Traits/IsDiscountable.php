@@ -73,6 +73,12 @@ trait IsDiscountable
         $this->total_discount = $price;
     }
 
+    // summary of total discount harus di unset sebelum di save
+    public function setSumTotalDiscount(int $price)
+    {
+        $this->sum_total_discount = $price + ($this->total_discount ?? 0);
+    }
+
     public function getDiscountError(): ?DiscountError
     {
         return $this?->discount_error;
@@ -87,6 +93,7 @@ trait IsDiscountable
 
         $this->setTotalPrice($this->getTotalPrice() + $this->getTotalDiscount());
         $this->setTotalDiscount(0);
+        $this->setSumTotalDiscount(0);
 
         if ($this instanceof Discountable) {
             $this->getDiscountableLines()->each(fn(DiscountableLine $line) => $line->resetDiscount());
@@ -121,6 +128,11 @@ trait IsDiscountable
     public function getTotalDiscount(): int
     {
         return $this->total_discount ?? 0;
+    }
+
+    public function getSumTotalDiscount(): int
+    {
+        return $this->sum_total_discount ?? 0;
     }
 
     public function getAdditionalDiscount(): int

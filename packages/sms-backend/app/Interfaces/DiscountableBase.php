@@ -21,12 +21,14 @@ interface DiscountableBase
 
     public function setTotalPrice(int $price);
 
+    public function getSumTotalDiscount(): int;
     public function getTotalDiscount(): int;
 
     public function getAdditionalDiscount(): int;
 
     public function setTotalDiscount(int $price);
 
+    public function setSumTotalDiscount(int $price);
     public function setDiscount(Discount $discount);
 
     public function getDiscount(): ?Discount;

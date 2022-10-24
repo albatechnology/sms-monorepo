@@ -149,6 +149,7 @@
                         <x-show-row :model="$order" key="total_discount" type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
                         <x-show-row :model="$order" key="shipping_fee" type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
                         <x-show-row :model="$order" key="packing_fee" type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
+                        <x-show-row :model="$order" key="additional_discount" type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
                         <tr>
                             <th>
                                 {{ trans('cruds.order.fields.price') }}
@@ -164,6 +165,19 @@
                             <td>
                                 {{ rupiah($order->total_price - $total_amount) }}
                             </td>
+                        </tr>
+                        <tr>
+                            <th>Discount Used</th>
+                            <td>
+                                @if($order->order_discounts->count() > 0)
+                                    <ol>
+                                        @foreach ($order->order_discounts as $od)
+                                            <li><a href="{{ route("admin.discounts.show", $od->discount_id) }}" target="_blank">{{ $od->discount->name }}</a></li>
+                                        @endforeach
+                                    </ol>
+                                @else
+                                    <p class="text-muted">No discount used</p>
+                                @endif
                         </tr>
                     </tbody>
                 </table>

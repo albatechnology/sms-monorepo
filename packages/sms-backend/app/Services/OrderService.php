@@ -28,6 +28,7 @@ use App\Pipes\Discountable\CheckDiscountApplied;
 use App\Pipes\Discountable\CheckDiscountMinOrderPrice;
 use App\Pipes\Discountable\CheckDiscountUseLimit;
 use App\Pipes\Discountable\CheckMaxDiscountLimit;
+use App\Pipes\Discountable\SyncSumDiscount;
 use App\Pipes\Order\AddAdditionalDiscount;
 use App\Pipes\Order\AddAdditionalFees;
 use App\Pipes\Order\ApplyDiscount;
@@ -105,6 +106,7 @@ class OrderService
                 CheckDiscountUseLimit::class,
                 CalculateDiscountForDiscountableClass::class,
                 CalculateDiscountForDiscountableLineClass::class,
+                SyncSumDiscount::class,
                 CheckMaxDiscountLimit::class,
                 CheckDiscountApplied::class,
                 CalculateDiscountCascadeForDiscountableLine::class,

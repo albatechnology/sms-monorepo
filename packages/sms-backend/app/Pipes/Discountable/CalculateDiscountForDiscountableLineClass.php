@@ -69,6 +69,7 @@ class CalculateDiscountForDiscountableLineClass
 
         $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductIds) {
             if (in_array($line->product_id, $allowedProductIds)) {
+                $line->setSumTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalPrice($line->getTotalPrice() - $line->getTotalDiscount());
             }
@@ -101,6 +102,7 @@ class CalculateDiscountForDiscountableLineClass
 
         $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductIds) {
             if (in_array($line->product_id, $allowedProductIds)) {
+                $line->setSumTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalPrice($line->getTotalPrice() - $line->getTotalDiscount());
             }
@@ -130,6 +132,7 @@ class CalculateDiscountForDiscountableLineClass
 
         $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductIds) {
             if (in_array($line->product_id, $allowedProductIds) && ($discount->product_category == $line->product->product_category)) {
+                $line->setSumTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalPrice($line->getTotalPrice() - $line->getTotalDiscount());
             }
@@ -174,6 +177,7 @@ class CalculateDiscountForDiscountableLineClass
 
         $discountable->getDiscountableLines()->each(function (DiscountableLine $line) use ($discount, $allowedProductIds) {
             if (in_array($line->product_id, $allowedProductIds)) {
+                $line->setSumTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalDiscount(OrderService::calculateTotalDiscount($line, $discount));
                 $line->setTotalPrice($line->getTotalPrice() - $line->getTotalDiscount());
             }

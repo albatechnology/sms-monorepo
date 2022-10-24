@@ -25,6 +25,7 @@ class SaveOrder
             unset($order->order_discounts);
             unset($order->discount);
             unset($order->allowed_product_ids);
+            unset($order->sum_total_discount);
 
             $order->save();
 
@@ -34,6 +35,7 @@ class SaveOrder
                 unset($detail->discount);
                 unset($detail->discount_id);
                 unset($detail->product_brand_id);
+                unset($detail->sum_total_discount);
                 $detail->order_id = $order->id;
                 $detail->save();
             }
