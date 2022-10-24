@@ -285,6 +285,15 @@ class MenuService
             0,
         );
 
+        $voucher = new Submenu(
+            'voucher_access',
+            route("admin.vouchers.index"),
+            'admin/vouchers',
+            'fas fa-gift',
+            trans('cruds.voucher.title'),
+            0,
+        );
+
         // $banner = new Submenu(
         //     'banner_access',
         //     route("admin.banners.index"),
@@ -302,6 +311,7 @@ class MenuService
                 $discount,
                 $promoCategory,
                 $promo,
+                $voucher,
                 // $banner,
             ]
         );

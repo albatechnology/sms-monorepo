@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductTagController;
 use App\Http\Controllers\Admin\ProductUnitsController;
 use App\Http\Controllers\Admin\PromoController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\PromoCategoryController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RolesController;
@@ -269,6 +270,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('discounts/destroy', [DiscountController::class, 'massDestroy'])->name('discounts.massDestroy');
     Route::get('discounts/get-discounts/{companyId?}', [DiscountController::class, 'getDiscounts']);
     Route::resource('discounts', 'DiscountController');
+
+    Route::delete('vouchers/destroy', [VoucherController::class, 'massDestroy'])->name('vouchers.massDestroy');
+    Route::get('vouchers/get-vouchers/{companyId?}', [DiscountController::class, 'getVoucher']);
+    Route::resource('vouchers', 'VoucherController');
 
     // User Alerts
     Route::delete('user-alerts/destroy', [UserAlertsController::class, 'massDestroy'])->name('user-alerts.massDestroy');

@@ -41,6 +41,7 @@ class CreateOrdersTable extends Migration
             $table->string('discount_error')->nullable();
             $table->bigInteger('total_discount')->default(0);
             $table->bigInteger('total_price')->default(0);
+            $table->unsignedInteger('total_voucher')->default(0);
 
             $table->softDeletes();
             $table->timestamps();

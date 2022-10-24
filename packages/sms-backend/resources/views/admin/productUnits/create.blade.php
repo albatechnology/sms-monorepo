@@ -80,8 +80,8 @@
                     <label class="" for="product_unit_category">{{ trans('cruds.discount.fields.product_unit_category') }}</label>
                     <select class="form-control {{ $errors->has('product_unit_category') ? 'is-invalid' : '' }}" name="product_unit_category" id="product_unit_category" style="width: 100%">
                         <option selected value="">-- Select Product Unit Category --</option>
-                        @foreach(\App\Enums\ProductUnitCategory::getInstances() as $productUnitCategory)
-                            <option value="{{ $productUnitCategory->value }}" {{ $productUnitCategory == old('product_unit_category') ? 'selected' : '' }}>{{ $productUnitCategory->description }}</option>
+                        @foreach(\App\Enums\ProductCategory::getInstances() as $productCategory)
+                            <option value="{{ $productCategory->value }}" {{ $productCategory == old('product_unit_category') ? 'selected' : '' }}>{{ $productCategory->description }}</option>
                         @endforeach
                     </select>
 

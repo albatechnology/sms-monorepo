@@ -118,7 +118,7 @@
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td></td>
-                    <x-filter-enum base-enum="{{ \App\Enums\ProductUnitCategory::class }}"></x-filter-enum>
+                    <x-filter-enum base-enum="{{ \App\Enums\ProductCategory::class }}"></x-filter-enum>
                     <td></td>
                     <td>
                     </td>

@@ -57,8 +57,8 @@
 		<select class="form-control {{ $errors->has('product_category') ? 'is-invalid' : '' }}"
 			name="product_category" id="product_category" style="width: 100%">
 			<option value="">-- Select Product Unit Category --</option>
-			@foreach(App\Enums\ProductUnitCategory::getInstances() as $productUnitCategory)
-				<option value="{{ $productUnitCategory->value }}" {{ $productUnitCategory == old('product_category') ? 'selected' : '' }}>{{ $productUnitCategory->description }}</option>
+			@foreach(App\Enums\ProductCategory::getInstances() as $productCategory)
+				<option value="{{ $productCategory->value }}" {{ $productCategory == old('product_category') ? 'selected' : '' }}>{{ $productCategory->description }}</option>
 			@endforeach
 		</select>
 		@if($errors->has('product_category'))
