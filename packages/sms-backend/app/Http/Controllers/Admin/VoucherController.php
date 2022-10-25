@@ -16,9 +16,9 @@ use Yajra\DataTables\Facades\DataTables;
 
 class VoucherController extends Controller
 {
-	public function index(Request $request)
-	{
-		abort_if(Gate::denies('voucher_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+    public function index(Request $request)
+    {
+        abort_if(Gate::denies('voucher_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
             $query = Voucher::with(['company'])->select(sprintf('%s.*', (new Voucher)->table));
@@ -53,84 +53,75 @@ class VoucherController extends Controller
             $table->addColumn('company', function ($row) {
                 return $row->company?->name ?? '-';
             });
-            $table->rawColumns(['actions', 'placeholder','is_active']);
+            $table->rawColumns(['actions', 'placeholder', 'is_active']);
 
             return $table->make(true);
         }
 
-		$vouchers = Voucher::tenanted()->with(['company'])->get();
+        $vouchers = Voucher::tenanted()->with(['company'])->get();
 
-		return view('admin.vouchers.index', compact('vouchers'));
-	}
+        return view('admin.vouchers.index', compact('vouchers'));
+    }
 
-	public function create()
-	{
-		abort_if(Gate::denies('voucher_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+    public function create()
+    {
+        abort_if(Gate::denies('voucher_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $companies = Company::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        return view('admin.vouchers.create', ['companies' => $companies]);
+    }
 
-		return view('admin.vouchers.create');
-	}
+    public function store(StoreVoucherRequest $request)
+    {
+        Voucher::create($request->validated());
 
-	public function store(StoreVoucherRequest $request)
-	{
-		Voucher::create($request->validated());
+        return redirect()->route('admin.vouchers.index')->with('message', 'Voucher created successfully');
+    }
 
-		return redirect()->route('admin.vouchers.index')->with('message', 'voucher created successfully');
-	}
+    public function edit(voucher $voucher)
+    {
+        abort_if(Gate::denies('voucher_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-	public function edit(voucher $voucher)
-	{
-		abort_if(Gate::denies('voucher_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-		$companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-		$voucher->load('company');
+        return view('admin.vouchers.edit', compact('companies', 'voucher'));
+    }
 
-		$selectedProducts = [];
-		if (isset($voucher->product_unit_ids) && !empty($voucher->product_unit_ids)) {
-			$selectedProducts = Product::whereActive()->whereIn('id', $voucher->product_unit_ids)->pluck('name', 'id')->all();
-		}
+    public function update(UpdateVoucherRequest $request, voucher $voucher)
+    {
+        $voucher->update($request->validated());
 
-		return view('admin.vouchers.edit', compact('companies', 'voucher', 'selectedProducts'));
-	}
+        return redirect()->route('admin.vouchers.index')->with('message', 'Voucher updated successfully');
+    }
 
-	public function update(UpdateVoucherRequest $request, voucher $voucher)
-	{
-		$data = $request->validated();
-        if ($request->scope != 1) {
-            unset($data['product_unit_ids']);
-        }
-		$voucher->update($data);
+    public function show(voucher $voucher)
+    {
+        abort_if(Gate::denies('voucher_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-		return redirect()->route('admin.vouchers.index')->with('message', 'voucher updated successfully');
-	}
+        $voucher->load('company');
 
-	public function show(voucher $voucher)
-	{
-		abort_if(Gate::denies('voucher_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        return view('admin.vouchers.show', compact('voucher'));
+    }
 
-		$voucher->load('company');
+    public function destroy(voucher $voucher)
+    {
+        abort_if(Gate::denies('voucher_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-		return view('admin.vouchers.show', compact('voucher'));
-	}
+        $voucher->delete();
 
-	public function destroy(voucher $voucher)
-	{
-		abort_if(Gate::denies('voucher_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        return back();
+    }
 
-		$voucher->delete();
+    public function massDestroy(MassDestroyVoucherRequest $request)
+    {
+        Voucher::whereIn('id', request('ids'))->delete();
 
-		return back();
-	}
+        return response(null, Response::HTTP_NO_CONTENT);
+    }
 
-	public function massDestroy(MassDestroyVoucherRequest $request)
-	{
-		Voucher::whereIn('id', request('ids'))->delete();
-
-		return response(null, Response::HTTP_NO_CONTENT);
-	}
-
-    public function getvouchers($company_id = null){
-        $vouchers = Voucher::select('id','name','description');
-        if($company_id != null && $company_id > 0) $vouchers->where('company_id', $company_id);
+    public function getvouchers($company_id = null)
+    {
+        $vouchers = Voucher::select('id', 'name', 'description');
+        if ($company_id != null && $company_id > 0) $vouchers->where('company_id', $company_id);
         $vouchers = $vouchers->get();
 
         return response()->json($vouchers);
