@@ -20,7 +20,9 @@ use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Enums\NotificationType;
 use App\Classes\ExpoMessage;
+use App\Models\Customer;
 use App\Models\Location;
+use App\Models\Voucher;
 
 class CoreService
 {
@@ -271,6 +273,24 @@ class CoreService
                 ->link($link);
 
             app(PushNotificationService::class)->notify($message);
+        }
+    }
+
+    public static function createAndAssignVoucher(Customer $customer, array $vouchers, $companyId = null)
+    {
+        foreach ($vouchers as $v) {
+            Voucher::firstOrCreate(
+                ['id' => $v['id']],
+                [
+                    'value' => $v['value'],
+                    'company_id' => $companyId ?? user()->company_id,
+                ]
+            );
+            if ($customer->vouchers()->where('id', $v['id'])->doesntExist()) {
+                $customer->vouchers()->attach($v['id'], [
+                    'is_used' => 0,
+                ]);
+            }
         }
     }
 }

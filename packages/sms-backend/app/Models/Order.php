@@ -186,6 +186,11 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         return $this->hasMany(OrderDiscount::class, 'order_id', 'id');
     }
 
+    public function orderVouchers(): HasMany
+    {
+        return $this->hasMany(OrderVoucher::class, 'order_id', 'id');
+    }
+
     public function orderShipments()
     {
         return $this->hasMany(Shipment::class, 'order_id', 'id');

@@ -17,15 +17,14 @@ class StoreVoucherRequest extends FormRequest
 	public function rules()
 	{
 		return [
+			'id'              => [
+				'nullable',
+				'unique:vouchers,id',
+				'string',
+			],
 			'description'                  => [
 				'string',
 				'nullable',
-			],
-			'code'              => [
-				'nullable',
-				'unique:vouchers,code',
-				'string',
-				'min:4',
 			],
 			'value'                        => [
 				'required',

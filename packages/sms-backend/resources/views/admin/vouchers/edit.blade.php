@@ -23,8 +23,8 @@
                 <span class="help-block">{{ trans('cruds.generic.fields.company_helper') }}</span>
             </div>
             <div class="form-group">
-                <label for="code">Code</label>
-                <input type="text" name="code" required class="form-control" value="{{ $voucher->code }}" placeholder="Voucher code">
+                <label for="id">Code</label>
+                <input type="text" name="id" required class="form-control" value="{{ $voucher->id }}" placeholder="Voucher Code">
             </div>
             <div class="form-group">
                 <label for="value">Value</label>

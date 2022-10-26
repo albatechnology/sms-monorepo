@@ -18,13 +18,10 @@
                 <thead>
                     <tr>
                         <th width="10"></th>
-                        <th>
-                            {{ trans('cruds.voucher.fields.id') }}
-                        </th>
+                        <th>Code</th>
                         <th>
                             {{ trans('cruds.voucher.fields.company') }}
                         </th>
-                        <th>Code</th>
                         <th>
                             {{ trans('cruds.voucher.fields.description') }}
                         </th>
@@ -45,7 +42,6 @@
                     <tr>
                         <td>
                         </td>
-                        <x-filter-id></x-filter-id>
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
@@ -130,10 +126,6 @@
                     {
                         data: 'company',
                         name: 'company.name'
-                    },
-                    {
-                        data: 'code',
-                        name: 'code'
                     },
                     {
                         data: 'description',

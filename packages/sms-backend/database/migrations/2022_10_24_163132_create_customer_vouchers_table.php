@@ -15,8 +15,10 @@ class CreateCustomerVouchersTable extends Migration
     {
         Schema::create('customer_vouchers', function (Blueprint $table) {
             $table->foreignId('customer_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('voucher_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('voucher_id', 100);
             $table->boolean('is_used')->default(0);
+
+            $table->foreign('voucher_id')->references('id')->on('vouchers')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

@@ -23,6 +23,8 @@ use App\Http\Resources\V1\Lead\LeadWithLatestActivityResource;
 use App\Http\Resources\V1\Lead\SubLeadCategoryResource;
 use App\Http\Resources\V1\Product\BaseProductBrandResource;
 use App\Models\Channel;
+use App\Models\Customer;
+use App\Models\CustomerVoucher;
 use App\Models\Lead;
 use App\Models\LeadCategory;
 use App\Models\ProductBrand;
@@ -166,6 +168,8 @@ class LeadController extends BaseApiController
     #[CustomOpenApi\ErrorResponse(exception: SalesOnlyActionException::class)]
     public function store(CreateLeadRequest $request): LeadWithLatestActivityResource
     {
+        // dump($request->all());
+        // dd($request->validated());
         $user = user();
         $data = array_merge($request->validated(), [
             'channel_id' => $user->type->is(UserType::SALES) ? $user->channel_id : ($request->validated()['channel_id'] ?? null),
@@ -200,6 +204,10 @@ class LeadController extends BaseApiController
 
         if (!is_null($lead->channel_id)) $lead->queueStatusChange();
         $lead->refresh()->loadMissing(self::load_relation);
+
+        if ($request->vouchers && count($request->vouchers) > 0) {
+            CoreService::createAndAssignVoucher(Customer::findOrFail($request->customer_id), $request->vouchers, $lead->channel->company_id);
+        }
 
         return $this->show($lead);
     }

@@ -27,6 +27,12 @@ class PreviewOrderRequest extends BaseApiRequest
                     // Schema::string('location_id')
                 ),
             ),
+            Schema::array('vouchers')->items(
+                Schema::object()->properties(
+                    Schema::integer('id')->example(1)->description('Voucher id'),
+                    Schema::integer('value')->example(1000000)->description('Voucher value in nominal'),
+                ),
+            )->nullable(),
             Schema::array('discount_ids')->example([1, 2, 3]),
             // Schema::integer('discount_id')->example(1),
             Schema::integer('interior_design_id')->example(1),

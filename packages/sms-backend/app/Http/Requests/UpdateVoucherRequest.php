@@ -19,15 +19,14 @@ class UpdateVoucherRequest extends FormRequest
         $voucher = $this->route('voucher');
 
         return [
+            'id'              => [
+                'nullable',
+                'unique:vouchers,id,' . $voucher->id,
+                'string',
+            ],
             'description'                  => [
                 'string',
                 'nullable',
-            ],
-            'code'              => [
-                'nullable',
-                'unique:vouchers,code,' . $voucher->id,
-                'string',
-                'min:4',
             ],
             'value'                        => [
                 'required',

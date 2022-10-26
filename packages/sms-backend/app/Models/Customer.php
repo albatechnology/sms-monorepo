@@ -18,6 +18,7 @@ class Customer extends BaseModel
         'Mr.'  => 'Mr.',
         'Mrs.' => 'Mrs.',
         'Ms.'  => 'Ms.',
+        'PT.'  => 'PT.',
     ];
 
     public $table = 'customers';
@@ -50,6 +51,11 @@ class Customer extends BaseModel
         'date_of_birth'      => 'date',
         'title'              => PersonTitle::class,
     ];
+
+    public function vouchers()
+    {
+        return $this->belongsToMany(Voucher::class, 'customer_vouchers', 'customer_id');
+    }
 
     public function customerLeads()
     {

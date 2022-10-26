@@ -272,8 +272,21 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('discounts', 'DiscountController');
 
     Route::delete('vouchers/destroy', [VoucherController::class, 'massDestroy'])->name('vouchers.massDestroy');
-    Route::get('vouchers/get-vouchers/{companyId?}', [DiscountController::class, 'getVoucher']);
+    Route::get('vouchers/get-vouchers/{companyId?}', [VoucherController::class, 'getVouchers']);
     Route::resource('vouchers', 'VoucherController');
+
+    // Route::group(['prefix' => 'vouchers/', 'as' => 'vouchers.'], function () {
+    //     Route::delete('destroy', [VoucherController::class, 'massDestroy'])->name('massDestroy');
+    //     Route::get('get-vouchers/{companyId?}', [VoucherController::class, 'getVouchers']);
+
+    //     Route::get('/', [VoucherController::class, 'index'])->name('index');
+    //     Route::get('/create', [VoucherController::class, 'create'])->name('create');
+    //     Route::post('/', [VoucherController::class, 'store'])->name('store');
+    //     Route::get('/{code}', [VoucherController::class, 'show'])->name('show');
+    //     Route::get('/{code}/edit', [VoucherController::class, 'edit'])->name('edit');
+    //     Route::put('/{code}', [VoucherController::class, 'update'])->name('update');
+    //     Route::delete('/{code}', [VoucherController::class, 'destroy'])->name('destroy');
+    // });
 
     // User Alerts
     Route::delete('user-alerts/destroy', [UserAlertsController::class, 'massDestroy'])->name('user-alerts.massDestroy');

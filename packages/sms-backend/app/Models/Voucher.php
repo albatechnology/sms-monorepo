@@ -10,8 +10,10 @@ class Voucher extends BaseModel implements Tenanted
 {
     use SoftDeletes, IsCompanyTenanted;
     public $table = 'vouchers';
+    // protected $primaryKey = 'id';
+
     protected $fillable = [
-        'code',
+        'id',
         'description',
         'value',
         'start_time',
@@ -22,6 +24,7 @@ class Voucher extends BaseModel implements Tenanted
     ];
 
     protected $casts = [
+        'id' => 'string',
         'value' => 'integer',
         // 'start_time',
         // 'end_time',

@@ -50,6 +50,9 @@ class VoucherController extends Controller
             $table->editColumn('is_active', function ($row) {
                 return $row->is_active == 1 ? '<i class="fa fa-check text-green"></i>' : '<i class="fa fa-ban text-danger"></i>';
             });
+            $table->editColumn('value', function ($row) {
+                return rupiah($row->value);
+            });
             $table->addColumn('company', function ($row) {
                 return $row->company?->name ?? '-';
             });
@@ -77,7 +80,7 @@ class VoucherController extends Controller
         return redirect()->route('admin.vouchers.index')->with('message', 'Voucher created successfully');
     }
 
-    public function edit(voucher $voucher)
+    public function edit(Voucher $voucher)
     {
         abort_if(Gate::denies('voucher_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
@@ -86,14 +89,14 @@ class VoucherController extends Controller
         return view('admin.vouchers.edit', compact('companies', 'voucher'));
     }
 
-    public function update(UpdateVoucherRequest $request, voucher $voucher)
+    public function update(UpdateVoucherRequest $request, Voucher $voucher)
     {
         $voucher->update($request->validated());
 
         return redirect()->route('admin.vouchers.index')->with('message', 'Voucher updated successfully');
     }
 
-    public function show(voucher $voucher)
+    public function show(Voucher $voucher)
     {
         abort_if(Gate::denies('voucher_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
@@ -102,7 +105,7 @@ class VoucherController extends Controller
         return view('admin.vouchers.show', compact('voucher'));
     }
 
-    public function destroy(voucher $voucher)
+    public function destroy(Voucher $voucher)
     {
         abort_if(Gate::denies('voucher_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
