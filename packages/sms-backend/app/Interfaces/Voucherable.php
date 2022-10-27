@@ -21,17 +21,17 @@ interface Voucherable
      * Voucherable model
      * @return Collection
      */
-    public function getVoucherableLines(): ?Collection;
+    // public function getVoucherableLines(): ?Collection;
 
-    public function updatePricesFromItemLine();
+    // public function updatePricesFromItemLine();
 
     public function getCustomerId(): int;
 
     public function getId(): ?int;
 
-    public function getTotalPrice(): int;
+    public function getTotalPriceVoucher(): int;
 
-    public function setTotalPrice(int $price);
+    public function setTotalPriceVoucher(int $price);
 
     public function getSumTotalVoucher(): int;
     public function getTotalVoucher(): int;

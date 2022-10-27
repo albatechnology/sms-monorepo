@@ -210,6 +210,7 @@ class OrderController extends BaseApiController
     #[CustomOpenApi\Response(resource: OrderResource::class, statusCode: 200)]
     public function preview(PreviewOrderRequest $request): OrderResource
     {
+        // dd($request->validated());
         $order = app(Pipeline::class)
             ->send(Order::make(['raw_source' => $request->all()]))
             ->through(

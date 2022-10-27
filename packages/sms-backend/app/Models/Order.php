@@ -25,6 +25,7 @@ use App\Services\OrderService;
 use App\Traits\Auditable;
 use App\Traits\IsCompanyTenanted;
 use App\Traits\IsDiscountable;
+use App\Traits\IsVoucherable;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -40,7 +41,7 @@ use function PHPUnit\Framework\returnSelf;
  */
 class Order extends BaseModel implements Tenanted, Discountable, Reportable, Voucherable
 {
-    use SoftDeletes, Auditable, IsCompanyTenanted, IsDiscountable;
+    use SoftDeletes, Auditable, IsCompanyTenanted, IsDiscountable, IsVoucherable;
 
     public $table = 'orders';
 

@@ -14,10 +14,10 @@ trait IsVoucherable
 {
 
     // region SETTER AND GETTERS
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    // public function getId(): ?int
+    // {
+    //     return $this->id;
+    // }
 
     /**
      * @param Voucher $voucher
@@ -52,11 +52,11 @@ trait IsVoucherable
     // {
     //     $item_lines = $this->getVoucherableLines();
 
-    //     $this->setTotalPrice($item_lines->sum(fn(VoucherableLine $line) => $line->getTotalPrice()));
+    //     $this->setTotalPriceVoucher($item_lines->sum(fn(VoucherableLine $line) => $line->getTotalPriceVoucher()));
     //     $this->setTotalVoucher($item_lines->sum(fn(VoucherableLine $line) => $line->getTotalVoucher()));
     // }
 
-    public function setTotalPrice(int $price)
+    public function setTotalPriceVoucher(int $price)
     {
         $this->total_price = $price;
     }
@@ -84,9 +84,9 @@ trait IsVoucherable
      */
     public function resetVoucherPrices()
     {
-        $this->checkInstance();
+        // $this->checkInstance();
 
-        $this->setTotalPrice($this->getTotalPrice() + $this->getTotalVoucher());
+        $this->setTotalPriceVoucher($this->getTotalPriceVoucher() + $this->getTotalVoucher());
         $this->setTotalVoucher(0);
         $this->setSumTotalVoucher(0);
 
@@ -101,22 +101,22 @@ trait IsVoucherable
      */
     public function resetVoucher()
     {
-        $this->checkInstance();
+        // $this->checkInstance();
         $this->resetVoucherPrices();
 
         // $this->voucher    = null;
         // $this->voucher_id = null;
     }
 
-    protected function checkInstance()
-    {
-        // if (!$this instanceof Voucherable && !$this instanceof VoucherableLine) {
-        if (!$this instanceof Voucherable) {
-            throw new Exception('Voucher applied to non Voucherable class.');
-        }
-    }
+    // protected function checkInstance()
+    // {
+    //     // if (!$this instanceof Voucherable && !$this instanceof VoucherableLine) {
+    //     if (!$this instanceof Voucherable) {
+    //         throw new Exception('Voucher applied to non Voucherable class.');
+    //     }
+    // }
 
-    public function getTotalPrice(): int
+    public function getTotalPriceVoucher(): int
     {
         return $this->total_price ?? 0;
     }
