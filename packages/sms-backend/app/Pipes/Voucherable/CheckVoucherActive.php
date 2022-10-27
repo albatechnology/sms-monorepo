@@ -23,7 +23,6 @@ class CheckVoucherActive
             $voucherable->setVoucherError(VoucherError::INACTIVE());
             return $voucherable;
         }
-
         return $next($voucherable);
     }
 }

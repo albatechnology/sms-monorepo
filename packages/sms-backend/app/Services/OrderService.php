@@ -34,6 +34,7 @@ use App\Pipes\Discountable\SyncSumDiscount;
 use App\Pipes\Order\AddAdditionalDiscount;
 use App\Pipes\Order\AddAdditionalFees;
 use App\Pipes\Order\ApplyDiscount;
+use App\Pipes\Order\ApplyVouchers;
 use App\Pipes\Order\CalculateCartDemand;
 // use App\Pipes\Order\CalculateStock;
 use App\Pipes\Order\CheckExpectedOrderPrice;
@@ -45,6 +46,7 @@ use App\Pipes\Order\ProcessInvoiceNumber;
 use App\Pipes\Order\SaveOrder;
 use App\Pipes\Order\SendDiscountApprovalNotification;
 use App\Pipes\Order\UpdateDiscountUse;
+use App\Pipes\Voucherable\CalculateVoucherForVoucherableClass;
 use App\Pipes\Voucherable\CheckVoucherActive;
 use App\Pipes\Voucherable\CheckVoucherMinOrderPrice;
 use Exception;
@@ -85,6 +87,25 @@ class OrderService
                 // dont let discount to be greater than the total price
                 $value = min($discount->value, $discountable->getTotalPrice());
             }
+        }
+
+        return $value ?? 0;
+    }
+
+    /**
+     * Calculate the Voucher price for a given Voucherable class.
+     *
+     * @param Voucherable $voucherable
+     * @param Voucher $voucher
+     * @return int
+     * @throws Exception
+     */
+    public static function calculateTotalVoucher(Voucherable $voucherable, Voucher $voucher, bool $setSumTotalVoucher = true): int
+    {
+        if ($setSumTotalVoucher) {
+            $value = $voucherable->getTotalVoucher() + $voucher->value;
+        } else {
+            $value = min($voucher->value, $voucherable->getTotalPriceVoucher());
         }
 
         return $value ?? 0;
@@ -141,7 +162,7 @@ class OrderService
                 // SyncSumVoucher::class,
                 // CheckMaxVoucherLimit::class,
                 // CheckVoucherApplied::class,
-                CalculateVoucherCascadeForVoucherableLine::class,
+                // CalculateVoucherCascadeForVoucherableLine::class,
             ])
             ->thenReturn();
     }
@@ -238,6 +259,7 @@ class OrderService
 
                     // apply discount
                     ApplyDiscount::class,
+                    ApplyVouchers::class,
                     // calculateCartDemand
                     CalculateCartDemand::class,
                     AddAdditionalDiscount::class,

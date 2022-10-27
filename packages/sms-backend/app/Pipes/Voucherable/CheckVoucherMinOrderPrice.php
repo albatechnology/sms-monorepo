@@ -17,12 +17,11 @@ class CheckVoucherMinOrderPrice
     {
         if (!$voucher = $voucherable->getVoucher()) return $next($voucherable);
 
-        if (!is_null($voucher->min_order_price) && $voucherable->getTotalPrice() < $voucher->min_order_price) {
+        if (!is_null($voucher->min_order_price) && $voucherable->getTotalPriceVoucher() < $voucher->min_order_price) {
             $voucherable->resetVoucher();
             $voucherable->setVoucherError(VoucherError::UNDER_MINIMUM_PRICE());
             return $voucherable;
         }
-
         return $next($voucherable);
     }
 }

@@ -45,6 +45,8 @@ class FillOrderAttributes
         $order->interior_design_id             = $order->raw_source['interior_design_id'] ?? null;
         $order->sum_total_discount             = 0;
         $order->total_discount                 = 0;
+        // $order->sum_total_voucher             = 0;
+        $order->total_voucher                 = 0;
         $order->status                         = OrderStatus::QUOTATION();
         $order->stock_status                   = OrderStockStatus::INDENT();
         $order->approval_status                = OrderApprovalStatus::NOT_REQUIRED();

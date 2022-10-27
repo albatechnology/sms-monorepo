@@ -259,6 +259,9 @@ class CustomQueryBuilder extends QueryBuilder
                 ],
             ],
             CustomerVoucher::class            => [
+                self::id('customer_id'),
+                self::scope('lead_id', 'whereLeadId', 1),
+                self::scope('company_id', 'whereCompanyId', 1),
                 self::scope('voucher_id', 'whereCodeLike', 'GratisOngkir'),
                 self::scope('start_time', 'whereStartTimeAfter', ApiDataExample::DATE),
                 self::scope('end_time', 'whereEndTimeBefore', ApiDataExample::DATE),

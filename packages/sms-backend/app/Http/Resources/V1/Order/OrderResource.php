@@ -30,6 +30,7 @@ class OrderResource extends BaseResource
             ResourceData::make('orlan_tr_no', Schema::TYPE_STRING, '125SSMV22093408')->nullable(),
             ResourceData::make('original_price', Schema::TYPE_INTEGER, 1),
             ResourceData::make('total_discount', Schema::TYPE_INTEGER, 1),
+            ResourceData::make('total_voucher', Schema::TYPE_INTEGER, 1),
             ResourceData::make('total_price', Schema::TYPE_INTEGER, 1),
             ResourceData::make('shipping_fee', Schema::TYPE_INTEGER, 0),
             ResourceData::make('packing_fee', Schema::TYPE_INTEGER, 0),

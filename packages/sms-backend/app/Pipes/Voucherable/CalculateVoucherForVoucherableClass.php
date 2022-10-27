@@ -24,11 +24,12 @@ class CalculateVoucherForVoucherableClass
     {
         if (!$voucher = $voucherable->getVoucher()) return $next($voucherable);
 
-        if ($voucher->applyToOrder()) {
+        // if ($voucher->applyToOrder()) {
             $voucherable->setSumTotalVoucher(OrderService::calculateTotalVoucher($voucherable, $voucher));
-            $voucherable->setTotalVoucher(OrderService::calculateTotalVoucher($voucherable, $voucher));
-            $voucherable->setTotalPrice($voucherable->getTotalPrice() - $voucherable->getTotalVoucher());
-        }
+            $voucherable->setTotalVoucher(OrderService::calculateTotalVoucher($voucherable, $voucher, false));
+            $voucherable->setTotalPriceVoucher($voucherable->getTotalPriceVoucher() - $voucherable->getTotalVoucher());
+        // }
+        // dump('CalculateVoucherForVoucherableClass');
 
         return $next($voucherable);
     }

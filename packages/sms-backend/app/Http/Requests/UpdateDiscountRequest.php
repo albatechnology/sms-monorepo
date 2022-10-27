@@ -23,7 +23,6 @@ class UpdateDiscountRequest extends FormRequest
         $companyId = $this->get('company_id');
 
         return [
-            'orlan_id' => 'required|string',
             'name'                         => [
                 'string',
                 'required',

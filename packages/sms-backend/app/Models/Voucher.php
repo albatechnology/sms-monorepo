@@ -26,8 +26,8 @@ class Voucher extends BaseModel implements Tenanted
     protected $casts = [
         'id' => 'string',
         'value' => 'integer',
-        // 'start_time',
-        // 'end_time',
+        'start_time' => 'date',
+        'end_time' => 'date',
         'is_active' => 'boolean',
         'min_order_price' => 'integer',
         'company_id' => 'integer',
@@ -50,7 +50,7 @@ class Voucher extends BaseModel implements Tenanted
 
     public function scopeWhereCodeLike($query, $key)
     {
-        return $query->orWhere('code', 'LIKE', "%" . $key . "%");
+        return $query->orWhere('id', 'LIKE', "%" . $key . "%");
     }
 
     public function scopeWhereStartTimeAfter($query, $datetime)
@@ -72,5 +72,13 @@ class Voucher extends BaseModel implements Tenanted
         }
 
         return true;
+    }
+
+    public function toRecord()
+    {
+        $data = $this->toArray();
+        unset($data['created_at'], $data['updated_at'], $data['deleted_at']);
+
+        return $data;
     }
 }

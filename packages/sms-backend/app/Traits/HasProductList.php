@@ -39,11 +39,11 @@ trait HasProductList
 
     public function getProductIdsAttribute()
     {
-        if (!$this->product_id_list) {
-            $this->product_id_list = $this->getProductsQueryFromList()->get('id')->pluck('id');
+        if (!$this->product_list_id) {
+            $this->product_list_id = $this->getProductsQueryFromList()->get('id')->pluck('id');
         }
 
-        return $this->product_id_list;
+        return $this->product_list_id;
     }
 
     public function getProductForeignKeyMap(): array

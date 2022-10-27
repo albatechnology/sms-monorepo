@@ -13,13 +13,6 @@
 		@endif
 		<span class="help-block">{{ trans('cruds.generic.fields.company_helper') }}</span>
 	</div>
-    <div class="form-group">
-        <label for="orlan_id" class="required">Orlansoft ID (Promo type)</label>
-        <input class="form-control {{ $errors->has('orlan_id') ? 'is-invalid' : '' }}" type="text" name="orlan_id" id="orlan_id" value="{{ old('orlan_id', '') }}" required>
-        @if($errors->has('orlan_id'))
-            <span class="text-danger">{{ $errors->first('orlan_id') }}</span>
-        @endif
-    </div>
 	<x-input key='name' :model='app(\App\Models\Discount::class)'></x-input>
 	<x-input key='description' :model='app(\App\Models\Discount::class)' required="0"></x-input>
 	<x-enum key='type' :model='app(\App\Models\Discount::class)'></x-enum>

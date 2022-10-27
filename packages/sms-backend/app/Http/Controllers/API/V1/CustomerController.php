@@ -20,6 +20,7 @@ use App\Models\Customer;
 use App\Models\CustomerVoucher;
 use App\Models\Lead;
 use App\OpenApi\Customs\Attributes as CustomOpenApi;
+use App\OpenApi\Parameters\Customer\CustomerVouchersParameter;
 use App\OpenApi\Parameters\DefaultHeaderParameters;
 use App\OpenApi\Responses\Custom\GenericSuccessMessageResponse;
 use Exception;
@@ -247,11 +248,25 @@ class CustomerController extends BaseApiController
      *
      */
     #[CustomOpenApi\Operation(id: 'CustomerVouchers', tags: [Tags::Customer, Tags::V1])]
-    #[CustomOpenApi\Parameters(model: Customer::class)]
+    #[CustomOpenApi\Parameters(model: CustomerVoucher::class)]
     #[CustomOpenApi\Response(resource: CustomerVouchersResource::class, isCollection: true)]
-    public function customerVouchers(Customer $customer)
+    public function customerVouchers()
     {
-        $query = fn ($q) => $q->where('customer_id', $customer->id)->with('voucher');
+        $query = fn ($q) => $q->with('voucher');
         return CustomQueryBuilder::buildResource(CustomerVoucher::class, CustomerVouchersResource::class, $query, useDefaultSort: false);
     }
+    // /**
+    //  * Show all customer vouchers.
+    //  *
+    //  * Show all customer vouchers.
+    //  *
+    //  */
+    // #[CustomOpenApi\Operation(id: 'CustomerVouchers', tags: [Tags::Customer, Tags::V1])]
+    // #[CustomOpenApi\Parameters(model: Customer::class)]
+    // #[CustomOpenApi\Response(resource: CustomerVouchersResource::class, isCollection: true)]
+    // public function customerVouchers(Customer $customer)
+    // {
+    //     $query = fn ($q) => $q->where('customer_id', $customer->id)->with('voucher');
+    //     return CustomQueryBuilder::buildResource(CustomerVoucher::class, CustomerVouchersResource::class, $query, useDefaultSort: false);
+    // }
 }

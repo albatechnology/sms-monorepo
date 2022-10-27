@@ -4,7 +4,6 @@ namespace App\Pipes\Order;
 
 use App\Models\CartDemand;
 use App\Models\Order;
-// use App\Models\OrderDetail;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
@@ -48,7 +47,7 @@ class SaveOrder
             $order->save();
             $order->order_details()->saveMany($details);
             if ($order_discounts->count() > 0) $order->order_discounts()->saveMany($order_discounts);
-            if ($order_vouchers->count() > 0) $order->orderVouchers()->saveMany($order_vouchers);
+            if ($order_vouchers->count() > 0) $this->applyVouchers($order, $order_vouchers);
 
             $cartDemand = CartDemand::where('user_id', $order->user_id)->whereNotNull('items')->whereNotOrdered()->first();
             if ($cartDemand) $cartDemand->update(['order_id' => $order->id, 'created_at' => $order->created_at]);
@@ -68,5 +67,18 @@ class SaveOrder
         });
 
         return $next($order);
+    }
+
+    private function applyVouchers(Order $order, $vouchers)
+    {
+        if ($vouchers->count() > 0) {
+            $customer = $order->customer;
+            foreach ($vouchers as $voucher) {
+                $order->orderVouchers()->create(['voucher_id' => $voucher->id]);
+                $customer->vouchers()->updateExistingPivot($voucher->id, [
+                    'is_used' => true,
+                ]);
+            }
+        }
     }
 }

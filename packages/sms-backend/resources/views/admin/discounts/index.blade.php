@@ -21,7 +21,6 @@
                         <th>
                             {{ trans('cruds.discount.fields.id') }}
                         </th>
-                        <th width="10">Orlansoft ID</th>
                         <th>
                             {{ trans('cruds.discount.fields.name') }}
                         </th>
@@ -64,9 +63,6 @@
                         <td>
                         </td>
                         <x-filter-id></x-filter-id>
-                        <td>
-                            <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td>
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
@@ -156,10 +152,6 @@
                     {
                         data: 'id',
                         name: 'id'
-                    },
-                    {
-                        data: 'orlan_id',
-                        name: 'orlan_id'
                     },
                     {
                         data: 'name',

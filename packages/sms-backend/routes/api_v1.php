@@ -84,7 +84,7 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
     Route::get('/customers/find-by-phone', [CustomerController::class, 'getCustomerByPhone'])->name('customers.addresses.findByPhone');
     Route::post('/customers/addresses', [CustomerController::class, 'storeWithAddress'])->name('customers.addresses.store');
     Route::get('/customers/{customer}/leads', [CustomerController::class, 'getCustomerLeads'])->name('customers.leads');
-    Route::get('/customers/{customer}/vouchers', [CustomerController::class, 'customerVouchers'])->name('customers.vouchers');
+    Route::get('/customers/vouchers', [CustomerController::class, 'customerVouchers'])->name('customers.vouchers');
     Route::get('/customers/{customer}/activities', [CustomerController::class, 'getCustomerActivities'])->name('customers.activities');
     Route::resource('customers', CustomerController::class);
     Route::resource('addresses', AddressController::class);

@@ -7,7 +7,7 @@ use App\Enums\DiscountScope;
 use App\Enums\DiscountType;
 use App\Interfaces\Tenanted;
 use App\Traits\Auditable;
-use App\Traits\HasProductList;
+// use App\Traits\HasProductList;
 use App\Traits\IsCompanyTenanted;
 use Carbon\Carbon;
 use DateTimeInterface;
@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Discount extends BaseModel implements Tenanted
 {
-    use SoftDeletes, Auditable, IsCompanyTenanted, HasProductList;
+    use SoftDeletes, Auditable, IsCompanyTenanted;
 
     public $table = 'discounts';
 
