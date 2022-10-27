@@ -3,6 +3,9 @@
 namespace App\Pipes\Order;
 
 use App\Models\Order;
+use App\Models\OrderVoucher;
+use App\Models\Voucher;
+use App\Services\OrderService;
 use Closure;
 
 /**
@@ -13,18 +16,35 @@ class ApplyVouchers
 {
     public function handle(Order $order, Closure $next)
     {
-        if ($order->shipping_fee) {
-            $order->total_price += $order->shipping_fee;
+        $order_vouchers = collect([]);
+        if (isset($order->raw_source['voucher_ids']) && count($order->raw_source['voucher_ids']) > 0) {
+
+
+            $order_vouchers = collect($order->raw_source['voucher_ids'])->map(function ($voucher_id) use($order) {
+                $voucher = Voucher::findOrFail($voucher_id);
+                if($voucher){
+                    OrderService::setVoucher($order, $voucher);
+
+                    // if ($voucher = $order->getvoucher()) {
+                        $records             = $order->records;
+                        $records['vouchers'][] = $voucher->toRecord();
+                        $order->records      = $records;
+                    // }
+                    unset($order->voucher);
+
+                    $order_voucher = new OrderVoucher();
+                    $order_voucher->voucher_id = $voucher->id;
+                    return $order_voucher;
+                } else {
+                    return null;
+                }
+            });
+
         }
 
-        if ($order->packing_fee) {
-            $order->total_price += $order->packing_fee;
-        }
-
-        //floor last digit total_price
-        $total_price = $order->total_price - ($order->total_price % 10);
-        $order->total_price = (int) $total_price;
-
+        $order->order_vouchers = $order_vouchers;
+        $order->total_voucher = $order->tmp_total_voucher ?? 0;
+        unset($order->tmp_total_voucher);
         return $next($order);
     }
 }

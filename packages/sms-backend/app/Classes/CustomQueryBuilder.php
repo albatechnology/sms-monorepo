@@ -26,6 +26,7 @@ use App\Models\CompanyAccount;
 use App\Models\Covering;
 use App\Models\Customer;
 use App\Models\CustomerDeposit;
+use App\Models\CustomerVoucher;
 use App\Models\Discount;
 use App\Models\InteriorDesign;
 use App\Models\Lead;
@@ -56,6 +57,7 @@ use App\Models\SubLeadCategory;
 use App\Models\SupervisorType;
 use App\Models\Target;
 use App\Models\User;
+use App\Models\Voucher;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\Schema;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -243,6 +245,33 @@ class CustomQueryBuilder extends QueryBuilder
                 [
                     'key'    => 'has_activity',
                     'schema' => Schema::boolean('has_activity')->example(true),
+                ],
+            ],
+            Voucher::class            => [
+                self::scope('id', 'whereCodeLike', 'GratisOngkir'),
+                self::id('company_id'),
+                self::scope('start_time', 'whereStartTimeAfter', ApiDataExample::DATE),
+                self::scope('end_time', 'whereEndTimeBefore', ApiDataExample::DATE),
+                [
+                    'key'    => 'is_active',
+                    'data_format' => DataFormat::BOOLEAN,
+                    'schema' => Schema::boolean('is_active')->example(true),
+                ],
+            ],
+            CustomerVoucher::class            => [
+                self::scope('voucher_id', 'whereCodeLike', 'GratisOngkir'),
+                self::scope('start_time', 'whereStartTimeAfter', ApiDataExample::DATE),
+                self::scope('end_time', 'whereEndTimeBefore', ApiDataExample::DATE),
+                [
+                    'key'    => 'is_used',
+                    'schema' => Schema::boolean('is_used')->example(true),
+                ],
+                [
+                    'key'         => 'is_active',
+                    'alias'       => 'whereIsActive',
+                    'type'        => self::TYPE_SCOPE,
+                    'data_format' => DataFormat::BOOLEAN,
+                    'schema'      => Schema::boolean('is_active')->example(true),
                 ],
             ],
             CustomerDeposit::class            => [

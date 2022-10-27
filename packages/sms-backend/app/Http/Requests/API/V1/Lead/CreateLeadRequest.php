@@ -30,7 +30,7 @@ class CreateLeadRequest extends BaseApiRequest
 
             Schema::array('vouchers')->items(
                 Schema::object()->properties(
-                    Schema::integer('id')->example(1)->description('Voucher id'),
+                    Schema::string('id')->example("GratisOngkir")->description('Voucher id'),
                     Schema::integer('value')->example(1000000)->description('Voucher value in nominal'),
                 ),
             )->nullable(),
@@ -90,6 +90,8 @@ class CreateLeadRequest extends BaseApiRequest
             'product_brand_ids' => 'nullable|array',
             'product_brand_ids.*' => 'exists:product_brands,id',
             'vouchers' => 'nullable|array',
+            'vouchers.*.id' => 'string',
+            'vouchers.*.value' => 'integer',
         ];
     }
 

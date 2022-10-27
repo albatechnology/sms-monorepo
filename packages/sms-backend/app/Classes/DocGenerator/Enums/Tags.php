@@ -30,6 +30,7 @@ use BenSampo\Enum\Enum;
  * @method static static QaMessage()
  * @method static static User()
  * @method static static Location()
+ * @method static static Voucher()
  */
 final class Tags extends Enum
 {
@@ -68,6 +69,7 @@ final class Tags extends Enum
     public const Target           = 'Target';
     public const User             = 'User';
     public const Location         = 'Location';
+    public const Voucher         = 'Voucher';
 
     public static function getDescription($value): string
     {
@@ -82,6 +84,7 @@ final class Tags extends Enum
             self::SmsChannel => 'Application SMS channel',
             self::Product => 'Application product',
             self::Address => 'Customer address',
+            self::Voucher => 'Application Voucher',
             self::Rule => 'Endpoint that provides validation rule for another endpoint',
             default => self::getKey($value),
         };

@@ -12,10 +12,12 @@ use App\Http\Requests\API\V1\Customer\CreateCustomerWithAddressRequest;
 use App\Http\Requests\API\V1\Customer\UpdateCustomerRequest;
 use App\Http\Resources\V1\Activity\ActivityResource;
 use App\Http\Resources\V1\Customer\CustomerResource;
+use App\Http\Resources\V1\Customer\CustomerVouchersResource;
 use App\Http\Resources\V1\Lead\LeadResource;
 use App\Models\Activity;
 use App\Models\Address;
 use App\Models\Customer;
+use App\Models\CustomerVoucher;
 use App\Models\Lead;
 use App\OpenApi\Customs\Attributes as CustomOpenApi;
 use App\OpenApi\Parameters\DefaultHeaderParameters;
@@ -236,5 +238,20 @@ class CustomerController extends BaseApiController
         $customer = Customer::where('phone', request()->phone)->first();
 
         return response()->json(['success' => $customer ? true : false, 'customer' => $customer]);
+    }
+
+    /**
+     * Show all customer vouchers.
+     *
+     * Show all customer vouchers.
+     *
+     */
+    #[CustomOpenApi\Operation(id: 'CustomerVouchers', tags: [Tags::Customer, Tags::V1])]
+    #[CustomOpenApi\Parameters(model: Customer::class)]
+    #[CustomOpenApi\Response(resource: CustomerVouchersResource::class, isCollection: true)]
+    public function customerVouchers(Customer $customer)
+    {
+        $query = fn ($q) => $q->where('customer_id', $customer->id)->with('voucher');
+        return CustomQueryBuilder::buildResource(CustomerVoucher::class, CustomerVouchersResource::class, $query, useDefaultSort: false);
     }
 }

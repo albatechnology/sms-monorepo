@@ -34,6 +34,7 @@ use App\Http\Controllers\API\V1\OrderDetailController;
 use App\Http\Controllers\API\V1\OrlanOrderController;
 use App\Http\Controllers\API\V1\PromoCategoryController;
 use App\Http\Controllers\API\V1\SmsChannelController;
+use App\Http\Controllers\API\V1\VoucherController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -83,6 +84,7 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
     Route::get('/customers/find-by-phone', [CustomerController::class, 'getCustomerByPhone'])->name('customers.addresses.findByPhone');
     Route::post('/customers/addresses', [CustomerController::class, 'storeWithAddress'])->name('customers.addresses.store');
     Route::get('/customers/{customer}/leads', [CustomerController::class, 'getCustomerLeads'])->name('customers.leads');
+    Route::get('/customers/{customer}/vouchers', [CustomerController::class, 'customerVouchers'])->name('customers.vouchers');
     Route::get('/customers/{customer}/activities', [CustomerController::class, 'getCustomerActivities'])->name('customers.activities');
     Route::resource('customers', CustomerController::class);
     Route::resource('addresses', AddressController::class);
@@ -185,6 +187,10 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
         Route::post('cart-demands', [CartDemandController::class, 'sync'])->name('cart-demands.sync');
         Route::post('cart-demands/{cartDemand}/upload', [CartDemandController::class, 'uploadImage'])->name('cart-demands.uploadImage');
         Route::resource('cart-demands', CartDemandController::class)->only(['index', 'destroy']);
+
+        Route::get('vouchers', [VoucherController::class, 'index'])->name('vouchers.index');
+        Route::post('vouchers', [VoucherController::class, 'store'])->name('vouchers.store');
+        Route::get('vouchers/{voucher}', [VoucherController::class, 'show'])->name('vouchers.show');
 
         Route::get('discounts', [DiscountController::class, 'index'])->name('discounts.index');
         Route::get('discounts/{code}', [DiscountController::class, 'discountGetByCode'])->name('discounts.code');

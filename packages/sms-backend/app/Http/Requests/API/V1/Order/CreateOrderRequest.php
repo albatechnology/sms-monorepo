@@ -27,12 +27,7 @@ class CreateOrderRequest extends BaseApiRequest
                     // Schema::string('location_id')
                 ),
             ),
-            Schema::array('vouchers')->items(
-                Schema::object()->properties(
-                    Schema::integer('id')->example(1)->description('Voucher id'),
-                    Schema::integer('value')->example(1000000)->description('Voucher value in nominal'),
-                ),
-            )->nullable(),
+            Schema::array('voucher_ids')->example(['GratisOngkir', 'Clearance', 'CuciGudang']),
             Schema::array('discount_ids')->example([1, 2, 3]),
             // Schema::integer('discount_id')->example(1),
             Schema::integer('interior_design_id')->example(1),
@@ -90,13 +85,10 @@ class CreateOrderRequest extends BaseApiRequest
                 }
             ],
             'items.*.quantity' => [Rule::requiredIf(!empty(request()->input('items'))), 'integer', 'min:1'],
+            'voucher_ids' => 'nullable|array',
+            'voucher_ids.*' => 'string|exists:vouchers,id',
             'discount_ids' => 'nullable|array',
-            'discount_ids.*' => [
-                'required', 'integer', 'exists:discounts,id',
-            ],
-            // 'discount_id' => [
-            //     'nullable', 'integer', 'exists:discounts,id',
-            // ],
+            'discount_ids.*' => 'integer|exists:discounts,id',
             'interior_design_id'      => 'nullable|integer|exists:interior_designs,id',
             'expected_price'      => 'nullable|integer',
             'shipping_address_id' => [

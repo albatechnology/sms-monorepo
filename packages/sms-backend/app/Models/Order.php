@@ -20,6 +20,7 @@ use App\Events\OrderPaymentSettlement;
 use App\Interfaces\Discountable;
 use App\Interfaces\Reportable;
 use App\Interfaces\Tenanted;
+use App\Interfaces\Voucherable;
 use App\Services\OrderService;
 use App\Traits\Auditable;
 use App\Traits\IsCompanyTenanted;
@@ -37,7 +38,7 @@ use function PHPUnit\Framework\returnSelf;
 /**
  * @mixin IdeHelperOrder
  */
-class Order extends BaseModel implements Tenanted, Discountable, Reportable
+class Order extends BaseModel implements Tenanted, Discountable, Reportable, Voucherable
 {
     use SoftDeletes, Auditable, IsCompanyTenanted, IsDiscountable;
 
@@ -72,6 +73,8 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         'is_direct_purchase',
         'orlan_tr_no',
         'expected_shipping_datetime',
+        'total_discount',
+        'total_voucher',
     ];
 
     protected $dates = [
@@ -86,6 +89,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
     protected $casts = [
         'approved_by'               => 'integer',
         'total_discount'            => 'integer',
+        'total_voucher'            => 'integer',
         'total_price'               => 'integer',
         'user_id'                   => 'integer',
         'lead_id'                   => 'integer',
@@ -279,6 +283,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
     {
         return ($this->total_price ?? 0) +
             ($this->total_discount ?? 0) +
+            ($this->total_voucher ?? 0) +
             ($this->additional_discount ?? 0) -
             ($this->shipping_fee ?? 0) -
             ($this->packing_fee ?? 0);

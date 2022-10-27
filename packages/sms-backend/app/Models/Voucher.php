@@ -37,4 +37,40 @@ class Voucher extends BaseModel implements Tenanted
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
+
+    public function customerVouchers()
+    {
+        return $this->hasMany(CustomerVoucher::class, 'voucher_id');
+    }
+
+    public function scopeWhereIsActive($query, $value = true)
+    {
+        return $query->where('is_active', $value);
+    }
+
+    public function scopeWhereCodeLike($query, $key)
+    {
+        return $query->orWhere('code', 'LIKE', "%" . $key . "%");
+    }
+
+    public function scopeWhereStartTimeAfter($query, $datetime)
+    {
+        return $query->whereDate('start_time', '>=', date('Y-m-d', strtotime($datetime)));
+    }
+
+    public function scopeWhereEndTimeBefore($query, $datetime)
+    {
+        return $query->whereDate('end_time', '<=', date('Y-m-d', strtotime($datetime)));
+    }
+
+    public function isActiveNow(): bool
+    {
+        if (!$this->is_active) return false;
+        if (!is_null($this->start_time) && !is_null($this->end_time)) {
+            if (now()->isBefore($this->start_time)) return false;
+            if (!empty($this->end_time) && now()->isAfter($this->end_time)) return false;
+        }
+
+        return true;
+    }
 }

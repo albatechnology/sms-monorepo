@@ -13,6 +13,7 @@ use App\Exceptions\InvalidOrderCancellationException;
 use App\Interfaces\Discountable;
 use App\Interfaces\DiscountableBase;
 use App\Interfaces\DiscountableLine;
+use App\Interfaces\Voucherable;
 use App\Models\CustomerDiscountUse;
 use App\Models\Discount;
 use App\Models\Order;
@@ -20,6 +21,7 @@ use App\Models\OrderDetail;
 use App\Models\Payment;
 use App\Models\PaymentType;
 use App\Models\User;
+use App\Models\Voucher;
 use App\Pipes\Discountable\CalculateDiscountCascadeForDiscountableLine;
 use App\Pipes\Discountable\CalculateDiscountForDiscountableClass;
 use App\Pipes\Discountable\CalculateDiscountForDiscountableLineClass;
@@ -43,6 +45,8 @@ use App\Pipes\Order\ProcessInvoiceNumber;
 use App\Pipes\Order\SaveOrder;
 use App\Pipes\Order\SendDiscountApprovalNotification;
 use App\Pipes\Order\UpdateDiscountUse;
+use App\Pipes\Voucherable\CheckVoucherActive;
+use App\Pipes\Voucherable\CheckVoucherMinOrderPrice;
 use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Pipeline\Pipeline;
@@ -110,6 +114,34 @@ class OrderService
                 CheckMaxDiscountLimit::class,
                 CheckDiscountApplied::class,
                 CalculateDiscountCascadeForDiscountableLine::class,
+            ])
+            ->thenReturn();
+    }
+
+    /**
+     * Set a Voucher to a Voucherable model
+     *
+     * @param Voucherable $voucherable
+     * @param Voucher $voucher
+     */
+    public static function setVoucher(Voucherable $voucherable, Voucher $voucher)
+    {
+        // set Voucher, before it is ready to be processed in pipeline
+        // $voucherable->voucher_id = $voucher->id;
+        $voucherable->voucher    = $voucher;
+
+        app(Pipeline::class)
+            ->send($voucherable)
+            ->through([
+                CheckVoucherActive::class,
+                CheckVoucherMinOrderPrice::class,
+                // CheckVoucherUseLimit::class,
+                CalculateVoucherForVoucherableClass::class,
+                // CalculateVoucherForVoucherableLineClass::class,
+                // SyncSumVoucher::class,
+                // CheckMaxVoucherLimit::class,
+                // CheckVoucherApplied::class,
+                CalculateVoucherCascadeForVoucherableLine::class,
             ])
             ->thenReturn();
     }

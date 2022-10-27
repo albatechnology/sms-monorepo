@@ -20,9 +20,11 @@ class SaveOrder
     {
         $order = DB::transaction(function () use ($order) {
             $details = $order->order_details;
-            $order_discounts = $order->order_discounts;
+            $order_discounts = $order->order_discounts ?? collect([]);
+            $order_vouchers = $order->order_vouchers ?? collect([]);
             unset($order->order_details);
             unset($order->order_discounts);
+            unset($order->order_vouchers);
             unset($order->discount);
             unset($order->allowed_product_ids);
             unset($order->sum_total_discount);
@@ -45,7 +47,8 @@ class SaveOrder
 
             $order->save();
             $order->order_details()->saveMany($details);
-            $order->order_discounts()->saveMany($order_discounts);
+            if ($order_discounts->count() > 0) $order->order_discounts()->saveMany($order_discounts);
+            if ($order_vouchers->count() > 0) $order->orderVouchers()->saveMany($order_vouchers);
 
             $cartDemand = CartDemand::where('user_id', $order->user_id)->whereNotNull('items')->whereNotOrdered()->first();
             if ($cartDemand) $cartDemand->update(['order_id' => $order->id, 'created_at' => $order->created_at]);

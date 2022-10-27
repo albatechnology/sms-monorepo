@@ -276,16 +276,22 @@ class CoreService
         }
     }
 
-    public static function createAndAssignVoucher(Customer $customer, array $vouchers, $companyId = null)
+    public static function createVoucher(string $id, int $value, $companyId): void
+    {
+        Voucher::firstOrCreate(
+            ['id' => $id],
+            [
+                'value' => $value,
+                'company_id' => $companyId
+            ]
+        );
+    }
+
+    public static function createAndAssignVoucher(Customer $customer, array $vouchers, $companyId = null): void
     {
         foreach ($vouchers as $v) {
-            Voucher::firstOrCreate(
-                ['id' => $v['id']],
-                [
-                    'value' => $v['value'],
-                    'company_id' => $companyId ?? user()->company_id,
-                ]
-            );
+            self::createVoucher($v['id'], $v['value'], $companyId ?? user()->company_id);
+
             if ($customer->vouchers()->where('id', $v['id'])->doesntExist()) {
                 $customer->vouchers()->attach($v['id'], [
                     'is_used' => 0,
