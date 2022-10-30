@@ -26,6 +26,7 @@ use App\Pipes\Order\FillOrderRecord;
 use App\Pipes\Order\MakeOrderLines;
 use App\Pipes\Order\Update\UpdateAdditionalDiscount;
 use App\Pipes\Order\Update\UpdateApplyDiscount;
+use App\Pipes\Order\Update\UpdateApplyVouchers;
 use App\Pipes\Order\Update\UpdateOrderLines;
 use App\Services\OrderService;
 use Exception;
@@ -118,6 +119,7 @@ class OrderController extends BaseApiController
                 [
                     UpdateOrderLines::class,
                     UpdateApplyDiscount::class,
+                    UpdateApplyVouchers::class,
                     CalculateCartDemand::class,
                     UpdateAdditionalDiscount::class,
                     AddAdditionalFees::class,
@@ -155,6 +157,7 @@ class OrderController extends BaseApiController
                 [
                     UpdateOrderLines::class,
                     UpdateApplyDiscount::class,
+                    UpdateApplyVouchers::class,
                     CalculateCartDemand::class,
                     UpdateAdditionalDiscount::class,
                     AddAdditionalFees::class,

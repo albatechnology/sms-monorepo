@@ -3,8 +3,8 @@
 namespace App\Pipes\Order\Admin;
 
 use App\Models\CartDemand;
+use App\Models\CustomerVoucher;
 use App\Models\Order;
-use App\Models\OrderDetail;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
@@ -20,9 +20,11 @@ class SaveOrder
     {
         $order = DB::transaction(function () use ($order) {
             $details = $order->order_details;
-            $order_discounts = $order->order_discounts;
+            $order_discounts = $order->order_discounts ?? collect([]);
+            $order_vouchers = $order->order_vouchers ?? collect([]);
             unset($order->order_details);
             unset($order->order_discounts);
+            unset($order->order_vouchers);
             unset($order->discount);
             unset($order->allowed_product_ids);
             unset($order->sum_total_discount);
@@ -40,7 +42,8 @@ class SaveOrder
                 $detail->save();
             }
 
-            $order->order_discounts()->saveMany($order_discounts);
+            if ($order_discounts->count() > 0) $order->order_discounts()->saveMany($order_discounts);
+            $this->applyVouchers($order, $order_vouchers);
 
             $cartDemand = CartDemand::where('user_id', $order->user_id)->whereNotNull('items')->whereNotOrdered()->first();
             if ($cartDemand) $cartDemand->update(['order_id' => $order->id, 'created_at' => $order->created_at]);
@@ -60,5 +63,24 @@ class SaveOrder
         });
 
         return $next($order);
+    }
+
+    private function applyVouchers(Order $order, $vouchers)
+    {
+        $orderVouchers = $order->orderVouchers;
+        $customer = $order->customer;
+
+        if($orderVouchers->count() > 0) $order->orderVouchers()->delete();
+
+        $customer->vouchers()->where('customer_id', $customer->id)->whereIn('voucher_id', $orderVouchers?->pluck('voucher_id') ?? [])->update(['is_used' => 0]);
+
+        if ($vouchers->count() > 0) {
+            foreach ($vouchers as $voucher) {
+                $order->orderVouchers()->create(['voucher_id' => $voucher->id]);
+                $customer->vouchers()->updateExistingPivot($voucher->id, [
+                    'is_used' => true,
+                ]);
+            }
+        }
     }
 }

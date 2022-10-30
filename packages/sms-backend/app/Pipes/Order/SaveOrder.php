@@ -71,14 +71,12 @@ class SaveOrder
 
     private function applyVouchers(Order $order, $vouchers)
     {
-        if ($vouchers->count() > 0) {
-            $customer = $order->customer;
-            foreach ($vouchers as $voucher) {
-                $order->orderVouchers()->create(['voucher_id' => $voucher->id]);
-                $customer->vouchers()->updateExistingPivot($voucher->id, [
-                    'is_used' => true,
-                ]);
-            }
+        $customer = $order->customer;
+        foreach ($vouchers as $voucher) {
+            $order->orderVouchers()->create(['voucher_id' => $voucher->id]);
+            $customer->vouchers()->updateExistingPivot($voucher->id, [
+                'is_used' => true,
+            ]);
         }
     }
 }

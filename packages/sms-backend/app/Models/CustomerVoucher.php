@@ -4,10 +4,12 @@ namespace App\Models;
 
 class CustomerVoucher extends BaseModel
 {
+    protected $guarded = [];
     protected $casts = [
         'customer_id' => 'integer',
         'is_used' => 'boolean',
     ];
+    public $timestamps = false;
 
     public function voucher()
     {

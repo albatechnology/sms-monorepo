@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Pipes\Order;
+namespace App\Pipes\Order\Update;
 
 use App\Models\Order;
 use App\Models\Voucher;
@@ -10,7 +10,7 @@ use Closure;
  * Class ApplyVouchers
  * @package App\Pipes\Order
  */
-class ApplyVouchers
+class UpdateApplyVouchers
 {
     // public function handle(Order $order, Closure $next)
     // {
@@ -47,9 +47,9 @@ class ApplyVouchers
 
     public function handle(Order $order, Closure $next)
     {
-        if (isset($order->raw_source['voucher_ids']) && count($order->raw_source['voucher_ids']) > 0) {
-
-            $vouchers = Voucher::whereHas('customerVouchers', fn ($q) => $q->whereIn('voucher_id', $order->raw_source['voucher_ids'])->where('is_used', 0))
+        $order->total_voucher = 0;
+        if (isset(request()->voucher_ids) && count(request()->voucher_ids) > 0) {
+            $vouchers = Voucher::whereHas('customerVouchers', fn ($q) => $q->whereIn('voucher_id', request()->voucher_ids))
                 ->whereIsActive()
                 // ->whereStartTimeAfter(now())
                 // ->whereEndTimeBefore(now())

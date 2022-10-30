@@ -305,7 +305,7 @@ class LeadController extends BaseApiController
                 return $q->whereHas('productBrands', fn ($q) => $q->whereIn('product_brand_id', $user->getMyBrandIds())->where('is_available', 1))
                     ->where('channel_id', $user->channel_id)->whereParent()->unhandled()->with(self::load_relation)->groupBy('leads.id');
             } elseif ($user->type->is(UserType::SUPERVISOR) && $user->supervisor_type_id == 1) {
-                return $q->where(fn ($q) => $q->whereNull('channel_id')->orWhereIn('channel_id', $user->channels->pluck('id')))->whereParent()->unhandled()->with(self::load_relation);
+                return $q->where(fn ($q) => $q->whereNull('channel_id')->orWhereIn('channel_id', $user->channels->pluck('id')))->whereParent()->unhandled()->where('user_id', '!=', $user->id)->with(self::load_relation);
             } else {
                 return $q->myLeads()->whereChilds()->unhandled()->assignable()->with(self::load_relation);
             }
