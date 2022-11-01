@@ -351,7 +351,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable, Vou
             $orderIsQuotation = $this->status->is(OrderStatus::QUOTATION);
 
             $paymentIsSettlement = $this->payment_status->in([
-                OrderPaymentStatus::SETTLEMENT, OrderPaymentStatus::OVERPAYMENT
+                OrderPaymentStatus::PARTIAL, OrderPaymentStatus::DOWN_PAYMENT, OrderPaymentStatus::SETTLEMENT, OrderPaymentStatus::OVERPAYMENT
             ]);
 
             $paymentIsDownPayment = $this->payment_status->in([
@@ -362,9 +362,9 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable, Vou
                 OrderPaymentSettlement::dispatch($this);
             }
 
-            if ($orderIsQuotation && $paymentIsDownPayment) {
-                OrderPaymentDownPayment::dispatch($this);
-            }
+            // if ($orderIsQuotation && $paymentIsDownPayment) {
+            //     OrderPaymentDownPayment::dispatch($this);
+            // }
 
             // set as deal
             if ($orderIsQuotation && ($paymentIsDownPayment || $paymentIsSettlement) && is_null($this->deal_at)) {

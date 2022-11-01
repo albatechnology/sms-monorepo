@@ -109,22 +109,22 @@ class Lead extends BaseModel implements Tenanted, HasMedia
             }
 
             // when a lead is closed as a sale, close other lead in the group
-            if (
-                $model->getOriginal('type') !== $model->type
-                && $model->type->is(LeadType::DEAL)
-                && $model->status->is(LeadStatus::SALES)
-            ) {
-                // do a mass update to avoid recursive update
-                Lead::query()
-                    ->where('id', '<>', $model->id)
-                    ->where('group_id', $model->group_id)
-                    ->update(
-                        [
-                            'type'   => LeadType::DEAL,
-                            'status' => LeadStatus::OTHER_SALES
-                        ]
-                    );
-            }
+            // if (
+            //     $model->getOriginal('type') !== $model->type
+            //     && $model->type->is(LeadType::DEAL)
+            //     && $model->status->is(LeadStatus::SALES)
+            // ) {
+            //     // do a mass update to avoid recursive update
+            //     Lead::query()
+            //         ->where('id', '<>', $model->id)
+            //         ->where('group_id', $model->group_id)
+            //         ->update(
+            //             [
+            //                 'type'   => LeadType::DEAL,
+            //                 'status' => LeadStatus::OTHER_SALES
+            //             ]
+            //         );
+            // }
 
             if ($model->isDirty('status') || $model->isDirty('type')) {
                 $model->addStatusHistory();

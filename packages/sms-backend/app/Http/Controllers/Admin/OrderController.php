@@ -296,8 +296,8 @@ class OrderController extends Controller
 
         $total_amount = OrderService::getTotalPaymentAmount($order);
 
-        $showCreateSOButton = OrderService::validateCreateManualSO($order);
-        return view('admin.orders.show', compact('order', 'total_amount', 'showCreateSOButton'));
+        // $showCreateSOButton = OrderService::validateCreateManualSO($order);
+        return view('admin.orders.show', compact('order', 'total_amount'));
     }
 
     public function destroy(Order $order)

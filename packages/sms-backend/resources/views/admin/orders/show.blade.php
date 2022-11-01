@@ -13,12 +13,12 @@
                 </div>
                 <table class="table table-bordered table-striped">
                     <tbody>
-                        <tr>
+                        {{-- <tr>
                             <th>Orlan TrNo (SO)</th>
                             <td>
                                 {{ $order->orlan_tr_no }}
                             </td>
-                        </tr>
+                        </tr> --}}
                         <tr>
                             <th>
                                 {{ trans('cruds.order.fields.invoice_number') }}
@@ -185,12 +185,12 @@
                     <a class="btn btn-default" href="{{ route('admin.orders.index') }}">
                         {{ trans('global.back_to_list') }}
                     </a>
-                    @if ($showCreateSOButton['status'] === true)
+                    {{-- @if ($showCreateSOButton['status'] === true)
                     <form action="{{ route('admin.orders.createSoOrlan', $order->id) }}" method="post" class="d-inline form-loading">
                         @csrf
                         <button type="submit" class="btn btn-danger">Create SO Orlansoft</button>
                     </form>
-                    @endif
+                    @endif --}}
                 </div>
             </div>
         </div>

@@ -24,7 +24,7 @@
                         <th width="30">
                             {{ trans('cruds.order.fields.id') }}
                         </th>
-                        <th>Orlan TrNo</th>
+                        {{-- <th>Orlan TrNo</th> --}}
                         <th>
                             {{ trans('cruds.order.fields.invoice_number') }}
                         </th>
@@ -76,9 +76,9 @@
                             <input class="search w-100" type="text" strict="true"
                                 placeholder="{{ trans('global.search') }}">
                         </td>
-                        <td>
+                        {{-- <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td>
+                        </td> --}}
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
@@ -179,7 +179,7 @@
                         data: 'id',
                         name: 'id'
                     },
-                    {data: 'orlan_tr_no', name: 'orlan_tr_no'},
+                    // {data: 'orlan_tr_no', name: 'orlan_tr_no'},
                     {
                         data: 'invoice_number',
                         name: 'invoice_number'

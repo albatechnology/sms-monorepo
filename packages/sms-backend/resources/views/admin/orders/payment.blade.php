@@ -22,13 +22,13 @@
 						@endphp
 						@foreach($order->orderOrderDetails as $o)
 						@php
-						$subtotal = $o->product_unit->price*$o->quantity;
+						$subtotal = $o->product->price*$o->quantity;
 						$total += $subtotal;
 						@endphp
 						<tr>
 							<td>{{ $o->quantity }}</td>
-							<td>{{ $o->product_unit->name }}</td>
-							<td>{{ number_format($o->product_unit->price) }}</td>
+							<td>{{ $o->product->name }}</td>
+							<td>{{ number_format($o->product->price) }}</td>
 							<td>{{ number_format($subtotal) }}</td>
 						</tr>
 						@endforeach

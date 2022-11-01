@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Classes\CustomQueryBuilder;
 use App\Classes\DocGenerator\Enums\Tags;
 use App\Classes\DocGenerator\OpenApi\GetFrontEndFormResponse;
+use App\Exceptions\LeadIsUnassignedException;
 use App\Exceptions\UnauthorisedTenantAccessException;
 use App\Http\Requests\API\V1\Activity\CreateActivityRequest;
 use App\Http\Requests\API\V1\Activity\UpdateActivityRequest;
@@ -132,6 +133,7 @@ class ActivityController extends BaseApiController
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
+            throw new LeadIsUnassignedException();
         }
 
         return $this->show($activity->refresh());

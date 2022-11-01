@@ -193,105 +193,105 @@ class PaymentController extends Controller
          * 1. create sales order sekaligus sales invoice ketika pembayaran >= 50%
          * 2. setelah pembayaran >= 50%, setiap ada pembayaran create sales invoice
          */
-        $order = $payment->order;
-        if ($payment->status->isNot(PaymentStatus::REJECTED)) {
-            if ($order->payment_status->is(OrderPaymentStatus::DOWN_PAYMENT)) {
-                // jika status pembayaran masih SETTLEMENT, tapi sudah pernah create sales order
-                if ($order->orlan_tr_no != null && $order->orlan_tr_no != '') {
-                    // create sales invoice
+        // $order = $payment->order;
+        // if ($payment->status->isNot(PaymentStatus::REJECTED)) {
+        //     if ($order->payment_status->is(OrderPaymentStatus::DOWN_PAYMENT)) {
+        //         // jika status pembayaran masih SETTLEMENT, tapi sudah pernah create sales order
+        //         if ($order->orlan_tr_no != null && $order->orlan_tr_no != '') {
+        //             // create sales invoice
 
-                    try {
-                        $salesInvoice = Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/salesInvoice/' . $order->orlan_tr_no . '/' . $payment->id . '/' . $payment->amount);
-                        $salesInvoiceResult = $salesInvoice?->json();
-                        if (isset($salesInvoiceResult) && !is_null($salesInvoiceResult)) {
-                            $message .= '. ' . $salesInvoiceResult['message'] ?? '';
-                        } else {
-                            $payment->refresh();
-                            $message = 'Sales Invoice with TrNo #' . $payment->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Invoice failed to created. Please check in Orlansoft';
-                        }
-                    } catch (\Throwable $th) {
-                        $message .= '. Failed to create Sales Invoice.';
-                    }
-                } else {
-                    // create sales order
+        //             try {
+        //                 $salesInvoice = Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/salesInvoice/' . $order->orlan_tr_no . '/' . $payment->id . '/' . $payment->amount);
+        //                 $salesInvoiceResult = $salesInvoice?->json();
+        //                 if (isset($salesInvoiceResult) && !is_null($salesInvoiceResult)) {
+        //                     $message .= '. ' . $salesInvoiceResult['message'] ?? '';
+        //                 } else {
+        //                     $payment->refresh();
+        //                     $message = 'Sales Invoice with TrNo #' . $payment->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Invoice failed to created. Please check in Orlansoft';
+        //                 }
+        //             } catch (\Throwable $th) {
+        //                 $message .= '. Failed to create Sales Invoice.';
+        //             }
+        //         } else {
+        //             // create sales order
 
-                    try {
-                        $salesOrder = Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/' . $order->id);
-                        $salesOrderResult = $salesOrder?->json();
-                        if (isset($salesOrderResult) && !is_null($salesOrderResult)) {
-                            $message .= '. ' . $salesOrderResult['message'] ?? '';
-                        } else {
-                            $order->refresh();
-                            $message = 'Sales Order with TrNo #' . $order->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Order failed to created. Please check in Orlansoft';
-                        }
-                    } catch (\Throwable $th) {
-                        $message .= '. Failed to create Sales Order.';
-                    }
+        //             try {
+        //                 $salesOrder = Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/' . $order->id);
+        //                 $salesOrderResult = $salesOrder?->json();
+        //                 if (isset($salesOrderResult) && !is_null($salesOrderResult)) {
+        //                     $message .= '. ' . $salesOrderResult['message'] ?? '';
+        //                 } else {
+        //                     $order->refresh();
+        //                     $message = 'Sales Order with TrNo #' . $order->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Order failed to created. Please check in Orlansoft';
+        //                 }
+        //             } catch (\Throwable $th) {
+        //                 $message .= '. Failed to create Sales Order.';
+        //             }
 
-                    $order->refresh();
-                    // create sales invoice
-                    $paymentsToInsert = $order->orderPayments()->where('id', $payment->id)->orWhere(fn ($q) => $q->where('order_id', $payment->order_id)->where('created_at', '<', $payment->created_at)->where('status', 1))->orderBy('created_at')->get();
-                    if (count($paymentsToInsert) > 0) {
-                        foreach ($paymentsToInsert as $payment) {
+        //             $order->refresh();
+        //             // create sales invoice
+        //             $paymentsToInsert = $order->orderPayments()->where('id', $payment->id)->orWhere(fn ($q) => $q->where('order_id', $payment->order_id)->where('created_at', '<', $payment->created_at)->where('status', 1))->orderBy('created_at')->get();
+        //             if (count($paymentsToInsert) > 0) {
+        //                 foreach ($paymentsToInsert as $payment) {
 
-                            try {
-                                $salesInvoice = Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/salesInvoice/' . $order->orlan_tr_no . '/' . $payment->id . '/' . $payment->amount);
-                                $salesInvoiceResult = $salesInvoice?->json();
-                                if (isset($salesInvoiceResult) && !is_null($salesInvoiceResult)) {
-                                    $message .= '. ' . $salesInvoiceResult['message'] ?? '';
-                                } else {
-                                    $payment->refresh();
-                                    $message = 'Sales Invoice with TrNo #' . $payment->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Invoice failed to created. Please check in Orlansoft';
-                                }
-                            } catch (\Throwable $th) {
-                                $message .= '. Failed to create Sales Invoice.';
-                            }
-                        }
-                    }
-                }
-            }
+        //                     try {
+        //                         $salesInvoice = Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/salesInvoice/' . $order->orlan_tr_no . '/' . $payment->id . '/' . $payment->amount);
+        //                         $salesInvoiceResult = $salesInvoice?->json();
+        //                         if (isset($salesInvoiceResult) && !is_null($salesInvoiceResult)) {
+        //                             $message .= '. ' . $salesInvoiceResult['message'] ?? '';
+        //                         } else {
+        //                             $payment->refresh();
+        //                             $message = 'Sales Invoice with TrNo #' . $payment->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Invoice failed to created. Please check in Orlansoft';
+        //                         }
+        //                     } catch (\Throwable $th) {
+        //                         $message .= '. Failed to create Sales Invoice.';
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
 
-            /**
-             * Jika status pembayaran sudah OVERPAYMENT atau SETTLEMENT,
-             * cek dulu apakah sudah pernah terbuat sales order, jika belum create sales order
-             * Jika payment statusnya OVERPAYMENT, kirim total_price dari order tsb.
-             */
-            if ($order->payment_status->in([OrderPaymentStatus::OVERPAYMENT, OrderPaymentStatus::SETTLEMENT])) {
-                if ($order->orlan_tr_no == null || $order->orlan_tr_no == '') {
-                    // create sales order
+        //     /**
+        //      * Jika status pembayaran sudah OVERPAYMENT atau SETTLEMENT,
+        //      * cek dulu apakah sudah pernah terbuat sales order, jika belum create sales order
+        //      * Jika payment statusnya OVERPAYMENT, kirim total_price dari order tsb.
+        //      */
+        //     if ($order->payment_status->in([OrderPaymentStatus::OVERPAYMENT, OrderPaymentStatus::SETTLEMENT])) {
+        //         if ($order->orlan_tr_no == null || $order->orlan_tr_no == '') {
+        //             // create sales order
 
-                    try {
-                        $salesOrder = Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/' . $order->id);
-                        $salesOrderResult = $salesOrder?->json();
-                        if (isset($salesOrderResult) && !is_null($salesOrderResult)) {
-                            $message .= '. ' . $salesOrderResult['message'] ?? '';
-                        } else {
-                            $order->refresh();
-                            $message = 'Sales Order with TrNo #' . $order->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Order failed to created. Please check in Orlansoft';
-                        }
-                    } catch (\Throwable $th) {
-                        $message .= '. Failed to create Sales Order.';
-                    }
-                }
+        //             try {
+        //                 $salesOrder = Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/' . $order->id);
+        //                 $salesOrderResult = $salesOrder?->json();
+        //                 if (isset($salesOrderResult) && !is_null($salesOrderResult)) {
+        //                     $message .= '. ' . $salesOrderResult['message'] ?? '';
+        //                 } else {
+        //                     $order->refresh();
+        //                     $message = 'Sales Order with TrNo #' . $order->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Order failed to created. Please check in Orlansoft';
+        //                 }
+        //             } catch (\Throwable $th) {
+        //                 $message .= '. Failed to create Sales Order.';
+        //             }
+        //         }
 
-                $order->refresh();
-                // create sales invoice
-                $total_payment = $order->payment_status->is(OrderPaymentStatus::OVERPAYMENT) ? $order->total_price : $payment->amount;
+        //         $order->refresh();
+        //         // create sales invoice
+        //         $total_payment = $order->payment_status->is(OrderPaymentStatus::OVERPAYMENT) ? $order->total_price : $payment->amount;
 
-                try {
-                    $salesInvoice = Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/salesInvoice/' . $order->orlan_tr_no . '/' . $payment->id . '/' . $total_payment);
-                    $salesInvoiceResult = $salesInvoice?->json();
-                    if (isset($salesInvoiceResult) && !is_null($salesInvoiceResult)) {
-                        $message .= '. ' . $salesInvoiceResult['message'] ?? '';
-                    } else {
-                        $payment->refresh();
-                        $message = 'Sales Invoice with TrNo #' . $payment->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Invoice failed to created. Please check in Orlansoft';
-                    }
-                } catch (\Throwable $th) {
-                    $message .= '. Failed to create Sales Invoice.';
-                }
-            }
-        }
+        //         try {
+        //             $salesInvoice = Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/salesInvoice/' . $order->orlan_tr_no . '/' . $payment->id . '/' . $total_payment);
+        //             $salesInvoiceResult = $salesInvoice?->json();
+        //             if (isset($salesInvoiceResult) && !is_null($salesInvoiceResult)) {
+        //                 $message .= '. ' . $salesInvoiceResult['message'] ?? '';
+        //             } else {
+        //                 $payment->refresh();
+        //                 $message = 'Sales Invoice with TrNo #' . $payment->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Invoice failed to created. Please check in Orlansoft';
+        //             }
+        //         } catch (\Throwable $th) {
+        //             $message .= '. Failed to create Sales Invoice.';
+        //         }
+        //     }
+        // }
 
         return redirect()->route('admin.payments.index')->with('message', $message);
     }

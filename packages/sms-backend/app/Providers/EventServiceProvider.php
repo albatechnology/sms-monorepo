@@ -64,7 +64,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         OrderPaymentSettlement::class  => [
             UpdateLeadToClosed::class,
-            SetOrderStatusToWarehouse::class,
+            // SetOrderStatusToWarehouse::class,
         ],
 
         // payment

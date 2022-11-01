@@ -64,13 +64,13 @@ class CreateActivityRequest extends BaseApiRequest
                         return;
                     }
 
-                    $lead = Lead::find(self::$lead_id);
-                    if ($lead->channel->company_id == 1) {
-                        $filteredValue = collect($value)->pluck('estimated_value')->filter(function ($value, $key) {
-                            return $value < 5000000;
-                        });
-                        if ($filteredValue->count() > 0) $fail("Estimated value must be greather then 5.000.000");
-                    }
+                    // $lead = Lead::find(self::$lead_id);
+                    // if ($lead->channel->company_id == 1) {
+                    //     $filteredValue = collect($value)->pluck('estimated_value')->filter(function ($value, $key) {
+                    //         return $value < 5000000;
+                    //     });
+                    //     if ($filteredValue->count() > 0) $fail("Estimated value must be greather then 5.000.000");
+                    // }
 
                     $product_brand_ids = collect($value)->pluck('product_brand_id');
                     // TODO: we may want to limit to the brand in the company context

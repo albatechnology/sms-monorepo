@@ -10,7 +10,7 @@
             <form method="POST" action="{{ route('admin.orders.update', [$order->id]) }}">
                 @method('PUT')
                 @csrf
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label for="orlan_tr_no">Orlan TrNo</label>
                     <input type="text" class="form-control {{ $errors->has('orlan_tr_no') ? 'is-invalid' : '' }}"
                         name="orlan_tr_no" id="orlan_tr_no" value="{{ old('orlan_tr_no', $order->orlan_tr_no) }}" />
@@ -18,7 +18,7 @@
                         <span class="text-danger">{{ $errors->first('orlan_tr_no') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.order.fields.user_helper') }}</span>
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label for="user_id">{{ trans('cruds.order.fields.user') }}</label>
                     <input type="text" class="form-control {{ $errors->has('user_id') ? 'is-invalid' : '' }}"
