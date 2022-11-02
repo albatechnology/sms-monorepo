@@ -29,7 +29,7 @@ class ProductBrandController extends Controller
         abort_if(Gate::denies('product_brand_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = ProductBrand::tenanted()->with('brandCategory')->select(sprintf('%s.*', (new ProductBrand())->table));
+            $query = ProductBrand::tenanted()->with(['brandCategory','company'])->select(sprintf('%s.*', (new ProductBrand())->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -55,6 +55,9 @@ class ProductBrandController extends Controller
             });
             $table->editColumn('name', function ($row) {
                 return $row->name ? $row->name : '';
+            });
+            $table->editColumn('company_name', function ($row) {
+                return $row->company->name ? $row->company->name : '';
             });
             $table->editColumn('hpp_calculation', function ($row) {
                 return $row->hpp_calculation ? $row->hpp_calculation . '%' : '';
@@ -92,8 +95,8 @@ class ProductBrandController extends Controller
 
             return $table->make(true);
         }
-
-        return view('admin.productBrands.index');
+        $companies = Company::tenanted()->pluck('name', 'id');
+        return view('admin.productBrands.index', ['companies' => $companies]);
     }
 
     public function create()

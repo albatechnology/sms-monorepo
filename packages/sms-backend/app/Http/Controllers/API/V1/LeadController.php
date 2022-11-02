@@ -168,8 +168,6 @@ class LeadController extends BaseApiController
     #[CustomOpenApi\ErrorResponse(exception: SalesOnlyActionException::class)]
     public function store(CreateLeadRequest $request): LeadWithLatestActivityResource
     {
-        // dump($request->all());
-        // dd($request->validated());
         $user = user();
         $data = array_merge($request->validated(), [
             'channel_id' => $user->type->is(UserType::SALES) ? $user->channel_id : ($request->validated()['channel_id'] ?? null),
@@ -206,7 +204,7 @@ class LeadController extends BaseApiController
         $lead->refresh()->loadMissing(self::load_relation);
 
         if ($request->vouchers && count($request->vouchers) > 0) {
-            CoreService::createAndAssignVoucher(Customer::findOrFail($request->customer_id), $request->vouchers, $lead->channel->company_id);
+            CoreService::createAndAssignVoucher(Customer::findOrFail($request->customer_id), $request->vouchers, $lead?->channel?->company_id ?? $user->company_id);
         }
 
         return $this->show($lead);

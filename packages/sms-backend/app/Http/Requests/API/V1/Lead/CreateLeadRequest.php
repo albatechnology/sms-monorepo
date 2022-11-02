@@ -22,7 +22,7 @@ class CreateLeadRequest extends BaseApiRequest
             Schema::integer('lead_category_id')->example(1),
             Schema::string('interest')->example('Lagi Pengen LazyBoy'),
             Schema::integer('user_referral_id')->example(1),
-            Schema::integer('channel_id')->example(1),
+            Schema::integer('channel_id')->example(1)->nullable(),
 
             Schema::array('product_brand_ids')->items(
                 Schema::integer('id')->example(1)->description('Product brand id'),
