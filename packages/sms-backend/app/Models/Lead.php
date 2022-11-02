@@ -12,6 +12,7 @@ use App\Services\CoreService;
 use App\Traits\Auditable;
 use App\Traits\CustomInteractsWithMedia;
 use App\Traits\IsTenanted;
+use Carbon\Carbon;
 use DateTimeInterface;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -382,6 +383,11 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         return $this->belongsToMany(Order::class, Activity::class);
     }
 
+    public function leadOrders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function scopeWhereParent($query)
     {
         return $query->whereNull('parent_id');
@@ -540,8 +546,11 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         return $files;
     }
 
-    public function scopeWhereCreatedAtRange($query, $startDate, $endDate)
+    public function scopeWhereCreatedAtRange($query, $startDate = null, $endDate = null)
     {
+        if (is_null($startDate)) $startDate = Carbon::now()->startOfMonth();
+        if (is_null($endDate)) $endDate = Carbon::now()->endOfMonth();
+
         return $query->where(function ($q) use ($startDate, $endDate) {
             $q->whereDate('leads.created_at', '>=', $startDate);
             $q->whereDate('leads.created_at', '<=', $endDate);

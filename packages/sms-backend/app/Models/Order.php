@@ -26,6 +26,7 @@ use App\Traits\Auditable;
 use App\Traits\IsCompanyTenanted;
 use App\Traits\IsDiscountable;
 use App\Traits\IsVoucherable;
+use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -381,6 +382,23 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable, Vou
         return $this->hasMany(Payment::class, 'order_id', 'id');
     }
 
+    public function firstOrderPayments(): HasOne
+    {
+        return $this->hasOne(Payment::class, 'order_id', 'id')->oldestOfMany();
+        // return $this->hasOne(Payment::class, 'order_id', 'id')->oldest()->where('status', '<>', 2);
+    }
+
+    // public function firstOrderPaymentApproved(): HasOne
+    // {
+    //     // return $this->hasOne(Payment::class, 'order_id', 'id')->oldestOfMany();
+    //     return $this->hasOne(Payment::class, 'order_id', 'id')->oldest()->where('status', 1);
+    // }
+
+    public function latestOrderPayment(): HasOne
+    {
+        return $this->hasOne(Payment::class, 'order_id', 'id')->latestOfMany();
+    }
+
     public function refreshShipmentStatus(): static
     {
         // terminate early if there is no order detail
@@ -575,19 +593,53 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable, Vou
         return $this->hasMany(StockTransfer::class);
     }
 
-    public function scopeWhereDealAtRange($query, $startDate, $endDate)
+    public function scopeWhereDealAtRange($query, $startDate = null, $endDate = null)
     {
+        if (is_null($startDate)) $startDate = Carbon::now()->startOfMonth();
+        if (is_null($endDate)) $endDate = Carbon::now()->endOfMonth();
+
         return $query->where(function ($q) use ($startDate, $endDate) {
             $q->whereDate('orders.deal_at', '>=', $startDate);
             $q->whereDate('orders.deal_at', '<=', $endDate);
         });
     }
 
-    public function scopeWhereCreatedAtRange($query, $startDate, $endDate)
+    public function scopeWhereCreatedAtRange($query, $startDate = null, $endDate = null)
     {
+        if (is_null($startDate)) $startDate = Carbon::now()->startOfMonth();
+        if (is_null($endDate)) $endDate = Carbon::now()->endOfMonth();
+
         return $query->where(function ($q) use ($startDate, $endDate) {
             $q->whereDate('orders.created_at', '>=', $startDate);
             $q->whereDate('orders.created_at', '<=', $endDate);
         });
+    }
+
+    public function scopeWhereDeal($query, $startDate = null, $endDate = null)
+    {
+        if (is_null($startDate)) $startDate = Carbon::now()->startOfMonth();
+        if (is_null($endDate)) $endDate = Carbon::now()->endOfMonth();
+
+        return $query->whereNotIn('orders.status', [5, 6])
+            ->whereNotIn('orders.payment_status', [OrderPaymentStatus::REFUNDED])
+            ->where(function ($q) use ($startDate, $endDate) {
+                $q->whereHas('firstOrderPayments', function ($q) use ($startDate, $endDate) {
+                    $q->whereCreatedAtRange($startDate, $endDate)->where('status', '<>', 2);
+                })->orWhere(fn ($q) => $q->whereDealAtRange($startDate, $endDate));
+            });
+    }
+
+    public function scopeWhereNotDeal($query, $startDate = null, $endDate = null)
+    {
+        if (is_null($startDate)) $startDate = Carbon::now()->startOfMonth();
+        if (is_null($endDate)) $endDate = Carbon::now()->endOfMonth();
+
+        return $query->whereIn('orders.status', [5, 6])
+            ->whereIn('orders.payment_status', [OrderPaymentStatus::REFUNDED])
+            ->where(function ($q) use ($startDate, $endDate) {
+                $q->whereHas('firstOrderPayments', function ($q) use ($startDate, $endDate) {
+                    $q->whereCreatedAtRange($startDate, $endDate)->where('status', 2);
+                })->orWhereDoesntHave('firstOrderPayments');
+            });
     }
 }

@@ -379,8 +379,11 @@ class Activity extends BaseModel implements Tenanted, Reportable
         return $this->hasMany(ActivityBrandValue::class, 'activity_id', 'id');
     }
 
-    public function scopeWhereCreatedAtRange($query, $startDate, $endDate)
+    public function scopeWhereCreatedAtRange($query, $startDate = null, $endDate = null)
     {
+        if (is_null($startDate)) $startDate = Carbon::now()->startOfMonth();
+        if (is_null($endDate)) $endDate = Carbon::now()->endOfMonth();
+
         return $query->where(function ($q) use ($startDate, $endDate) {
             $q->whereDate('created_at', '>=', $startDate);
             $q->whereDate('created_at', '<=', $endDate);

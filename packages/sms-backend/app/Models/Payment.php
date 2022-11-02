@@ -9,6 +9,7 @@ use App\Interfaces\Reportable;
 use App\Interfaces\Tenanted;
 use App\Traits\Auditable;
 use App\Traits\IsCompanyTenanted;
+use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
@@ -102,6 +103,17 @@ class Payment extends BaseModel implements HasMedia, Tenanted, Reportable
         });
 
         parent::boot();
+    }
+
+    public function scopeWhereCreatedAtRange($query, $startDate = null, $endDate = null)
+    {
+        if (is_null($startDate)) $startDate = Carbon::now()->startOfMonth();
+        if (is_null($endDate)) $endDate = Carbon::now()->endOfMonth();
+
+        return $query->where(function ($q) use ($startDate, $endDate) {
+            $q->whereDate('orders.created_at', '>=', $startDate);
+            $q->whereDate('orders.created_at', '<=', $endDate);
+        });
     }
 
     public function registerMediaConversions(Media $media = null): void

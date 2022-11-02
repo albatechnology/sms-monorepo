@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class ActivityBrandValue extends Model
@@ -64,8 +65,11 @@ class ActivityBrandValue extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function scopeWhereCreatedAtRange($query, $startDate, $endDate)
+    public function scopeWhereCreatedAtRange($query, $startDate = null, $endDate = null)
     {
+        if (is_null($startDate)) $startDate = Carbon::now()->startOfMonth();
+        if (is_null($endDate)) $endDate = Carbon::now()->endOfMonth();
+
         return $query->where(function ($q) use ($startDate, $endDate) {
             $q->whereDate('created_at', '>=', $startDate);
             $q->whereDate('created_at', '<=', $endDate);

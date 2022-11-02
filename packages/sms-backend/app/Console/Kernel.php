@@ -40,6 +40,7 @@ class Kernel extends ConsoleKernel
 
         // copy monthly report target every new month
         $schedule->command('report:clone-new-month-report')->monthly();
+        $schedule->command('new-reports:clone')->monthly();
 
         $schedule->job(new \App\Jobs\UnhandledLeadJob)->dailyAt('08:00');
         $schedule->job(new \App\Jobs\SendEmailReportLeads)->weeklyOn(1, '09:00')->timezone('Asia/Jakarta');

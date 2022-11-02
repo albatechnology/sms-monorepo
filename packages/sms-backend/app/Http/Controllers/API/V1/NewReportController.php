@@ -8,12 +8,10 @@ use App\Enums\LeadType;
 use App\Enums\NewTargetType;
 use App\Enums\OrderPaymentStatus;
 use App\Enums\UserType;
-use App\Models\ActivityBrandValue;
 use App\Models\Channel;
 use App\Models\Lead;
 use App\Models\Order;
 use App\Models\ProductBrand;
-use App\Models\Product;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -21,56 +19,33 @@ use Illuminate\Support\Facades\DB;
 
 class NewReportController extends BaseApiController
 {
-    public function test(Request $request)
-    {
-        $startDate = Carbon::now()->startOfMonth();
-        $endDate = Carbon::now()->endOfMonth();
+    protected function getDates($start_date, $end_date){
+        $startTargetDate = Carbon::createFromFormat('Y-m-d', $start_date)->startOfMonth();
+        $endTargetDate = Carbon::createFromFormat('Y-m-d', $end_date)->endOfMonth();
 
-        if (($request->has('start_date') && $request->start_date != '') && ($request->has('end_date') && $request->end_date != '')) {
-            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
-            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
+        $startDate = Carbon::createFromFormat('Y-m-d', $start_date)->startOfDay();
+        $endDate = Carbon::createFromFormat('Y-m-d', $end_date)->endOfDay();
+
+        $sd = date('Y-m-d', strtotime($start_date));
+        $ed = date('Y-m-d', strtotime($end_date));
+
+        if ((date('m', strtotime($sd)) === date('m', strtotime($ed))) && $sd === date('Y-m-01', strtotime($sd)) && $ed === date('Y-m-t', strtotime($sd))) {
+            $startDateCompare = Carbon::createFromFormat('Y-m-d', $start_date)->subMonth()->startOfMonth();
+            $endDateCompare = Carbon::createFromFormat('Y-m-d', $start_date)->subMonth()->endOfMonth();
+        } else {
+            $diff = $startDate->diffInDays($endDate);
+            $startDateCompare = Carbon::createFromFormat('Y-m-d', $start_date)->startOfDay()->subDays($diff + 1);
+            $endDateCompare = Carbon::createFromFormat('Y-m-d', $start_date)->startOfDay()->subDay();
         }
 
-        $orders = Order::selectRaw('id, total_price, additional_discount, created_at, deal_at')
-            ->with('order_details', fn ($q) => $q->selectRaw('id, order_id, total_price, product_id'))
-            ->whereHas('activityBrandValues')
-            ->whereHas('order_details')
-            ->whereDate('created_at', '>=', '2022-09-01')
-            ->whereDate('created_at', '<=', '2022-09-30')
-            ->get();
-
-        $success = 0;
-        foreach ($orders as $order) {
-            $additionalDiscount = (int)$order->additional_discount ?? 0;
-            $sumActivityDatas = $order->order_details->sum('total_price');
-            $activityDatas = [];
-            foreach ($order->order_details as $detail) {
-                $product = Product::find($detail->product_id);
-                $activityDatas[] = [$product->product->product_brand_id => $detail->total_price];
-            }
-
-            $activityDatas = collect($activityDatas)
-                ->groupBy(function ($item) {
-                    return collect($item)->keys()->first();
-                })
-                ->map(function ($items) {
-                    return collect($items)->flatten()->sum();
-                });
-
-            foreach ($activityDatas as $product_brand_id => $value) {
-                $abvs = ActivityBrandValue::where('order_id', $order->id)->where('product_brand_id', $product_brand_id)->get();
-                foreach ($abvs as $abv) {
-                    $totalDiscount = (($abv->order_value / $sumActivityDatas) * $additionalDiscount) ?? 0;
-                    $abv->total_discount = $totalDiscount;
-                    $abv->total_order_value = $abv->order_value > $totalDiscount ? $abv->order_value - $totalDiscount : $abv->order_value;
-                    $abv->save();
-                }
-            }
-            $success++;
-        }
-
-        return response()->json($orders);
-        return response()->json($orders->count());
+        return [
+            'startTargetDate' => $startTargetDate,
+            'endTargetDate' => $endTargetDate,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'startDateCompare' => $startDateCompare,
+            'endDateCompare' => $endDateCompare
+        ];
     }
 
     public function index(Request $request)
@@ -79,18 +54,23 @@ class NewReportController extends BaseApiController
         $endDate = Carbon::now()->endOfMonth();
         $startDateCompare = Carbon::now()->subMonth()->startOfMonth();
         $endDateCompare = Carbon::now()->subMonth()->endOfMonth();
-        $targetDate = Carbon::now()->startOfDay();
 
+        $startTargetDate = Carbon::now()->startOfMonth();
+        $endTargetDate = Carbon::now()->endOfMonth();
         if (($request->has('start_date') && $request->start_date != '') && ($request->has('end_date') && $request->end_date != '')) {
-            $targetDate = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
-            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
-            $endDateCompare = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay()->subDay();
+            $dates = $this->getDates($request->start_date, $request->end_date);
 
-            $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date)->endOfDay();
+            $startTargetDate = $dates['startTargetDate'];
+            $endTargetDate = $dates['endTargetDate'];
 
-            $diff = $startDate->diffInDays($endDate);
-            $startDateCompare = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay()->subDays($diff + 1);
+            $startDate = $dates['startDate'];
+            $endDate = $dates['endDate'];
+
+            $startDateCompare = $dates['startDateCompare'];
+            $endDateCompare = $dates['endDateCompare'];
         }
+        // dump($startDateCompare);
+        // dd($endDateCompare);
 
         $infoDate = [
             'original_date' => [
@@ -115,11 +95,11 @@ class NewReportController extends BaseApiController
         if ($user->is_director || $user->is_digital_marketing) {
             $userType = 'director';
 
-            $target_deals = DB::table('targets')->select('target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', 0)->whereDate('created_at', '>=', $targetDate->startOfMonth())->whereDate('created_at', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+            $target_deals = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', 0)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_activities = DB::table('targets')->select('target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', 7)->whereDate('created_at', '>=', $targetDate->startOfMonth())->whereDate('created_at', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+            $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', 7)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_leads = DB::table('new_targets')->select('target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $targetDate->startOfMonth())->whereDate('end_date', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+            $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_supervisor) {
             if ($user->supervisor_type_id == 1) {
                 $userType = 'sl';
@@ -129,28 +109,28 @@ class NewReportController extends BaseApiController
                 $userType = 'hs';
             }
 
-            $target_deals = DB::table('targets')->select('target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', 0)->whereDate('created_at', '>=', $targetDate->startOfMonth())->whereDate('created_at', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+            $target_deals = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', 0)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_activities = DB::table('targets')->select('target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', 7)->whereDate('created_at', '>=', $targetDate->startOfMonth())->whereDate('created_at', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+            $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', 7)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_leads = DB::table('new_targets')->select('target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $targetDate->startOfMonth())->whereDate('end_date', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+            $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_sales) {
             $userType = 'sales';
 
-            $target_deals = DB::table('targets')->select('target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', 0)->whereDate('created_at', '>=', $targetDate->startOfMonth())->whereDate('created_at', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+            $target_deals = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', 0)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_activities = DB::table('targets')->select('target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', 7)->whereDate('created_at', '>=', $targetDate->startOfMonth())->whereDate('created_at', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+            $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', 7)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_leads = DB::table('new_targets')->select('target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $targetDate->startOfMonth())->whereDate('end_date', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+            $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
 
         if ($user->is_director || $user->is_digital_marketing || $user->is_supervisor) {
             if ($channelId) {
-                $target_deals = DB::table('targets')->select('target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', 0)->whereDate('created_at', '>=', $targetDate->startOfMonth())->whereDate('created_at', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+                $target_deals = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', 0)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-                $target_activities = DB::table('targets')->select('target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', 7)->whereDate('created_at', '>=', $targetDate->startOfMonth())->whereDate('created_at', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+                $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', 7)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-                $target_leads = DB::table('new_targets')->select('target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $targetDate->startOfMonth())->whereDate('end_date', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+                $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
             }
         }
 
@@ -215,10 +195,10 @@ class NewReportController extends BaseApiController
                         });
                     }
                 }])
-                ->withCount(['leads as total_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
-                        $q2->whereCreatedAtRange($startDate, $endDate);
-                    });
+                ->withCount(['userActivities as total_activities' => function ($q) use ($channelId, $startDate, $endDate) {
+                    // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
+                    $q->whereCreatedAtRange($startDate, $endDate);
+                    // });
 
                     if ($channelId) $q->where('channel_id', $channelId);
 
@@ -228,10 +208,10 @@ class NewReportController extends BaseApiController
                         });
                     }
                 }])
-                ->withCount(['leads as compare_total_activities' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
-                    $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
-                        $q2->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                    });
+                ->withCount(['userActivities as compare_total_activities' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
+                    // $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
+                    $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                    // });
 
                     if ($channelId) $q->where('channel_id', $channelId);
 
@@ -242,7 +222,7 @@ class NewReportController extends BaseApiController
                     }
                 }])
                 ->withCount(['leads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+                    $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal())->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
 
                     if ($channelId) $q->where('channel_id', $channelId);
 
@@ -300,57 +280,49 @@ class NewReportController extends BaseApiController
                 ], 'estimated_value')
                 ->withSum(['userOrders as total_quotation' => function ($q) use ($channelId, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate);
-                    $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                    // $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                    $q->whereDoesntHave('orderPayments');
                     $q->whereNotIn('status', [5, 6]);
                     if ($channelId) $q->where('channel_id', $channelId);
                 }], 'total_price')
                 ->withSum(['userOrders as compare_total_quotation' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
+                    $q->whereDoesntHave('orderPayments');
                     $q->whereNotIn('status', [5, 6]);
                     $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
                     if ($channelId) $q->where('channel_id', $channelId);
                 }], 'total_price')
                 ->withCount([
                     'userOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
+                        $q->whereDeal($startDate, $endDate);
                         if ($channelId) $q->where('channel_id', $channelId);
                     }
                 ], 'total_price')
                 ->withSum([
                     'userOrders as total_deals' => function ($q) use ($channelId, $startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
+                        $q->whereDeal($startDate, $endDate);
                         if ($channelId) $q->where('channel_id', $channelId);
                     }
                 ], 'total_price')
                 ->withSum([
                     'userOrders as compare_total_deals' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDateCompare, $endDateCompare);
-                        if ($channelId) $q->where('channel_id', $channelId);
-                    }
-                ], 'total_price')
-                ->withSum([
-                    'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
-                        $q->whereNotNull('interior_design_id');
-                        if ($channelId) $q->where('channel_id', $channelId);
-                    }
-                ], 'total_price')
-                ->withCount([
-                    'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
-                        $q->whereNotNull('interior_design_id');
+                        $q->whereDeal($startDateCompare, $endDateCompare);
                         if ($channelId) $q->where('channel_id', $channelId);
                     }
                 ], 'total_price');
+                // ->withSum([
+                //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                //         $q->whereDeal($startDate, $endDate)
+                //             ->whereNotNull('interior_design_id');
+                //         if ($channelId) $q->where('channel_id', $channelId);
+                //     }
+                // ], 'total_price')
+                // ->withCount([
+                //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                //         $q->whereDeal($startDate, $endDate)
+                //             ->whereNotNull('interior_design_id');
+                //         if ($channelId) $q->where('channel_id', $channelId);
+                //     }
+                // ], 'total_price');
 
             $result = $query->get();
 
@@ -372,8 +344,8 @@ class NewReportController extends BaseApiController
             $summary_deals = 0;
             $summary_total_deals_transaction = 0;
             $summary_compare_deals = 0;
-            $summary_interior_design = 0;
-            $summary_interior_design_total_transaction = 0;
+            // $summary_interior_design = 0;
+            // $summary_interior_design_total_transaction = 0;
             foreach ($result as $sales) {
 
                 $pbs = $this->getPbs($sales, $startDate, $endDate, $startDateCompare, $endDateCompare);
@@ -396,15 +368,15 @@ class NewReportController extends BaseApiController
                 $summary_deals += (int)$sales->total_deals ?? 0;
                 $summary_total_deals_transaction += (int)$sales->total_deals_transaction ?? 0;
                 $summary_compare_deals += (int)$sales->compare_total_deals ?? 0;
-                $summary_interior_design += (int)$sales->interior_design ?? 0;
-                $summary_interior_design_total_transaction += (int)$sales->interior_design_total_transaction ?? 0;
+                // $summary_interior_design += (int)$sales->interior_design ?? 0;
+                // $summary_interior_design_total_transaction += (int)$sales->interior_design_total_transaction ?? 0;
             }
 
             $data = [
                 'new_leads' => [
                     'value' => $summary_new_leads,
                     'compare' => $summary_compare_new_leads,
-                    'target_leads' => (int)$target_leads,
+                    'target_leads' => (int)$target_leads ?? 0,
                 ],
                 'active_leads' => [
                     'value' => $summary_active_leads,
@@ -414,7 +386,7 @@ class NewReportController extends BaseApiController
                     'total_activities' => [
                         'value' => $summary_total_activities,
                         'compare' => $summary_compare_total_activities,
-                        'target_activities' => (int)$target_activities,
+                        'target_activities' => (int)$target_activities ?? 0,
                     ],
                     'hot_activities' => $summary_hot_activities,
                     'warm_activities' => $summary_warm_activities,
@@ -429,19 +401,19 @@ class NewReportController extends BaseApiController
                     'compare' => $summary_compare_quotation,
                 ],
                 'deals' => [
-                    'value' => $summary_deals,
-                    'compare' => $summary_compare_deals,
+                    'value' => potongPPN($summary_deals),
+                    'compare' => potongPPN($summary_compare_deals),
                     'total_transaction' => $summary_total_deals_transaction,
-                    'target_deals' => $target_deals,
+                    'target_deals' => (int)$target_deals ?? 0,
                 ],
-                'interior_design' => [
-                    'value' => $summary_interior_design,
-                    'total_transaction' => $summary_interior_design_total_transaction,
-                ],
-                'retail' => [
-                    'value' => $summary_deals - $summary_interior_design,
-                    'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
-                ],
+                // 'interior_design' => [
+                //     'value' => potongPPN($summary_interior_design),
+                //     'total_transaction' => $summary_interior_design_total_transaction,
+                // ],
+                // 'retail' => [
+                //     'value' => potongPPN($summary_deals - $summary_interior_design),
+                //     'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
+                // ],
             ];
 
             return response()->json(array_merge($data, $infoDate));
@@ -506,10 +478,10 @@ class NewReportController extends BaseApiController
                         });
                     }
                 }])
-                ->withCount(['leads as total_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
-                        $q2->whereCreatedAtRange($startDate, $endDate);
-                    });
+                ->withCount(['userActivities as total_activities' => function ($q) use ($channelId, $startDate, $endDate) {
+                    // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
+                    $q->whereCreatedAtRange($startDate, $endDate);
+                    // });
 
                     if ($channelId) $q->where('channel_id', $channelId);
 
@@ -519,10 +491,10 @@ class NewReportController extends BaseApiController
                         });
                     }
                 }])
-                ->withCount(['leads as compare_total_activities' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
-                    $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
-                        $q2->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                    });
+                ->withCount(['userActivities as compare_total_activities' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
+                    // $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
+                    $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                    // });
 
                     if ($channelId) $q->where('channel_id', $channelId);
 
@@ -533,7 +505,7 @@ class NewReportController extends BaseApiController
                     }
                 }])
                 ->withCount(['leads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+                    $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal())->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
 
                     if ($channelId) $q->where('channel_id', $channelId);
 
@@ -591,57 +563,49 @@ class NewReportController extends BaseApiController
                 ], 'estimated_value')
                 ->withSum(['userOrders as total_quotation' => function ($q) use ($channelId, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate);
-                    $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                    // $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                    $q->whereDoesntHave('orderPayments');
                     $q->whereNotIn('status', [5, 6]);
                     if ($channelId) $q->where('channel_id', $channelId);
                 }], 'total_price')
                 ->withSum(['userOrders as compare_total_quotation' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
+                    $q->whereDoesntHave('orderPayments');
                     $q->whereNotIn('status', [5, 6]);
                     $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
                     if ($channelId) $q->where('channel_id', $channelId);
                 }], 'total_price')
                 ->withCount([
                     'userOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
+                        $q->whereDeal($startDate, $endDate);
                         if ($channelId) $q->where('channel_id', $channelId);
                     }
                 ], 'total_price')
                 ->withSum([
                     'userOrders as total_deals' => function ($q) use ($channelId, $startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
+                        $q->whereDeal($startDate, $endDate);
                         if ($channelId) $q->where('channel_id', $channelId);
                     }
                 ], 'total_price')
                 ->withSum([
                     'userOrders as compare_total_deals' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDateCompare, $endDateCompare);
-                        if ($channelId) $q->where('channel_id', $channelId);
-                    }
-                ], 'total_price')
-                ->withSum([
-                    'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
-                        $q->whereNotNull('interior_design_id');
-                        if ($channelId) $q->where('channel_id', $channelId);
-                    }
-                ], 'total_price')
-                ->withCount([
-                    'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
-                        $q->whereNotNull('interior_design_id');
+                        $q->whereDeal($startDateCompare, $endDateCompare);
                         if ($channelId) $q->where('channel_id', $channelId);
                     }
                 ], 'total_price');
+                // ->withSum([
+                //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                //         $q->whereDeal($startDate, $endDate)
+                //             ->whereNotNull('interior_design_id');
+                //         if ($channelId) $q->where('channel_id', $channelId);
+                //     }
+                // ], 'total_price')
+                // ->withCount([
+                //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                //         $q->whereDeal($startDate, $endDate)
+                //             ->whereNotNull('interior_design_id');
+                //         if ($channelId) $q->where('channel_id', $channelId);
+                //     }
+                // ], 'total_price');
 
             $result = $query->get();
 
@@ -663,8 +627,8 @@ class NewReportController extends BaseApiController
             $summary_deals = 0;
             $summary_total_deals_transaction = 0;
             $summary_compare_deals = 0;
-            $summary_interior_design = 0;
-            $summary_interior_design_total_transaction = 0;
+            // $summary_interior_design = 0;
+            // $summary_interior_design_total_transaction = 0;
             foreach ($result as $sales) {
                 $pbs = $this->getPbs($sales, $startDate, $endDate, $startDateCompare, $endDateCompare);
 
@@ -686,15 +650,15 @@ class NewReportController extends BaseApiController
                 $summary_deals += (int)$sales->total_deals ?? 0;
                 $summary_total_deals_transaction += (int)$sales->total_deals_transaction ?? 0;
                 $summary_compare_deals += (int)$sales->compare_total_deals ?? 0;
-                $summary_interior_design += (int)$sales->interior_design ?? 0;
-                $summary_interior_design_total_transaction += (int)$sales->interior_design_total_transaction ?? 0;
+                // $summary_interior_design += (int)$sales->interior_design ?? 0;
+                // $summary_interior_design_total_transaction += (int)$sales->interior_design_total_transaction ?? 0;
             }
 
             $data = [
                 'new_leads' => [
                     'value' => $summary_new_leads,
                     'compare' => $summary_compare_new_leads,
-                    'target_leads' => (int)$target_leads,
+                    'target_leads' => (int)$target_leads ?? 0,
                 ],
                 'active_leads' => [
                     'value' => $summary_active_leads,
@@ -704,7 +668,7 @@ class NewReportController extends BaseApiController
                     'total_activities' => [
                         'value' => $summary_total_activities,
                         'compare' => $summary_compare_total_activities,
-                        'target_activities' => (int)$target_activities,
+                        'target_activities' => (int)$target_activities ?? 0,
                     ],
                     'hot_activities' => $summary_hot_activities,
                     'warm_activities' => $summary_warm_activities,
@@ -719,19 +683,19 @@ class NewReportController extends BaseApiController
                     'compare' => $summary_compare_quotation,
                 ],
                 'deals' => [
-                    'value' => $summary_deals,
-                    'compare' => $summary_compare_deals,
+                    'value' => potongPPN($summary_deals),
+                    'compare' => potongPPN($summary_compare_deals),
                     'total_transaction' => $summary_total_deals_transaction,
-                    'target_deals' => $target_deals,
+                    'target_deals' => (int)$target_deals ?? 0,
                 ],
-                'interior_design' => [
-                    'value' => $summary_interior_design,
-                    'total_transaction' => $summary_interior_design_total_transaction,
-                ],
-                'retail' => [
-                    'value' => $summary_deals - $summary_interior_design,
-                    'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
-                ],
+                // 'interior_design' => [
+                //     'value' => potongPPN($summary_interior_design),
+                //     'total_transaction' => $summary_interior_design_total_transaction,
+                // ],
+                // 'retail' => [
+                //     'value' => potongPPN($summary_deals - $summary_interior_design),
+                //     'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
+                // ],
             ];
 
             return response()->json(array_merge($data, $infoDate));
@@ -796,10 +760,10 @@ class NewReportController extends BaseApiController
                     });
                 }
             }])
-            ->withCount(['leads as total_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
-                    $q2->whereCreatedAtRange($startDate, $endDate);
-                });
+            ->withCount(['userActivities as total_activities' => function ($q) use ($channelId, $startDate, $endDate) {
+                // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
+                $q->whereCreatedAtRange($startDate, $endDate);
+                // });
 
                 if ($channelId) $q->where('channel_id', $channelId);
 
@@ -809,10 +773,10 @@ class NewReportController extends BaseApiController
                     });
                 }
             }])
-            ->withCount(['leads as compare_total_activities' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
-                $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
-                    $q2->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                });
+            ->withCount(['userActivities as compare_total_activities' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
+                // $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
+                $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                // });
 
                 if ($channelId) $q->where('channel_id', $channelId);
 
@@ -823,7 +787,7 @@ class NewReportController extends BaseApiController
                 }
             }])
             ->withCount(['leads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+                $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal())->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
 
                 if ($channelId) $q->where('channel_id', $channelId);
 
@@ -881,57 +845,49 @@ class NewReportController extends BaseApiController
             ], 'estimated_value')
             ->withSum(['userOrders as total_quotation' => function ($q) use ($channelId, $startDate, $endDate) {
                 $q->whereCreatedAtRange($startDate, $endDate);
-                $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                // $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                $q->whereDoesntHave('orderPayments');
                 $q->whereNotIn('status', [5, 6]);
                 if ($channelId) $q->where('channel_id', $channelId);
             }], 'total_price')
             ->withSum(['userOrders as compare_total_quotation' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
+                $q->whereDoesntHave('orderPayments');
                 $q->whereNotIn('status', [5, 6]);
                 $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
                 if ($channelId) $q->where('channel_id', $channelId);
             }], 'total_price')
             ->withCount([
                 'userOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereNotIn('status', [5, 6]);
-                    $q->whereIn('payment_status', [2, 3, 4, 6]);
-                    $q->whereDealAtRange($startDate, $endDate);
+                    $q->whereDeal($startDate, $endDate);
                     if ($channelId) $q->where('channel_id', $channelId);
                 }
             ], 'total_price')
             ->withSum([
                 'userOrders as total_deals' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereNotIn('status', [5, 6]);
-                    $q->whereIn('payment_status', [2, 3, 4, 6]);
-                    $q->whereDealAtRange($startDate, $endDate);
+                    $q->whereDeal($startDate, $endDate);
                     if ($channelId) $q->where('channel_id', $channelId);
                 }
             ], 'total_price')
             ->withSum([
                 'userOrders as compare_total_deals' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
-                    $q->whereNotIn('status', [5, 6]);
-                    $q->whereIn('payment_status', [2, 3, 4, 6]);
-                    $q->whereDealAtRange($startDateCompare, $endDateCompare);
-                    if ($channelId) $q->where('channel_id', $channelId);
-                }
-            ], 'total_price')
-            ->withSum([
-                'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereNotIn('status', [5, 6]);
-                    $q->whereIn('payment_status', [2, 3, 4, 6]);
-                    $q->whereDealAtRange($startDate, $endDate);
-                    $q->whereNotNull('interior_design_id');
-                    if ($channelId) $q->where('channel_id', $channelId);
-                }
-            ], 'total_price')
-            ->withCount([
-                'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereNotIn('status', [5, 6]);
-                    $q->whereIn('payment_status', [2, 3, 4, 6]);
-                    $q->whereDealAtRange($startDate, $endDate);
-                    $q->whereNotNull('interior_design_id');
+                    $q->whereDeal($startDateCompare, $endDateCompare);
                     if ($channelId) $q->where('channel_id', $channelId);
                 }
             ], 'total_price');
+            // ->withSum([
+            //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+            //         $q->whereDeal($startDate, $endDate)
+            //             ->whereNotNull('interior_design_id');
+            //         if ($channelId) $q->where('channel_id', $channelId);
+            //     }
+            // ], 'total_price')
+            // ->withCount([
+            //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+            //         $q->whereDeal($startDate, $endDate)
+            //             ->whereNotNull('interior_design_id');
+            //         if ($channelId) $q->where('channel_id', $channelId);
+            //     }
+            // ], 'total_price');
 
         $result = $query->first();
 
@@ -941,7 +897,7 @@ class NewReportController extends BaseApiController
             'new_leads' => [
                 'value' => (int)$result->total_leads ?? 0,
                 'compare' => (int)$result->compare_total_leads ?? 0,
-                'target_leads' => (int)$target_leads,
+                'target_leads' => (int)$target_leads ?? 0,
             ],
             'active_leads' => [
                 'value' => (int)$result->active_leads ?? 0,
@@ -951,7 +907,7 @@ class NewReportController extends BaseApiController
                 'total_activities' => [
                     'value' => (int)$result->total_activities ?? 0,
                     'compare' => (int)$result->compare_total_activities ?? 0,
-                    'target_activities' => (int)$target_activities,
+                    'target_activities' => (int)$target_activities ?? 0,
                 ],
                 'hot_activities' => (int)$result->hot_activities ?? 0,
                 'warm_activities' => (int)$result->warm_activities ?? 0,
@@ -964,23 +920,23 @@ class NewReportController extends BaseApiController
                 // 'compare' => (int)$result->compare_total_estimation ?? 0,
             ],
             'quotation' => [
-                'value' => (int)$result->total_quotation ?? 0,
-                'compare' => (int)$result->compare_total_quotation ?? 0,
+                'value' => (int) $result->total_quotation ?? 0,
+                'compare' => (int) $result->compare_total_quotation ?? 0,
             ],
             'deals' => [
-                'value' => (int)$result->total_deals ?? 0,
-                'compare' => (int)$result->compare_total_deals ?? 0,
+                'value' => potongPPN($result->total_deals),
+                'compare' => potongPPN($result->compare_total_deals),
                 'total_transaction' => $result->total_deals_transaction,
-                'target_deals' => $target_deals,
+                'target_deals' => (int)$target_deals ?? 0,
             ],
-            'interior_design' => [
-                'value' => (int)$result->interior_design ?? 0,
-                'total_transaction' => (int)$result->interior_design_total_transaction ?? 0,
-            ],
-            'retail' => [
-                'value' => (int)($result->total_deals - $result->interior_design) ?? 0,
-                'total_transaction' => (int)($result->total_deals_transaction - $result->interior_design_total_transaction) ?? 0,
-            ],
+            // 'interior_design' => [
+            //     'value' => potongPPN($result->interior_design),
+            //     'total_transaction' => (int)$result->interior_design_total_transaction ?? 0,
+            // ],
+            // 'retail' => [
+            //     'value' => potongPPN($result->total_deals - $result->interior_design),
+            //     'total_transaction' => (int)($result->total_deals_transaction - $result->interior_design_total_transaction) ?? 0,
+            // ],
         ];
 
         return response()->json(array_merge($data, $infoDate));
@@ -992,17 +948,21 @@ class NewReportController extends BaseApiController
         $endDate = Carbon::now()->endOfMonth();
         $startDateCompare = Carbon::now()->subMonth()->startOfMonth();
         $endDateCompare = Carbon::now()->subMonth()->endOfMonth();
-        $targetDate = Carbon::now()->startOfDay();
+        // $targetDate = Carbon::now()->startOfDay();
 
+        $startTargetDate = Carbon::now()->startOfMonth();
+        $endTargetDate = Carbon::now()->endOfMonth();
         if (($request->has('start_date') && $request->start_date != '') && ($request->has('end_date') && $request->end_date != '')) {
-            $targetDate = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
-            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
-            $endDateCompare = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay()->subDay();
+            $dates = $this->getDates($request->start_date, $request->end_date);
 
-            $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date)->endOfDay();
+            $startTargetDate = $dates['startTargetDate'];
+            $endTargetDate = $dates['endTargetDate'];
 
-            $diff = $startDate->diffInDays($endDate);
-            $startDateCompare = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay()->subDays($diff + 1);
+            $startDate = $dates['startDate'];
+            $endDate = $dates['endDate'];
+
+            $startDateCompare = $dates['startDateCompare'];
+            $endDateCompare = $dates['endDateCompare'];
         }
 
         $infoDate = [
@@ -1043,13 +1003,13 @@ class NewReportController extends BaseApiController
                     ->where('supervisor_type_id', 2)
                     ->where('company_id', $companyId);
 
-                $query = $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(start_date) >= '" . $targetDate->startOfMonth() . "' AND DATE(end_date) <= '" . $targetDate->endOfMonth() . "') as target_leads");
+                $query = $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
 
-                $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='user' AND model_id=users.id AND type=7 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_activities");
+                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=7 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
-                if ($startDate->month == $endDate->month) {
-                    $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_deals");
-                }
+                // if ($startDate->month == $endDate->month) {
+                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_deals");
+                // }
                 $query = $query->with(['channels' => function ($channel) use ($companyId, $channelId, $startDate, $endDate, $startDateCompare, $endDateCompare) {
                     $channel->where('company_id', $companyId)
                         ->with(['sales' => function ($q) use ($channelId, $startDate, $endDate, $startDateCompare, $endDateCompare) {
@@ -1095,10 +1055,10 @@ class NewReportController extends BaseApiController
                                         });
                                     }
                                 }])
-                                ->withCount(['leads as total_activities' => function ($q) use ($startDate, $endDate) {
-                                    $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
-                                        $q2->whereCreatedAtRange($startDate, $endDate);
-                                    });
+                                ->withCount(['userActivities as total_activities' => function ($q) use ($startDate, $endDate) {
+                                    // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
+                                    $q->whereCreatedAtRange($startDate, $endDate);
+                                    // });
 
                                     if (request()->product_brand_id) {
                                         $q->whereHas('activityBrandValues', function ($q2) {
@@ -1106,10 +1066,10 @@ class NewReportController extends BaseApiController
                                         });
                                     }
                                 }])
-                                ->withCount(['leads as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
-                                    $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
-                                        $q2->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                                    });
+                                ->withCount(['userActivities as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
+                                    // $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
+                                    $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                                    // });
 
                                     if (request()->product_brand_id) {
                                         $q->whereHas('activityBrandValues', function ($q2) {
@@ -1118,7 +1078,7 @@ class NewReportController extends BaseApiController
                                     }
                                 }])
                                 ->withCount(['leads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                                    $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+                                    $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal())->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
 
                                     if ($channelId) $q->where('channel_id', $channelId);
 
@@ -1172,53 +1132,47 @@ class NewReportController extends BaseApiController
                                 ], 'estimated_value')
                                 ->withSum(['userOrders as total_quotation' => function ($q) use ($startDate, $endDate) {
                                     $q->whereCreatedAtRange($startDate, $endDate);
-                                    $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                                    // $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                                    $q->whereDoesntHave('orderPayments');
                                     $q->whereNotIn('status', [5, 6]);
                                 }], 'total_price')
                                 ->withSum(['userOrders as compare_total_quotation' => function ($q) use ($startDateCompare, $endDateCompare) {
+                                    $q->whereDoesntHave('orderPayments');
                                     $q->whereNotIn('status', [5, 6]);
                                     $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
                                 }], 'total_price')
                                 ->withCount([
                                     'userOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                        $q->whereNotIn('status', [5, 6]);
-                                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                        $q->whereDealAtRange($startDate, $endDate);
+                                        $q->whereDeal($startDate, $endDate);
                                         if ($channelId) $q->where('channel_id', $channelId);
                                     }
                                 ], 'total_price')
                                 ->withSum([
-                                    'userOrders as total_deals' => function ($q) use ($startDate, $endDate) {
-                                        $q->whereNotIn('status', [5, 6]);
-                                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                        $q->whereDealAtRange($startDate, $endDate);
-                                    }
-                                ], 'total_price')
-                                ->withSum([
-                                    'userOrders as compare_total_deals' => function ($q) use ($startDateCompare, $endDateCompare) {
-                                        $q->whereNotIn('status', [5, 6]);
-                                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                        $q->whereDealAtRange($startDateCompare, $endDateCompare);
-                                    }
-                                ], 'total_price')
-                                ->withSum([
-                                    'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                                        $q->whereNotIn('status', [5, 6]);
-                                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                        $q->whereDealAtRange($startDate, $endDate);
-                                        $q->whereNotNull('interior_design_id');
+                                    'userOrders as total_deals' => function ($q) use ($channelId, $startDate, $endDate) {
+                                        $q->whereDeal($startDate, $endDate);
                                         if ($channelId) $q->where('channel_id', $channelId);
                                     }
                                 ], 'total_price')
-                                ->withCount([
-                                    'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                        $q->whereNotIn('status', [5, 6]);
-                                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                        $q->whereDealAtRange($startDate, $endDate);
-                                        $q->whereNotNull('interior_design_id');
+                                ->withSum([
+                                    'userOrders as compare_total_deals' => function ($q) use ($channelId, $startDateCompare, $endDateCompare) {
+                                        $q->whereDeal($startDateCompare, $endDateCompare);
                                         if ($channelId) $q->where('channel_id', $channelId);
                                     }
                                 ], 'total_price');
+                                // ->withSum([
+                                //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                                //         $q->whereDeal($startDate, $endDate)
+                                //             ->whereNotNull('interior_design_id');
+                                //         if ($channelId) $q->where('channel_id', $channelId);
+                                //     }
+                                // ], 'total_price')
+                                // ->withCount([
+                                //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                                //         $q->whereDeal($startDate, $endDate)
+                                //             ->whereNotNull('interior_design_id');
+                                //         if ($channelId) $q->where('channel_id', $channelId);
+                                //     }
+                                // ], 'total_price');
                         }]);
 
                     if ($channelId) {
@@ -1253,8 +1207,8 @@ class NewReportController extends BaseApiController
                 $summary_deals = 0;
                 $summary_total_deals_transaction = 0;
                 $summary_compare_deals = 0;
-                $summary_interior_design = 0;
-                $summary_interior_design_total_transaction = 0;
+                // $summary_interior_design = 0;
+                // $summary_interior_design_total_transaction = 0;
 
                 foreach ($result as $bum) {
 
@@ -1274,8 +1228,8 @@ class NewReportController extends BaseApiController
                     $channel_deals = 0;
                     $channel_total_deals_transaction = 0;
                     $channel_compare_deals = 0;
-                    $channel_interior_design = 0;
-                    $channel_interior_design_total_transaction = 0;
+                    // $channel_interior_design = 0;
+                    // $channel_interior_design_total_transaction = 0;
                     foreach ($bum->channels as $channel) {
 
                         $sales_new_leads = 0;
@@ -1294,8 +1248,8 @@ class NewReportController extends BaseApiController
                         $sales_deals = 0;
                         $sales_total_deals_transaction = 0;
                         $sales_compare_deals = 0;
-                        $sales_interior_design = 0;
-                        $sales_interior_design_total_transaction = 0;
+                        // $sales_interior_design = 0;
+                        // $sales_interior_design_total_transaction = 0;
                         foreach ($channel->sales as $sales) {
                             $pbs = $this->getPbs($sales, $startDate, $endDate, $startDateCompare, $endDateCompare, $channelId, $companyId);
 
@@ -1317,8 +1271,8 @@ class NewReportController extends BaseApiController
                             $sales_deals += $sales->total_deals ?? 0;
                             $sales_total_deals_transaction += $sales->total_deals_transaction ?? 0;
                             $sales_compare_deals += $sales->compare_total_deals ?? 0;
-                            $sales_interior_design += $sales->interior_design ?? 0;
-                            $sales_interior_design_total_transaction += $sales->interior_design_total_transaction ?? 0;
+                            // $sales_interior_design += $sales->interior_design ?? 0;
+                            // $sales_interior_design_total_transaction += $sales->interior_design_total_transaction ?? 0;
                         }
 
                         $channel_new_leads += $sales_new_leads ?? 0;
@@ -1337,8 +1291,8 @@ class NewReportController extends BaseApiController
                         $channel_deals += $sales_deals ?? 0;
                         $channel_total_deals_transaction += $sales_total_deals_transaction ?? 0;
                         $channel_compare_deals += $sales_compare_deals ?? 0;
-                        $channel_interior_design += $sales_interior_design ?? 0;
-                        $channel_interior_design_total_transaction += $sales_interior_design_total_transaction ?? 0;
+                        // $channel_interior_design += $sales_interior_design ?? 0;
+                        // $channel_interior_design_total_transaction += $sales_interior_design_total_transaction ?? 0;
                     }
 
                     $data['details'][] = [
@@ -1368,23 +1322,23 @@ class NewReportController extends BaseApiController
                             'compare' => (int)$channel_compare_estimation ?? 0,
                         ],
                         'quotation' => [
-                            'value' => (int)$channel_quotation ?? 0,
-                            'compare' => (int)$channel_compare_quotation ?? 0,
+                            'value' => (int) $channel_quotation ?? 0,
+                            'compare' => (int) $channel_compare_quotation ?? 0,
                         ],
                         'deals' => [
-                            'value' => (int)$channel_deals ?? 0,
-                            'compare' => (int)$channel_compare_deals ?? 0,
+                            'value' => potongPPN($channel_deals),
+                            'compare' => potongPPN($channel_compare_deals),
                             'total_transaction' => $channel_total_deals_transaction,
                             'target_deals' => (int)$bum->target_deals ?? 0,
                         ],
-                        'interior_design' => [
-                            'value' => $channel_interior_design,
-                            'total_transaction' => $channel_interior_design_total_transaction,
-                        ],
-                        'retail' => [
-                            'value' => $channel_deals - $channel_interior_design,
-                            'total_transaction' => $channel_total_deals_transaction - $channel_interior_design_total_transaction,
-                        ],
+                        // 'interior_design' => [
+                        //     'value' => potongPPN($channel_interior_design),
+                        //     'total_transaction' => $channel_interior_design_total_transaction,
+                        // ],
+                        // 'retail' => [
+                        //     'value' => potongPPN($channel_deals - $channel_interior_design),
+                        //     'total_transaction' => $channel_total_deals_transaction - $channel_interior_design_total_transaction,
+                        // ],
                     ];
 
                     $summary_new_leads += $channel_new_leads ?? 0;
@@ -1403,8 +1357,8 @@ class NewReportController extends BaseApiController
                     $summary_deals += $channel_deals ?? 0;
                     $summary_total_deals_transaction += $channel_total_deals_transaction ?? 0;
                     $summary_compare_deals += $channel_compare_deals ?? 0;
-                    $summary_interior_design += $channel_interior_design ?? 0;
-                    $summary_interior_design_total_transaction += $channel_interior_design_total_transaction ?? 0;
+                    // $summary_interior_design += $channel_interior_design ?? 0;
+                    // $summary_interior_design_total_transaction += $channel_interior_design_total_transaction ?? 0;
                 }
 
                 $data['summary'] = [
@@ -1434,34 +1388,34 @@ class NewReportController extends BaseApiController
                         'compare' => $summary_compare_quotation,
                     ],
                     'deals' => [
-                        'value' => $summary_deals,
-                        'compare' => $summary_compare_deals,
+                        'value' => potongPPN($summary_deals),
+                        'compare' => potongPPN($summary_compare_deals),
                         'total_transaction' => $summary_total_deals_transaction,
                     ],
-                    'interior_design' => [
-                        'value' => $summary_interior_design,
-                        'total_transaction' => $summary_interior_design_total_transaction,
-                    ],
-                    'retail' => [
-                        'value' => $summary_deals - $summary_interior_design,
-                        'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
-                    ],
+                    // 'interior_design' => [
+                    //     'value' => potongPPN($summary_interior_design),
+                    //     'total_transaction' => $summary_interior_design_total_transaction,
+                    // ],
+                    // 'retail' => [
+                    //     'value' => potongPPN($summary_deals - $summary_interior_design),
+                    //     'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
+                    // ],
                 ];
 
                 return response()->json(array_merge($data, $infoDate));
             } elseif ($request->user_type == 'store_leader') {
                 $query = User::selectRaw('id, name, type')
-                    ->where('type', 3)
+                    ->where('type', UserType::SUPERVISOR)
                     ->where('supervisor_type_id', 1)
                     ->where('company_id', $companyId);
 
-                $query = $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(start_date) >= '" . $targetDate->startOfMonth() . "' AND DATE(end_date) <= '" . $targetDate->endOfMonth() . "') as target_leads");
+                $query = $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
 
-                $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='user' AND model_id=users.id AND type=7 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_activities");
+                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=7 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
-                if ($startDate->month == $endDate->month) {
-                    $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_deals");
-                }
+                // if ($startDate->month == $endDate->month) {
+                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_deals");
+                // }
 
                 $query = $query->with(['channels' => function ($channel) use ($channelId, $startDate, $endDate, $startDateCompare, $endDateCompare) {
                     $channel->selectRaw("id, name");
@@ -1520,10 +1474,10 @@ class NewReportController extends BaseApiController
                                 });
                             }
                         }])
-                        ->withCount(['channelLeads as total_activities' => function ($q) use ($startDate, $endDate) {
-                            $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
-                                $q2->whereCreatedAtRange($startDate, $endDate);
-                            });
+                        ->withCount(['channelActivities as total_activities' => function ($q) use ($startDate, $endDate) {
+                            // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
+                            $q->whereCreatedAtRange($startDate, $endDate);
+                            // });
 
                             if (request()->product_brand_id) {
                                 $q->whereHas('activityBrandValues', function ($q2) {
@@ -1531,10 +1485,10 @@ class NewReportController extends BaseApiController
                                 });
                             }
                         }])
-                        ->withCount(['channelLeads as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
-                            $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
-                                $q2->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                            });
+                        ->withCount(['channelActivities as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
+                            // $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
+                            $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                            // });
 
                             if (request()->product_brand_id) {
                                 $q->whereHas('activityBrandValues', function ($q2) {
@@ -1543,7 +1497,7 @@ class NewReportController extends BaseApiController
                             }
                         }])
                         ->withCount(['channelLeads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                            $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+                            $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal())->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
 
                             if ($channelId) $q->where('channel_id', $channelId);
 
@@ -1597,53 +1551,45 @@ class NewReportController extends BaseApiController
                         // ], 'estimated_value')
                         ->withSum(['channelOrders as total_quotation' => function ($q) use ($startDate, $endDate) {
                             $q->whereCreatedAtRange($startDate, $endDate);
-                            $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                            // $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                            $q->whereDoesntHave('orderPayments');
                             $q->whereNotIn('status', [5, 6]);
                         }], 'total_price')
                         ->withSum(['channelOrders as compare_total_quotation' => function ($q) use ($startDateCompare, $endDateCompare) {
+                            $q->whereDoesntHave('orderPayments');
                             $q->whereNotIn('status', [5, 6]);
                             $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
                         }], 'total_price')
                         ->withCount([
                             'channelOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
+                                $q->whereDeal($startDate, $endDate);
                                 if ($channelId) $q->where('channel_id', $channelId);
                             }
                         ], 'total_price')
                         ->withSum([
                             'channelOrders as total_deals' => function ($q) use ($startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
+                                $q->whereDeal($startDate, $endDate);
                             }
                         ], 'total_price')
                         ->withSum([
                             'channelOrders as compare_total_deals' => function ($q) use ($startDateCompare, $endDateCompare) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDateCompare, $endDateCompare);
-                            }
-                        ], 'total_price')
-                        ->withSum([
-                            'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                $q->whereNotNull('interior_design_id');
-                                if ($channelId) $q->where('channel_id', $channelId);
-                            }
-                        ], 'total_price')
-                        ->withCount([
-                            'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                $q->whereNotNull('interior_design_id');
-                                if ($channelId) $q->where('channel_id', $channelId);
+                                $q->whereDeal($startDateCompare, $endDateCompare);
                             }
                         ], 'total_price');
+                        // ->withSum([
+                        //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                        //         $q->whereDeal($startDate, $endDate)
+                        //             ->whereNotNull('interior_design_id');
+                        //         if ($channelId) $q->where('channel_id', $channelId);
+                        //     }
+                        // ], 'total_price')
+                        // ->withCount([
+                        //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                        //         $q->whereDeal($startDate, $endDate)
+                        //             ->whereNotNull('interior_design_id');
+                        //         if ($channelId) $q->where('channel_id', $channelId);
+                        //     }
+                        // ], 'total_price');
                 }]);
 
                 if ($request->name) {
@@ -1670,82 +1616,144 @@ class NewReportController extends BaseApiController
                 $summary_deals = 0;
                 $summary_total_deals_transaction = 0;
                 $summary_compare_deals = 0;
-                $summary_interior_design = 0;
-                $summary_interior_design_total_transaction = 0;
+                // $summary_interior_design = 0;
+                // $summary_interior_design_total_transaction = 0;
 
                 $data = [];
                 foreach ($result as $sl) {
+
+                    $channel_new_leads = 0;
+                    $channel_compare_new_leads = 0;
+                    $channel_active_leads = 0;
+                    $channel_compare_active_leads = 0;
+                    $channel_total_activities = 0;
+                    $channel_compare_total_activities = 0;
+                    $channel_target_activities = 0;
+                    $channel_hot_activities = 0;
+                    $channel_warm_activities = 0;
+                    $channel_cold_activities = 0;
+                    $channel_estimation = 0;
+                    $channel_compare_estimation = 0;
+                    $channel_quotation = 0;
+                    $channel_compare_quotation = 0;
+                    $channel_deals = 0;
+                    $channel_total_deals_transaction = 0;
+                    $channel_compare_deals = 0;
+                    // $channel_interior_design = 0;
+                    // $channel_interior_design_total_transaction = 0;
                     foreach ($sl->channels as $channel) {
                         $pbs = $this->getPbs($channel, $startDate, $endDate, $startDateCompare, $endDateCompare, $channelId, $companyId);
 
-                        $summary_new_leads += (int)$channel->total_leads ?? 0;
-                        $summary_compare_new_leads += (int)$channel->compare_total_leads ?? 0;
-                        $summary_active_leads += (int)$channel->active_leads ?? 0;
-                        $summary_compare_active_leads += (int)$channel->compare_active_leads ?? 0;
-                        $summary_total_activities += (int)$channel->total_activities ?? 0;
-                        $summary_compare_total_activities += (int)$channel->compare_total_activities ?? 0;
-                        $summary_target_activities += (int)$channel->target_activities ?? 0;
-                        $summary_hot_activities += (int)$channel->hot_activities ?? 0;
-                        $summary_warm_activities += (int)$channel->warm_activities ?? 0;
-                        $summary_cold_activities += (int)$channel->cold_activities ?? 0;
-                        $summary_estimation += $pbs['estimated_value'];
-                        $summary_compare_estimation += $pbs['compare_estimated_value'];
-                        // $summary_estimation += (int)$channel->total_estimation ?? 0;
-                        // $summary_compare_estimation += (int)$channel->compare_total_estimation ?? 0;
-                        $summary_quotation += (int)$channel->total_quotation ?? 0;
-                        $summary_compare_quotation += (int)$channel->compare_total_quotation ?? 0;
-                        $summary_deals += (int)$channel->total_deals ?? 0;
-                        $summary_total_deals_transaction += (int)$channel->total_deals_transaction ?? 0;
-                        $summary_compare_deals += (int)$channel->compare_total_deals ?? 0;
-                        $summary_interior_design += (int)$channel->interior_design ?? 0;
-                        $summary_interior_design_total_transaction += (int)$channel->interior_design_total_transaction ?? 0;
+                        $channel_new_leads += (int)$channel->total_leads ?? 0;
+                        $channel_compare_new_leads += (int)$channel->compare_total_leads ?? 0;
+                        $channel_active_leads += (int)$channel->active_leads ?? 0;
+                        $channel_compare_active_leads += (int)$channel->compare_active_leads ?? 0;
+                        $channel_total_activities += (int)$channel->total_activities ?? 0;
+                        $channel_compare_total_activities += (int)$channel->compare_total_activities ?? 0;
+                        $channel_target_activities += (int)$channel->target_activities ?? 0;
+                        $channel_hot_activities += (int)$channel->hot_activities ?? 0;
+                        $channel_warm_activities += (int)$channel->warm_activities ?? 0;
+                        $channel_cold_activities += (int)$channel->cold_activities ?? 0;
+                        $channel_estimation += $pbs['estimated_value'];
+                        $channel_compare_estimation += $pbs['compare_estimated_value'];
+                        // $channel_estimation += (int)$channel->total_estimation ?? 0;
+                        // $channel_compare_estimation += (int)$channel->compare_total_estimation ?? 0;
+                        $channel_quotation += (int)$channel->total_quotation ?? 0;
+                        $channel_compare_quotation += (int)$channel->compare_total_quotation ?? 0;
+                        $channel_deals += (int)$channel->total_deals ?? 0;
+                        $channel_total_deals_transaction += (int)$channel->total_deals_transaction ?? 0;
+                        $channel_compare_deals += (int)$channel->compare_total_deals ?? 0;
+                        // $channel_interior_design += (int)$channel->interior_design ?? 0;
+                        // $channel_interior_design_total_transaction += (int)$channel->interior_design_total_transaction ?? 0;
+
+                        // $summary_new_leads += (int)$channel->total_leads ?? 0;
+                        // $summary_compare_new_leads += (int)$channel->compare_total_leads ?? 0;
+                        // $summary_active_leads += (int)$channel->active_leads ?? 0;
+                        // $summary_compare_active_leads += (int)$channel->compare_active_leads ?? 0;
+                        // $summary_total_activities += (int)$channel->total_activities ?? 0;
+                        // $summary_compare_total_activities += (int)$channel->compare_total_activities ?? 0;
+                        // $summary_target_activities += (int)$channel->target_activities ?? 0;
+                        // $summary_hot_activities += (int)$channel->hot_activities ?? 0;
+                        // $summary_warm_activities += (int)$channel->warm_activities ?? 0;
+                        // $summary_cold_activities += (int)$channel->cold_activities ?? 0;
+                        // $summary_estimation += $pbs['estimated_value'];
+                        // $summary_compare_estimation += $pbs['compare_estimated_value'];
+                        // // $summary_estimation += (int)$channel->total_estimation ?? 0;
+                        // // $summary_compare_estimation += (int)$channel->compare_total_estimation ?? 0;
+                        // $summary_quotation += (int)$channel->total_quotation ?? 0;
+                        // $summary_compare_quotation += (int)$channel->compare_total_quotation ?? 0;
+                        // $summary_deals += (int)$channel->total_deals ?? 0;
+                        // $summary_total_deals_transaction += (int)$channel->total_deals_transaction ?? 0;
+                        // $summary_compare_deals += (int)$channel->compare_total_deals ?? 0;
+                        // $summary_interior_design += (int)$channel->interior_design ?? 0;
+                        // $summary_interior_design_total_transaction += (int)$channel->interior_design_total_transaction ?? 0;
                     }
 
                     $data['details'][] = [
                         'id' => $sl->id,
                         'name' => $sl->name,
                         'new_leads' => [
-                            'value' => $summary_new_leads,
-                            'compare' => $summary_compare_new_leads,
+                            'value' => $channel_new_leads,
+                            'compare' => $channel_compare_new_leads,
                             'target_leads' => (int)$sl->target_leads ?? 0,
                         ],
                         'active_leads' => [
-                            'value' => $summary_active_leads,
-                            'compare' => $summary_compare_active_leads,
+                            'value' => $channel_active_leads,
+                            'compare' => $channel_compare_active_leads,
                         ],
                         'follow_up' => [
                             'total_activities' => [
-                                'value' => $summary_total_activities,
-                                'compare' => $summary_compare_total_activities,
+                                'value' => $channel_total_activities,
+                                'compare' => $channel_compare_total_activities,
                                 'target_activities' => (int)$sl->target_activities ?? 0,
                             ],
-                            'hot_activities' => $summary_hot_activities,
-                            'warm_activities' => $summary_warm_activities,
-                            'cold_activities' => $summary_cold_activities,
+                            'hot_activities' => $channel_hot_activities,
+                            'warm_activities' => $channel_warm_activities,
+                            'cold_activities' => $channel_cold_activities,
                         ],
                         'estimation' => [
-                            'value' => $summary_estimation,
-                            'compare' => $summary_compare_estimation,
+                            'value' => $channel_estimation,
+                            'compare' => $channel_compare_estimation,
                         ],
                         'quotation' => [
-                            'value' => $summary_quotation,
-                            'compare' => $summary_compare_quotation,
+                            'value' => (int) $channel_quotation ?? 0,
+                            'compare' => (int) $channel_compare_quotation ?? 0,
                         ],
                         'deals' => [
-                            'value' => $summary_deals,
-                            'compare' => $summary_compare_deals,
-                            'total_transaction' => $summary_total_deals_transaction,
+                            'value' => potongPPN($channel_deals),
+                            'compare' => potongPPN($channel_compare_deals),
+                            'total_transaction' => $channel_total_deals_transaction,
                             'target_deals' => (int)$sl->target_deals ?? 0,
                         ],
-                        'interior_design' => [
-                            'value' => $summary_interior_design,
-                            'total_transaction' => $summary_interior_design_total_transaction,
-                        ],
-                        'retail' => [
-                            'value' => $summary_deals - $summary_interior_design,
-                            'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
-                        ],
+                        // 'interior_design' => [
+                        //     'value' => potongPPN($channel_interior_design),
+                        //     'total_transaction' => $channel_interior_design_total_transaction,
+                        // ],
+                        // 'retail' => [
+                        //     'value' => potongPPN($channel_deals - $channel_interior_design),
+                        //     'total_transaction' => $channel_total_deals_transaction - $channel_interior_design_total_transaction,
+                        // ],
                     ];
+
+                    $summary_new_leads += $channel_new_leads;
+                    $summary_compare_new_leads += $channel_compare_new_leads;
+                    $summary_active_leads += $channel_active_leads;
+                    $summary_compare_active_leads += $channel_compare_active_leads;
+                    $summary_total_activities += $channel_total_activities;
+                    $summary_compare_total_activities += $channel_compare_total_activities;
+                    $summary_target_activities += $channel_target_activities;
+                    $summary_hot_activities += $channel_hot_activities;
+                    $summary_warm_activities += $channel_warm_activities;
+                    $summary_cold_activities += $channel_cold_activities;
+                    $summary_estimation += $channel_estimation;
+                    $summary_compare_estimation += $channel_compare_estimation;
+                    $summary_quotation += $channel_quotation;
+                    $summary_compare_quotation += $channel_compare_quotation;
+                    $summary_deals += $channel_deals;
+                    $summary_total_deals_transaction += $channel_total_deals_transaction;
+                    $summary_compare_deals += $channel_compare_deals;
+                    // $summary_interior_design += $channel_interior_design;
+                    // $summary_interior_design_total_transaction += $channel_interior_design_total_transaction;
                 }
 
                 // ini belum bener totalnya
@@ -1777,208 +1785,203 @@ class NewReportController extends BaseApiController
                         'compare' => $summary_compare_quotation,
                     ],
                     'deals' => [
-                        'value' => $summary_deals,
-                        'compare' => $summary_compare_deals,
+                        'value' => potongPPN($summary_deals),
+                        'compare' => potongPPN($summary_compare_deals),
                         'total_transaction' => $summary_total_deals_transaction,
                     ],
-                    'interior_design' => [
-                        'value' => $summary_interior_design,
-                        'total_transaction' => $summary_interior_design_total_transaction,
-                    ],
-                    'retail' => [
-                        'value' => $summary_deals - $summary_interior_design,
-                        'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
-                    ],
+                    // 'interior_design' => [
+                    //     'value' => potongPPN($summary_interior_design),
+                    //     'total_transaction' => $summary_interior_design_total_transaction,
+                    // ],
+                    // 'retail' => [
+                    //     'value' => potongPPN($summary_deals - $summary_interior_design),
+                    //     'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
+                    // ],
                 ];
 
                 return response()->json(array_merge($data, $infoDate));
             } elseif ($request->user_type == 'store') {
                 $query = Channel::selectRaw('id, name')->where('company_id', $companyId);
+                // ->whereIn('id', $user->channels->pluck('id')->all());
 
-                $query = $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='channel' AND model_id=channels.id AND type=0 AND DATE(start_date) >= '" . $targetDate->startOfMonth() . "' AND DATE(end_date) <= '" . $targetDate->endOfMonth() . "') as target_leads");
+                $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='channel' AND model_id=channels.id AND type=0 AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
 
-                $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='channel' AND model_id=channels.id AND type=7 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_activities");
+                $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='channel' AND model_id=channels.id AND type=7 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
-                if ($startDate->month == $endDate->month) {
-                    $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='channel' AND model_id=channels.id AND type=0 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_deals");
-                }
-                $query = $query->with(['sales' => function ($q) use ($channelId, $startDate, $endDate, $startDateCompare, $endDateCompare) {
-                    $q->selectRaw("
-                            id,name,type,channel_id,
-                            (
-                                SELECT
-                                    count(DISTINCT customer_id)
-                                from
-                                    leads
-                                    JOIN customers on customers.id = leads.customer_id
-                                WHERE
-                                    date(customers.created_at) >= '" . $startDate . "'
-                                    and date(customers.created_at) <= '" . $endDate . "'
-                                    and user_id = users.id
-                                    " . ($channelId ? " and channel_id='" . $channelId . "'" : null) . "
-                                ) as total_leads
-                            ")
-                        // $q->withCount(['leads as total_leads' => function ($q) use ($startDate, $endDate) {
-                        //     $q->whereHas('customer', fn ($customer) => $customer->whereCreatedAtRange($startDate, $endDate));
+                // if ($startDate->month == $endDate->month) {
+                $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='channel' AND model_id=channels.id AND type=0 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_deals");
+                // }
 
-                        //     if (request()->product_brand_id) {
-                        //         $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
-                        //             $q2->where('product_brand_id', request()->product_brand_id);
-                        //         });
-                        //     }
-                        // }])
-                        ->withCount(['leads as compare_total_leads' => function ($q) use ($startDateCompare, $endDateCompare) {
-                            $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                $query->selectRaw("(SELECT SUM(estimated_value) FROM activity_brand_values abv
+                    WHERE abv.lead_id IN (SELECT id FROM leads ld WHERE ld.channel_id=channels.id)
+                    AND DATE(abv.created_at) >= '" . $startDate . "'
+                    AND DATE(abv.created_at) <= '" . $endDate . "')
+                    " . (request()->product_brand_id ? " and abv.product_brand_id='" . request()->product_brand_id . "'" : '') . "
+                    as total_estimation");
 
-                            if (request()->product_brand_id) {
-                                $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as active_leads' => function ($q) use ($startDate, $endDate) {
-                            $q->whereNotIn('status', [LeadStatus::EXPIRED])->whereNotIn('type', [LeadType::DROP]);
+                $query->selectRaw("(SELECT SUM(estimated_value) FROM activity_brand_values abv
+                    WHERE abv.lead_id IN (SELECT id FROM leads ld WHERE ld.channel_id=channels.id)
+                    AND DATE(abv.created_at) >= '" . $startDateCompare . "'
+                    AND DATE(abv.created_at) <= '" . $endDateCompare . "')
+                    " . (request()->product_brand_id ? " and abv.product_brand_id='" . request()->product_brand_id . "'" : '') . "
+                    as compare_total_estimation");
+                $query->selectRaw("
+                    (
+                        SELECT
+                            count(DISTINCT customer_id)
+                        from
+                            leads
+                            JOIN customers on customers.id = leads.customer_id
+                        WHERE
+                            date(customers.created_at) >= '" . $startDate . "'
+                            and date(customers.created_at) <= '" . $endDate . "'
+                            and channel_id = channels.id
+                            " . ($channelId ? " and channel_id='" . $channelId . "'" : null) . "
+                        ) as total_leads
+                    ")
+                    ->withCount(['channelLeads as compare_total_leads' => function ($q) use ($startDateCompare, $endDateCompare) {
+                        $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
 
-                            if (request()->product_brand_id) {
-                                $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as compare_active_leads' => function ($q) use ($startDateCompare, $endDateCompare) {
-                            $q->whereNotIn('status', [LeadStatus::EXPIRED])->whereNotIn('type', [LeadType::DROP]);
-
-                            if (request()->product_brand_id) {
-                                $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as total_activities' => function ($q) use ($startDate, $endDate) {
-                            $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
-                                $q2->whereCreatedAtRange($startDate, $endDate);
+                        if (request()->product_brand_id) {
+                            $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
                             });
+                        }
+                    }])
+                    ->withCount(['channelLeads as active_leads' => function ($q) use ($startDate, $endDate) {
+                        $q->whereNotIn('status', [LeadStatus::EXPIRED])->whereNotIn('type', [LeadType::DROP]);
 
-                            if (request()->product_brand_id) {
-                                $q->whereHas('activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
-                            $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
-                                $q2->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                        if (request()->product_brand_id) {
+                            $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
                             });
+                        }
+                    }])
+                    ->withCount(['channelLeads as compare_active_leads' => function ($q) use ($startDateCompare, $endDateCompare) {
+                        $q->whereNotIn('status', [LeadStatus::EXPIRED])->whereNotIn('type', [LeadType::DROP]);
 
-                            if (request()->product_brand_id) {
-                                $q->whereHas('activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                            $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+                        if (request()->product_brand_id) {
+                            $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    ->withCount(['channelActivities as total_activities' => function ($q) use ($startDate, $endDate) {
+                        // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
+                        $q->whereCreatedAtRange($startDate, $endDate);
+                        // });
 
+                        if (request()->product_brand_id) {
+                            $q->whereHas('activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    ->withCount(['channelActivities as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
+                        // $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
+                        $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                        // });
+
+                        if (request()->product_brand_id) {
+                            $q->whereHas('activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    ->withCount(['channelLeads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
+                        $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal())->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+
+                        if ($channelId) $q->where('channel_id', $channelId);
+
+                        if (request()->product_brand_id) {
+                            $q->whereHas('activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    ->withCount(['channelLeads as warm_activities' => function ($q) use ($channelId, $startDate, $endDate) {
+                        $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 2)->whereCreatedAtRange($startDate, $endDate));
+
+                        if ($channelId) $q->where('channel_id', $channelId);
+
+                        if (request()->product_brand_id) {
+                            $q->whereHas('activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    ->withCount(['channelLeads as cold_activities' => function ($q) use ($channelId, $startDate, $endDate) {
+                        $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 3)->whereCreatedAtRange($startDate, $endDate));
+
+                        if ($channelId) $q->where('channel_id', $channelId);
+
+                        if (request()->product_brand_id) {
+                            $q->whereHas('activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    // ->withSum([
+                    //     'activityBrandValues as total_estimation' => function ($q) use ($startDate, $endDate) {
+                    //         $q->whereCreatedAtRange($startDate, $endDate);
+                    //         // $q->whereHas('lead', fn ($q2) => $q2->whereNotIn('type', [4])); // lead type drop di allow dulu karena data new lead yang type nya drop dimunculin juga
+
+                    //         if (request()->product_brand_id) {
+                    //             $q->where('product_brand_id', request()->product_brand_id);
+                    //         }
+                    //     }
+                    // ], 'estimated_value')
+                    // ->withSum([
+                    //     'activityBrandValues as compare_total_estimation' => function ($q) use ($startDateCompare, $endDateCompare) {
+                    //         $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                    //         // $q->whereHas('lead', fn ($q2) => $q2->whereNotIn('type', [4])); // lead type drop di allow dulu karena data new lead yang type nya drop dimunculin juga
+
+                    //         if (request()->product_brand_id) {
+                    //             $q->where('product_brand_id', request()->product_brand_id);
+                    //         }
+                    //     }
+                    // ], 'estimated_value')
+                    ->withSum(['channelOrders as total_quotation' => function ($q) use ($startDate, $endDate) {
+                        $q->whereCreatedAtRange($startDate, $endDate);
+                        // $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                        $q->whereDoesntHave('orderPayments');
+                        $q->whereNotIn('status', [5, 6]);
+                    }], 'total_price')
+                    ->withSum(['channelOrders as compare_total_quotation' => function ($q) use ($startDateCompare, $endDateCompare) {
+                        $q->whereDoesntHave('orderPayments');
+                        $q->whereNotIn('status', [5, 6]);
+                        $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                    }], 'total_price')
+                    ->withCount([
+                        'channelOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                            $q->whereDeal($startDate, $endDate);
                             if ($channelId) $q->where('channel_id', $channelId);
-
-                            if (request()->product_brand_id) {
-                                $q->whereHas('activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as warm_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                            $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 2)->whereCreatedAtRange($startDate, $endDate));
-
-                            if ($channelId) $q->where('channel_id', $channelId);
-
-                            if (request()->product_brand_id) {
-                                $q->whereHas('activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as cold_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                            $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 3)->whereCreatedAtRange($startDate, $endDate));
-
-                            if ($channelId) $q->where('channel_id', $channelId);
-
-                            if (request()->product_brand_id) {
-                                $q->whereHas('activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withSum([
-                            'activityBrandValues as total_estimation' => function ($q) use ($startDate, $endDate) {
-                                $q->whereCreatedAtRange($startDate, $endDate);
-                                // $q->whereHas('lead', fn ($q2) => $q2->whereNotIn('type', [4])); // lead type drop di allow dulu karena data new lead yang type nya drop dimunculin juga
-
-                                if (request()->product_brand_id) {
-                                    $q->where('product_brand_id', request()->product_brand_id);
-                                }
-                            }
-                        ], 'estimated_value')
-                        ->withSum([
-                            'activityBrandValues as compare_total_estimation' => function ($q) use ($startDateCompare, $endDateCompare) {
-                                $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                                // $q->whereHas('lead', fn ($q2) => $q2->whereNotIn('type', [4])); // lead type drop di allow dulu karena data new lead yang type nya drop dimunculin juga
-
-                                if (request()->product_brand_id) {
-                                    $q->where('product_brand_id', request()->product_brand_id);
-                                }
-                            }
-                        ], 'estimated_value')
-                        ->withSum(['userOrders as total_quotation' => function ($q) use ($startDate, $endDate) {
-                            $q->whereCreatedAtRange($startDate, $endDate);
-                            $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
-                            $q->whereNotIn('status', [5, 6]);
-                        }], 'total_price')
-                        ->withSum(['userOrders as compare_total_quotation' => function ($q) use ($startDateCompare, $endDateCompare) {
-                            $q->whereNotIn('status', [5, 6]);
-                            $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                        }], 'total_price')
-                        ->withCount([
-                            'userOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                if ($channelId) $q->where('channel_id', $channelId);
-                            }
-                        ], 'total_price')
-                        ->withSum([
-                            'userOrders as total_deals' => function ($q) use ($startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                            }
-                        ], 'total_price')
-                        ->withSum([
-                            'userOrders as compare_total_deals' => function ($q) use ($startDateCompare, $endDateCompare) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDateCompare, $endDateCompare);
-                            }
-                        ], 'total_price')
-                        ->withSum([
-                            'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                $q->whereNotNull('interior_design_id');
-                                if ($channelId) $q->where('channel_id', $channelId);
-                            }
-                        ], 'total_price')
-                        ->withCount([
-                            'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                $q->whereNotNull('interior_design_id');
-                                if ($channelId) $q->where('channel_id', $channelId);
-                            }
-                        ], 'total_price');
-                }]);
+                        }
+                    ], 'total_price')
+                    ->withSum([
+                        'channelOrders as total_deals' => function ($q) use ($startDate, $endDate) {
+                            $q->whereDeal($startDate, $endDate);
+                        }
+                    ], 'total_price')
+                    ->withSum([
+                        'channelOrders as compare_total_deals' => function ($q) use ($startDateCompare, $endDateCompare) {
+                            $q->whereDeal($startDateCompare, $endDateCompare);
+                        }
+                    ], 'total_price');
+                    // ->withSum([
+                    //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                    //         $q->whereDeal($startDate, $endDate)
+                    //             ->whereNotNull('interior_design_id');
+                    //         if ($channelId) $q->where('channel_id', $channelId);
+                    //     }
+                    // ], 'total_price')
+                    // ->withCount([
+                    //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                    //         $q->whereDeal($startDate, $endDate)
+                    //             ->whereNotNull('interior_design_id');
+                    //         if ($channelId) $q->where('channel_id', $channelId);
+                    //     }
+                    // ], 'total_price');
 
                 if ($channelId) {
                     $query = $query->where('id', $channelId);
@@ -2007,120 +2010,119 @@ class NewReportController extends BaseApiController
                 $summary_deals = 0;
                 $summary_total_deals_transaction = 0;
                 $summary_compare_deals = 0;
-                $summary_interior_design = 0;
-                $summary_interior_design_total_transaction = 0;
+                $summary_total_deals_transaction = 0;
+                // $summary_interior_design = 0;
+                // $summary_interior_design_total_transaction = 0;
 
                 foreach ($result as $channel) {
-                    $sales_new_leads = 0;
-                    $sales_compare_new_leads = 0;
-                    $sales_active_leads = 0;
-                    $sales_compare_active_leads = 0;
-                    $sales_total_activities = 0;
-                    $sales_compare_total_activities = 0;
-                    $sales_hot_activities = 0;
-                    $sales_warm_activities = 0;
-                    $sales_cold_activities = 0;
-                    $sales_estimation = 0;
-                    $sales_compare_estimation = 0;
-                    $sales_quotation = 0;
-                    $sales_compare_quotation = 0;
-                    $sales_deals = 0;
-                    $sales_total_deals_transaction = 0;
-                    $sales_compare_deals = 0;
-                    $sales_interior_design = 0;
-                    $saels_interior_design_total_transaction = 0;
-                    foreach ($channel->sales as $sales) {
-                        $pbs = $this->getPbs($sales, $startDate, $endDate, $startDateCompare, $endDateCompare, $channelId, $companyId);
 
-                        $sales_new_leads += $sales->total_leads ?? 0;
-                        $sales_compare_new_leads += $sales->compare_total_leads ?? 0;
-                        $sales_active_leads += $sales->active_leads ?? 0;
-                        $sales_compare_active_leads += $sales->compare_active_leads ?? 0;
-                        $sales_total_activities += $sales->total_activities ?? 0;
-                        $sales_compare_total_activities += $sales->compare_total_activities ?? 0;
-                        $sales_hot_activities += $sales->hot_activities ?? 0;
-                        $sales_warm_activities += $sales->warm_activities ?? 0;
-                        $sales_cold_activities += $sales->cold_activities ?? 0;
-                        $sales_estimation += $pbs['estimated_value'];
-                        $sales_compare_estimation += $pbs['compare_estimated_value'];
-                        // $sales_estimation += $sales->total_estimation ?? 0;
-                        // $sales_compare_estimation += $sales->compare_total_estimation ?? 0;
-                        $sales_quotation += $sales->total_quotation ?? 0;
-                        $sales_compare_quotation += $sales->compare_total_quotation ?? 0;
-                        $sales_deals += $sales->total_deals ?? 0;
-                        $sales_total_deals_transaction += $sales->total_deals_transaction ?? 0;
-                        $sales_compare_deals += $sales->compare_total_deals ?? 0;
-                        $sales_interior_design += $sales->interior_design ?? 0;
-                        $saels_interior_design_total_transaction += $sales->interior_design_total_transaction ?? 0;
-                    }
+                    // $sales_new_leads = 0;
+                    // $sales_compare_new_leads = 0;
+                    // $sales_active_leads = 0;
+                    // $sales_compare_active_leads = 0;
+                    // $sales_total_activities = 0;
+                    // $sales_compare_total_activities = 0;
+                    // $sales_hot_activities = 0;
+                    // $sales_warm_activities = 0;
+                    // $sales_cold_activities = 0;
+                    // $sales_estimation = 0;
+                    // $sales_compare_estimation = 0;
+                    // $sales_quotation = 0;
+                    // $sales_compare_quotation = 0;
+                    // $sales_deals = 0;
+                    // $sales_total_deals_transaction = 0;
+                    // $sales_compare_deals = 0;
+                    // $sales_interior_design = 0;
+                    // $sales_interior_design_total_transaction = 0;
+                    // foreach ($channel->sales as $sales) {
+                    //     $pbs = $this->getPbs($sales, $startDate, $endDate, $startDateCompare, $endDateCompare);
+                    //     $sales_new_leads += $sales->total_leads ?? 0;
+                    //     $sales_compare_new_leads += $sales->compare_total_leads ?? 0;
+                    //     $sales_active_leads += $sales->active_leads ?? 0;
+                    //     $sales_compare_active_leads += $sales->compare_active_leads ?? 0;
+                    //     $sales_total_activities += $sales->total_activities ?? 0;
+                    //     $sales_compare_total_activities += $sales->compare_total_activities ?? 0;
+                    //     $sales_hot_activities += $sales->hot_activities ?? 0;
+                    //     $sales_warm_activities += $sales->warm_activities ?? 0;
+                    //     $sales_cold_activities += $sales->cold_activities ?? 0;
+                    //     $sales_estimation += $pbs['estimated_value'];
+                    //     $sales_compare_estimation += $pbs['compare_estimated_value'];
+                    //     // $sales_estimation += $sales->total_estimation ?? 0;
+                    //     // $sales_compare_estimation += $sales->compare_total_estimation ?? 0;
+                    //     $sales_quotation += $sales->total_quotation ?? 0;
+                    //     $sales_compare_quotation += $sales->compare_total_quotation ?? 0;
+                    //     $sales_deals += $sales->total_deals ?? 0;
+                    //     $sales_total_deals_transaction += $sales->total_deals_transaction ?? 0;
+                    //     $sales_compare_deals += $sales->compare_total_deals ?? 0;
+                    //     $sales_interior_design += $sales->interior_design ?? 0;
+                    //     $sales_interior_design_total_transaction += $sales->interior_design_total_transaction ?? 0;
+                    // }
 
-                    // $pbs = $this->getPbs($channel, $startDate, $endDate, $startDateCompare, $endDateCompare, $channelId, $companyId);
+                    $pbs = $this->getPbs($channel, $startDate, $endDate, $startDateCompare, $endDateCompare);
                     $data['details'][] = [
                         'id' => $channel->id,
                         'name' => $channel->name,
                         'new_leads' => [
-                            'value' => (int)$sales_new_leads ?? 0,
-                            'compare' => (int)$sales_compare_new_leads ?? 0,
+                            'value' => (int)$channel->total_leads ?? 0,
+                            'compare' => (int)$channel->compare_total_leads ?? 0,
                             'target_leads' => (int)$channel->target_leads ?? 0,
                         ],
                         'active_leads' => [
-                            'value' => (int)$sales_active_leads ?? 0,
-                            'compare' => (int)$sales_compare_active_leads ?? 0,
+                            'value' => (int)$channel->active_leads ?? 0,
+                            'compare' => (int)$channel->compare_active_leads ?? 0,
                         ],
                         'follow_up' => [
                             'total_activities' => [
-                                'value' => (int)$sales_total_activities ?? 0,
-                                'compare' => (int)$sales_compare_total_activities ?? 0,
+                                'value' => (int)$channel->total_activities ?? 0,
+                                'compare' => (int)$channel->compare_total_activities ?? 0,
                                 'target_activities' => (int)$channel->target_activities ?? 0,
                             ],
-                            'hot_activities' => (int)$sales_hot_activities ?? 0,
-                            'warm_activities' => (int)$sales_warm_activities ?? 0,
-                            'cold_activities' => (int)$sales_cold_activities ?? 0,
+                            'hot_activities' => (int)$channel->hot_activities ?? 0,
+                            'warm_activities' => (int)$channel->warm_activities ?? 0,
+                            'cold_activities' => (int)$channel->cold_activities ?? 0,
                         ],
                         'estimation' => [
-                            // 'value' => $pbs['estimated_value'],
-                            // 'compare' => $pbs['compare_estimated_value'],
-                            'value' => (int)$sales_estimation ?? 0,
-                            'compare' => (int)$sales_compare_estimation ?? 0,
+                            'value' => (int)$pbs['estimated_value'] ?? 0,
+                            'compare' => (int)$pbs['compare_estimated_value'] ?? 0,
                         ],
                         'quotation' => [
-                            'value' => (int)$sales_quotation ?? 0,
-                            'compare' => (int)$sales_compare_quotation ?? 0,
+                            'value' => (int) $channel->total_quotation ?? 0,
+                            'compare' => (int) $channel->compare_total_quotation ?? 0,
                         ],
                         'deals' => [
-                            'value' => (int)$sales_deals ?? 0,
-                            'compare' => (int)$sales_compare_deals ?? 0,
-                            'total_transaction' => $sales_total_deals_transaction,
+                            'value' => potongPPN($channel->total_deals),
+                            'compare' => potongPPN($channel->compare_total_deals),
+                            'total_transaction' => $channel->total_deals_transaction,
                             'target_deals' => (int)$channel->target_deals ?? 0,
                         ],
-                        'interior_design' => [
-                            'value' => $sales_interior_design,
-                            'total_transaction' => $saels_interior_design_total_transaction,
-                        ],
-                        'retail' => [
-                            'value' => $sales_deals - $sales_interior_design,
-                            'total_transaction' => $sales_total_deals_transaction - $saels_interior_design_total_transaction,
-                        ],
+                        // 'interior_design' => [
+                        //     'value' => potongPPN($channel->interior_design),
+                        //     'total_transaction' => (int)$channel->interior_design_total_transaction ?? 0,
+                        // ],
+                        // 'retail' => [
+                        //     'value' => potongPPN($channel->total_deals - $channel->interior_design),
+                        //     'total_transaction' => (int)($channel->total_deals_transaction - $channel->interior_design_total_transaction) ?? 0,
+                        // ],
                     ];
 
-                    $summary_new_leads += $sales_new_leads ?? 0;
-                    $summary_compare_new_leads += $sales_compare_new_leads ?? 0;
-                    $summary_active_leads += $sales_active_leads ?? 0;
-                    $summary_compare_active_leads += $sales_compare_active_leads ?? 0;
-                    $summary_total_activities += $sales_total_activities ?? 0;
-                    $summary_compare_total_activities += $sales_compare_total_activities ?? 0;
-                    $summary_hot_activities += $sales_hot_activities ?? 0;
-                    $summary_warm_activities += $sales_warm_activities ?? 0;
-                    $summary_cold_activities += $sales_cold_activities ?? 0;
-                    $summary_estimation += $sales_estimation ?? 0;
-                    $summary_compare_estimation += $sales_compare_estimation ?? 0;
-                    $summary_quotation += $sales_quotation ?? 0;
-                    $summary_compare_quotation += $sales_compare_quotation ?? 0;
-                    $summary_deals += $sales_deals ?? 0;
-                    $summary_total_deals_transaction += $sales_total_deals_transaction ?? 0;
-                    $summary_compare_deals += $sales_compare_deals ?? 0;
-                    $summary_interior_design += $sales_interior_design ?? 0;
-                    $summary_interior_design_total_transaction += $saels_interior_design_total_transaction ?? 0;
+                    $summary_new_leads += $channel->total_leads ?? 0;
+                    $summary_compare_new_leads += $channel->compare_total_leads ?? 0;
+                    $summary_active_leads += $channel->active_leads ?? 0;
+                    $summary_compare_active_leads += $channel->compare_active_leads ?? 0;
+                    $summary_total_activities += $channel->total_activities ?? 0;
+                    $summary_compare_total_activities += $channel->compare_total_activities ?? 0;
+                    $summary_hot_activities += $channel->hot_activities ?? 0;
+                    $summary_warm_activities += $channel->warm_activities ?? 0;
+                    $summary_cold_activities += $channel->cold_activities ?? 0;
+                    $summary_estimation += (int)$pbs['estimated_value'] ?? 0;
+                    $summary_compare_estimation += (int)$pbs['compare_estimated_value'] ?? 0;
+                    $summary_quotation += $channel->total_quotation ?? 0;
+                    $summary_compare_quotation += $channel->compare_total_quotation ?? 0;
+                    $summary_deals += $channel->total_deals ?? 0;
+                    $summary_total_deals_transaction += $channel->total_deals_transaction ?? 0;
+                    $summary_compare_deals += $channel->compare_total_deals ?? 0;
+                    // $summary_interior_design += $channel->interior_design ?? 0;
+                    // $summary_interior_design_total_transaction += $channel->interior_design_total_transaction ?? 0;
                 }
 
                 $data['summary'] = [
@@ -2150,18 +2152,18 @@ class NewReportController extends BaseApiController
                         'compare' => $summary_compare_quotation,
                     ],
                     'deals' => [
-                        'value' => $summary_deals,
-                        'compare' => $summary_compare_deals,
+                        'value' => potongPPN($summary_deals),
+                        'compare' => potongPPN($summary_compare_deals),
                         'total_transaction' => $summary_total_deals_transaction,
                     ],
-                    'interior_design' => [
-                        'value' => $summary_interior_design,
-                        'total_transaction' => $summary_interior_design_total_transaction,
-                    ],
-                    'retail' => [
-                        'value' => $summary_deals - $summary_interior_design,
-                        'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
-                    ],
+                    // 'interior_design' => [
+                    //     'value' => potongPPN($summary_interior_design),
+                    //     'total_transaction' => $summary_interior_design_total_transaction,
+                    // ],
+                    // 'retail' => [
+                    //     'value' => potongPPN($summary_deals - $summary_interior_design),
+                    //     'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
+                    // ],
                 ];
 
                 return response()->json(array_merge($data, $infoDate));
@@ -2182,13 +2184,13 @@ class NewReportController extends BaseApiController
                     ) as total_leads
                 ");
 
-            $query = $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(start_date) >= '" . $targetDate->startOfMonth() . "' AND DATE(end_date) <= '" . $targetDate->endOfMonth() . "') as target_leads");
+            $query = $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
 
-            $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='user' AND model_id=users.id AND type=7 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_activities");
+            $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=7 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
-            if ($startDate->month == $endDate->month) {
-                $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_deals");
-            }
+            // if ($startDate->month == $endDate->month) {
+            $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_deals");
+            // }
             $query = $query->where('type', 2)
                 ->where('company_id', $companyId)
                 ->withCount(['leads as compare_total_leads' => function ($q) use ($startDateCompare, $endDateCompare) {
@@ -2218,10 +2220,10 @@ class NewReportController extends BaseApiController
                         });
                     }
                 }])
-                ->withCount(['leads as total_activities' => function ($q) use ($startDate, $endDate) {
-                    $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
-                        $q2->whereCreatedAtRange($startDate, $endDate);
-                    });
+                ->withCount(['userActivities as total_activities' => function ($q) use ($startDate, $endDate) {
+                    // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
+                    $q->whereCreatedAtRange($startDate, $endDate);
+                    // });
 
                     if (request()->product_brand_id) {
                         $q->whereHas('activityBrandValues', function ($q2) {
@@ -2229,10 +2231,10 @@ class NewReportController extends BaseApiController
                         });
                     }
                 }])
-                ->withCount(['leads as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
-                    $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
-                        $q2->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                    });
+                ->withCount(['userActivities as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
+                    // $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
+                    $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                    // });
 
                     if (request()->product_brand_id) {
                         $q->whereHas('activityBrandValues', function ($q2) {
@@ -2241,7 +2243,7 @@ class NewReportController extends BaseApiController
                     }
                 }])
                 ->withCount(['leads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+                    $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal())->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
 
                     if ($channelId) $q->where('channel_id', $channelId);
 
@@ -2295,53 +2297,45 @@ class NewReportController extends BaseApiController
                 ], 'estimated_value')
                 ->withSum(['userOrders as total_quotation' => function ($q) use ($startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate);
-                    $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                    // $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                    $q->whereDoesntHave('orderPayments');
                     $q->whereNotIn('status', [5, 6]);
                 }], 'total_price')
                 ->withSum(['userOrders as compare_total_quotation' => function ($q) use ($startDateCompare, $endDateCompare) {
+                    $q->whereDoesntHave('orderPayments');
                     $q->whereNotIn('status', [5, 6]);
                     $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
                 }], 'total_price')
                 ->withCount([
                     'userOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
+                        $q->whereDeal($startDate, $endDate);
                         if ($channelId) $q->where('channel_id', $channelId);
                     }
                 ], 'total_price')
                 ->withSum([
                     'userOrders as total_deals' => function ($q) use ($startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
+                        $q->whereDeal($startDate, $endDate);
                     }
                 ], 'total_price')
                 ->withSum([
                     'userOrders as compare_total_deals' => function ($q) use ($startDateCompare, $endDateCompare) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDateCompare, $endDateCompare);
-                    }
-                ], 'total_price')
-                ->withSum([
-                    'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
-                        $q->whereNotNull('interior_design_id');
-                        if ($channelId) $q->where('channel_id', $channelId);
-                    }
-                ], 'total_price')
-                ->withCount([
-                    'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                        $q->whereNotIn('status', [5, 6]);
-                        $q->whereIn('payment_status', [2, 3, 4, 6]);
-                        $q->whereDealAtRange($startDate, $endDate);
-                        $q->whereNotNull('interior_design_id');
-                        if ($channelId) $q->where('channel_id', $channelId);
+                        $q->whereDeal($startDateCompare, $endDateCompare);
                     }
                 ], 'total_price');
+                // ->withSum([
+                //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                //         $q->whereDeal($startDate, $endDate)
+                //             ->whereNotNull('interior_design_id');
+                //         if ($channelId) $q->where('channel_id', $channelId);
+                //     }
+                // ], 'total_price')
+                // ->withCount([
+                //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                //         $q->whereDeal($startDate, $endDate)
+                //             ->whereNotNull('interior_design_id');
+                //         if ($channelId) $q->where('channel_id', $channelId);
+                //     }
+                // ], 'total_price');
 
             if ($request->name) {
                 $query = $query->where('name', 'like', '%' . $request->name . '%');
@@ -2365,8 +2359,8 @@ class NewReportController extends BaseApiController
             $summary_deals = 0;
             $summary_total_deals_transaction = 0;
             $summary_compare_deals = 0;
-            $summary_interior_design = 0;
-            $summary_interior_design_total_transaction = 0;
+            // $summary_interior_design = 0;
+            // $summary_interior_design_total_transaction = 0;
 
             $data = [];
             foreach ($result as $sales) {
@@ -2401,23 +2395,23 @@ class NewReportController extends BaseApiController
                         // 'compare' => (int)$sales->compare_total_estimation ?? 0,
                     ],
                     'quotation' => [
-                        'value' => (int)$sales->total_quotation ?? 0,
-                        'compare' => (int)$sales->compare_total_quotation ?? 0,
+                        'value' => (int) $sales->total_quotation ?? 0,
+                        'compare' => (int) $sales->compare_total_quotation ?? 0,
                     ],
                     'deals' => [
-                        'value' => (int)$sales->total_deals ?? 0,
-                        'compare' => (int)$sales->compare_total_deals ?? 0,
-                        'total_transaction' => (int)$sales->total_deals_transaction,
+                        'value' => potongPPN($sales->total_deals),
+                        'compare' => potongPPN($sales->compare_total_deals),
+                        'total_transaction' => (int)$sales->total_deals_transaction ?? 0,
                         'target_deals' => (int)$sales->target_deals ?? 0,
                     ],
-                    'interior_design' => [
-                        'value' => (int)$sales->interior_design ?? 0,
-                        'total_transaction' => (int)$sales->interior_design_total_transaction ?? 0,
-                    ],
-                    'retail' => [
-                        'value' => (int)($sales->total_deals - $sales->interior_design) ?? 0,
-                        'total_transaction' => (int)($sales->total_deals_transaction - $sales->interior_design_total_transaction) ?? 0,
-                    ],
+                    // 'interior_design' => [
+                    //     'value' => potongPPN($sales->interior_design),
+                    //     'total_transaction' => (int)$sales->interior_design_total_transaction ?? 0,
+                    // ],
+                    // 'retail' => [
+                    //     'value' => potongPPN($sales->total_deals - $sales->interior_design),
+                    //     'total_transaction' => (int)($sales->total_deals_transaction - $sales->interior_design_total_transaction) ?? 0,
+                    // ],
                 ];
 
                 $summary_new_leads += (int)$sales->total_leads ?? 0;
@@ -2438,8 +2432,8 @@ class NewReportController extends BaseApiController
                 $summary_deals += (int)$sales->total_deals ?? 0;
                 $summary_total_deals_transaction += (int)$sales->total_deals_transaction ?? 0;
                 $summary_compare_deals += (int)$sales->compare_total_deals ?? 0;
-                $summary_interior_design += (int)$sales->interior_design ?? 0;
-                $summary_interior_design_total_transaction += (int)$sales->interior_design_total_transaction ?? 0;
+                // $summary_interior_design += (int)$sales->interior_design ?? 0;
+                // $summary_interior_design_total_transaction += (int)$sales->interior_design_total_transaction ?? 0;
             }
 
             $data['summary'] = [
@@ -2469,18 +2463,18 @@ class NewReportController extends BaseApiController
                     'compare' => $summary_compare_quotation,
                 ],
                 'deals' => [
-                    'value' => $summary_deals,
-                    'compare' => $summary_compare_deals,
+                    'value' => potongPPN($summary_deals),
+                    'compare' => potongPPN($summary_compare_deals),
                     'total_transaction' => $summary_total_deals_transaction,
                 ],
-                'interior_design' => [
-                    'value' => $summary_interior_design,
-                    'total_transaction' => $summary_interior_design_total_transaction,
-                ],
-                'retail' => [
-                    'value' => $summary_deals - $summary_interior_design,
-                    'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
-                ],
+                // 'interior_design' => [
+                //     'value' => potongPPN($summary_interior_design),
+                //     'total_transaction' => $summary_interior_design_total_transaction,
+                // ],
+                // 'retail' => [
+                //     'value' => potongPPN($summary_deals - $summary_interior_design),
+                //     'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
+                // ],
             ];
 
             return response()->json(array_merge($data, $infoDate));
@@ -2488,25 +2482,28 @@ class NewReportController extends BaseApiController
             if ($request->user_type == 'store') {
                 $query = Channel::selectRaw('id, name')->whereIn('id', $user->channels->pluck('id')->all());
 
-                $query = $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='channel' AND model_id=channels.id AND type=0 AND DATE(start_date) >= '" . $targetDate->startOfMonth() . "' AND DATE(end_date) <= '" . $targetDate->endOfMonth() . "') as target_leads");
+                $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='channel' AND model_id=channels.id AND type=0 AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
 
-                $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='channel' AND model_id=channels.id AND type=7 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_activities");
+                $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='channel' AND model_id=channels.id AND type=7 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
-                if ($startDate->month == $endDate->month) {
-                    $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='channel' AND model_id=channels.id AND type=0 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_deals");
-                }
-                $query = $query->with(['sales' => function ($q) use ($channelId, $startDate, $endDate, $startDateCompare, $endDateCompare) {
-                    // $q->withCount(['leads as total_leads' => function ($q) use ($startDate, $endDate) {
-                    //     $q->whereHas('customer', fn ($customer) => $customer->whereCreatedAtRange($startDate, $endDate));
+                // if ($startDate->month == $endDate->month) {
+                $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='channel' AND model_id=channels.id AND type=0 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_deals");
+                // }
 
-                    //     if (request()->product_brand_id) {
-                    //         $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
-                    //             $q2->where('product_brand_id', request()->product_brand_id);
-                    //         });
-                    //     }
-                    // }])
-                    $q->selectRaw("
-                    id,name,type,channel_id,
+                $query->selectRaw("(SELECT SUM(estimated_value) FROM activity_brand_values abv
+                    WHERE abv.lead_id IN (SELECT id FROM leads ld WHERE ld.channel_id=channels.id)
+                    AND DATE(abv.created_at) >= '" . $startDate . "'
+                    AND DATE(abv.created_at) <= '" . $endDate . "')
+                    " . (request()->product_brand_id ? " and abv.product_brand_id='" . request()->product_brand_id . "'" : '') . "
+                    as total_estimation");
+
+                $query->selectRaw("(SELECT SUM(estimated_value) FROM activity_brand_values abv
+                    WHERE abv.lead_id IN (SELECT id FROM leads ld WHERE ld.channel_id=channels.id)
+                    AND DATE(abv.created_at) >= '" . $startDateCompare . "'
+                    AND DATE(abv.created_at) <= '" . $endDateCompare . "')
+                    " . (request()->product_brand_id ? " and abv.product_brand_id='" . request()->product_brand_id . "'" : '') . "
+                    as compare_total_estimation");
+                $query->selectRaw("
                     (
                         SELECT
                             count(DISTINCT customer_id)
@@ -2516,162 +2513,153 @@ class NewReportController extends BaseApiController
                         WHERE
                             date(customers.created_at) >= '" . $startDate . "'
                             and date(customers.created_at) <= '" . $endDate . "'
-                            and user_id = users.id
+                            and channel_id = channels.id
                             " . ($channelId ? " and channel_id='" . $channelId . "'" : null) . "
                         ) as total_leads
                     ")
-                        ->withCount(['leads as compare_total_leads' => function ($q) use ($startDateCompare, $endDateCompare) {
-                            $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                    ->withCount(['channelLeads as compare_total_leads' => function ($q) use ($startDateCompare, $endDateCompare) {
+                        $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
 
-                            if (request()->product_brand_id) {
-                                $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as active_leads' => function ($q) use ($startDate, $endDate) {
-                            $q->whereNotIn('status', [LeadStatus::EXPIRED])->whereNotIn('type', [LeadType::DROP]);
-
-                            if (request()->product_brand_id) {
-                                $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as compare_active_leads' => function ($q) use ($startDateCompare, $endDateCompare) {
-                            $q->whereNotIn('status', [LeadStatus::EXPIRED])->whereNotIn('type', [LeadType::DROP]);
-
-                            if (request()->product_brand_id) {
-                                $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as total_activities' => function ($q) use ($startDate, $endDate) {
-                            $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
-                                $q2->whereCreatedAtRange($startDate, $endDate);
+                        if (request()->product_brand_id) {
+                            $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
                             });
+                        }
+                    }])
+                    ->withCount(['channelLeads as active_leads' => function ($q) use ($startDate, $endDate) {
+                        $q->whereNotIn('status', [LeadStatus::EXPIRED])->whereNotIn('type', [LeadType::DROP]);
 
-                            if (request()->product_brand_id) {
-                                $q->whereHas('activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
-                            $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
-                                $q2->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                        if (request()->product_brand_id) {
+                            $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
                             });
+                        }
+                    }])
+                    ->withCount(['channelLeads as compare_active_leads' => function ($q) use ($startDateCompare, $endDateCompare) {
+                        $q->whereNotIn('status', [LeadStatus::EXPIRED])->whereNotIn('type', [LeadType::DROP]);
 
-                            if (request()->product_brand_id) {
-                                $q->whereHas('activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                            $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+                        if (request()->product_brand_id) {
+                            $q->whereHas('leadActivities.activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    ->withCount(['channelActivities as total_activities' => function ($q) use ($startDate, $endDate) {
+                        // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
+                        $q->whereCreatedAtRange($startDate, $endDate);
+                        // });
 
+                        if (request()->product_brand_id) {
+                            $q->whereHas('activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    ->withCount(['channelActivities as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
+                        // $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
+                        $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                        // });
+
+                        if (request()->product_brand_id) {
+                            $q->whereHas('activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    ->withCount(['channelLeads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
+                        $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal())->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+
+                        if ($channelId) $q->where('channel_id', $channelId);
+
+                        if (request()->product_brand_id) {
+                            $q->whereHas('activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    ->withCount(['channelLeads as warm_activities' => function ($q) use ($channelId, $startDate, $endDate) {
+                        $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 2)->whereCreatedAtRange($startDate, $endDate));
+
+                        if ($channelId) $q->where('channel_id', $channelId);
+
+                        if (request()->product_brand_id) {
+                            $q->whereHas('activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    ->withCount(['channelLeads as cold_activities' => function ($q) use ($channelId, $startDate, $endDate) {
+                        $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 3)->whereCreatedAtRange($startDate, $endDate));
+
+                        if ($channelId) $q->where('channel_id', $channelId);
+
+                        if (request()->product_brand_id) {
+                            $q->whereHas('activityBrandValues', function ($q2) {
+                                $q2->where('product_brand_id', request()->product_brand_id);
+                            });
+                        }
+                    }])
+                    // ->withSum([
+                    //     'activityBrandValues as total_estimation' => function ($q) use ($startDate, $endDate) {
+                    //         $q->whereCreatedAtRange($startDate, $endDate);
+                    //         // $q->whereHas('lead', fn ($q2) => $q2->whereNotIn('type', [4])); // lead type drop di allow dulu karena data new lead yang type nya drop dimunculin juga
+
+                    //         if (request()->product_brand_id) {
+                    //             $q->where('product_brand_id', request()->product_brand_id);
+                    //         }
+                    //     }
+                    // ], 'estimated_value')
+                    // ->withSum([
+                    //     'activityBrandValues as compare_total_estimation' => function ($q) use ($startDateCompare, $endDateCompare) {
+                    //         $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                    //         // $q->whereHas('lead', fn ($q2) => $q2->whereNotIn('type', [4])); // lead type drop di allow dulu karena data new lead yang type nya drop dimunculin juga
+
+                    //         if (request()->product_brand_id) {
+                    //             $q->where('product_brand_id', request()->product_brand_id);
+                    //         }
+                    //     }
+                    // ], 'estimated_value')
+                    ->withSum(['channelOrders as total_quotation' => function ($q) use ($startDate, $endDate) {
+                        $q->whereCreatedAtRange($startDate, $endDate);
+                        // $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                        $q->whereDoesntHave('orderPayments');
+                        $q->whereNotIn('status', [5, 6]);
+                    }], 'total_price')
+                    ->withSum(['channelOrders as compare_total_quotation' => function ($q) use ($startDateCompare, $endDateCompare) {
+                        $q->whereDoesntHave('orderPayments');
+                        $q->whereNotIn('status', [5, 6]);
+                        $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                    }], 'total_price')
+                    ->withCount([
+                        'channelOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                            $q->whereDeal($startDate, $endDate);
                             if ($channelId) $q->where('channel_id', $channelId);
-
-                            if (request()->product_brand_id) {
-                                $q->whereHas('activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as warm_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                            $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 2)->whereCreatedAtRange($startDate, $endDate));
-
-                            if ($channelId) $q->where('channel_id', $channelId);
-
-                            if (request()->product_brand_id) {
-                                $q->whereHas('activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withCount(['leads as cold_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                            $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 3)->whereCreatedAtRange($startDate, $endDate));
-
-                            if ($channelId) $q->where('channel_id', $channelId);
-
-                            if (request()->product_brand_id) {
-                                $q->whereHas('activityBrandValues', function ($q2) {
-                                    $q2->where('product_brand_id', request()->product_brand_id);
-                                });
-                            }
-                        }])
-                        ->withSum([
-                            'activityBrandValues as total_estimation' => function ($q) use ($startDate, $endDate) {
-                                $q->whereCreatedAtRange($startDate, $endDate);
-                                // $q->whereHas('lead', fn ($q2) => $q2->whereNotIn('type', [4])); // lead type drop di allow dulu karena data new lead yang type nya drop dimunculin juga
-
-                                if (request()->product_brand_id) {
-                                    $q->where('product_brand_id', request()->product_brand_id);
-                                }
-                            }
-                        ], 'estimated_value')
-                        ->withSum([
-                            'activityBrandValues as compare_total_estimation' => function ($q) use ($startDateCompare, $endDateCompare) {
-                                $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                                // $q->whereHas('lead', fn ($q2) => $q2->whereNotIn('type', [4])); // lead type drop di allow dulu karena data new lead yang type nya drop dimunculin juga
-
-                                if (request()->product_brand_id) {
-                                    $q->where('product_brand_id', request()->product_brand_id);
-                                }
-                            }
-                        ], 'estimated_value')
-                        ->withSum(['userOrders as total_quotation' => function ($q) use ($startDate, $endDate) {
-                            $q->whereCreatedAtRange($startDate, $endDate);
-                            $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
-                            $q->whereNotIn('status', [5, 6]);
-                        }], 'total_price')
-                        ->withSum(['userOrders as compare_total_quotation' => function ($q) use ($startDateCompare, $endDateCompare) {
-                            $q->whereNotIn('status', [5, 6]);
-                            $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                        }], 'total_price')
-                        ->withCount([
-                            'userOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                if ($channelId) $q->where('channel_id', $channelId);
-                            }
-                        ], 'total_price')
-                        ->withSum([
-                            'userOrders as total_deals' => function ($q) use ($startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                            }
-                        ], 'total_price')
-                        ->withSum([
-                            'userOrders as compare_total_deals' => function ($q) use ($startDateCompare, $endDateCompare) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDateCompare, $endDateCompare);
-                            }
-                        ], 'total_price')
-                        ->withSum([
-                            'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                $q->whereNotNull('interior_design_id');
-                                if ($channelId) $q->where('channel_id', $channelId);
-                            }
-                        ], 'total_price')
-                        ->withCount([
-                            'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                $q->whereNotNull('interior_design_id');
-                                if ($channelId) $q->where('channel_id', $channelId);
-                            }
-                        ], 'total_price');
-                }]);
+                        }
+                    ], 'total_price')
+                    ->withSum([
+                        'channelOrders as total_deals' => function ($q) use ($startDate, $endDate) {
+                            $q->whereDeal($startDate, $endDate);
+                        }
+                    ], 'total_price')
+                    ->withSum([
+                        'channelOrders as compare_total_deals' => function ($q) use ($startDateCompare, $endDateCompare) {
+                            $q->whereDeal($startDateCompare, $endDateCompare);
+                        }
+                    ], 'total_price');
+                    // ->withSum([
+                    //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                    //         $q->whereDeal($startDate, $endDate)
+                    //             ->whereNotNull('interior_design_id');
+                    //         if ($channelId) $q->where('channel_id', $channelId);
+                    //     }
+                    // ], 'total_price')
+                    // ->withCount([
+                    //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                    //         $q->whereDeal($startDate, $endDate)
+                    //             ->whereNotNull('interior_design_id');
+                    //         if ($channelId) $q->where('channel_id', $channelId);
+                    //     }
+                    // ], 'total_price');
 
                 if ($channelId) {
                     $query = $query->where('id', $channelId);
@@ -2700,118 +2688,119 @@ class NewReportController extends BaseApiController
                 $summary_deals = 0;
                 $summary_total_deals_transaction = 0;
                 $summary_compare_deals = 0;
-                $summary_interior_design = 0;
                 $summary_total_deals_transaction = 0;
-                $summary_interior_design_total_transaction = 0;
+                // $summary_interior_design = 0;
+                // $summary_interior_design_total_transaction = 0;
 
                 foreach ($result as $channel) {
 
-                    $sales_new_leads = 0;
-                    $sales_compare_new_leads = 0;
-                    $sales_active_leads = 0;
-                    $sales_compare_active_leads = 0;
-                    $sales_total_activities = 0;
-                    $sales_compare_total_activities = 0;
-                    $sales_hot_activities = 0;
-                    $sales_warm_activities = 0;
-                    $sales_cold_activities = 0;
-                    $sales_estimation = 0;
-                    $sales_compare_estimation = 0;
-                    $sales_quotation = 0;
-                    $sales_compare_quotation = 0;
-                    $sales_deals = 0;
-                    $sales_total_deals_transaction = 0;
-                    $sales_compare_deals = 0;
-                    $sales_interior_design = 0;
-                    $sales_interior_design_total_transaction = 0;
-                    foreach ($channel->sales as $sales) {
-                        $pbs = $this->getPbs($sales, $startDate, $endDate, $startDateCompare, $endDateCompare);
-                        $sales_new_leads += $sales->total_leads ?? 0;
-                        $sales_compare_new_leads += $sales->compare_total_leads ?? 0;
-                        $sales_active_leads += $sales->active_leads ?? 0;
-                        $sales_compare_active_leads += $sales->compare_active_leads ?? 0;
-                        $sales_total_activities += $sales->total_activities ?? 0;
-                        $sales_compare_total_activities += $sales->compare_total_activities ?? 0;
-                        $sales_hot_activities += $sales->hot_activities ?? 0;
-                        $sales_warm_activities += $sales->warm_activities ?? 0;
-                        $sales_cold_activities += $sales->cold_activities ?? 0;
-                        $sales_estimation += $pbs['estimated_value'];
-                        $sales_compare_estimation += $pbs['compare_estimated_value'];
-                        // $sales_estimation += $sales->total_estimation ?? 0;
-                        // $sales_compare_estimation += $sales->compare_total_estimation ?? 0;
-                        $sales_quotation += $sales->total_quotation ?? 0;
-                        $sales_compare_quotation += $sales->compare_total_quotation ?? 0;
-                        $sales_deals += $sales->total_deals ?? 0;
-                        $sales_total_deals_transaction += $sales->total_deals_transaction ?? 0;
-                        $sales_compare_deals += $sales->compare_total_deals ?? 0;
-                        $sales_interior_design += $sales->interior_design ?? 0;
-                        $sales_interior_design_total_transaction += $sales->interior_design_total_transaction ?? 0;
-                    }
+                    // $sales_new_leads = 0;
+                    // $sales_compare_new_leads = 0;
+                    // $sales_active_leads = 0;
+                    // $sales_compare_active_leads = 0;
+                    // $sales_total_activities = 0;
+                    // $sales_compare_total_activities = 0;
+                    // $sales_hot_activities = 0;
+                    // $sales_warm_activities = 0;
+                    // $sales_cold_activities = 0;
+                    // $sales_estimation = 0;
+                    // $sales_compare_estimation = 0;
+                    // $sales_quotation = 0;
+                    // $sales_compare_quotation = 0;
+                    // $sales_deals = 0;
+                    // $sales_total_deals_transaction = 0;
+                    // $sales_compare_deals = 0;
+                    // $sales_interior_design = 0;
+                    // $sales_interior_design_total_transaction = 0;
+                    // foreach ($channel->sales as $sales) {
+                    //     $pbs = $this->getPbs($sales, $startDate, $endDate, $startDateCompare, $endDateCompare);
+                    //     $sales_new_leads += $sales->total_leads ?? 0;
+                    //     $sales_compare_new_leads += $sales->compare_total_leads ?? 0;
+                    //     $sales_active_leads += $sales->active_leads ?? 0;
+                    //     $sales_compare_active_leads += $sales->compare_active_leads ?? 0;
+                    //     $sales_total_activities += $sales->total_activities ?? 0;
+                    //     $sales_compare_total_activities += $sales->compare_total_activities ?? 0;
+                    //     $sales_hot_activities += $sales->hot_activities ?? 0;
+                    //     $sales_warm_activities += $sales->warm_activities ?? 0;
+                    //     $sales_cold_activities += $sales->cold_activities ?? 0;
+                    //     $sales_estimation += $pbs['estimated_value'];
+                    //     $sales_compare_estimation += $pbs['compare_estimated_value'];
+                    //     // $sales_estimation += $sales->total_estimation ?? 0;
+                    //     // $sales_compare_estimation += $sales->compare_total_estimation ?? 0;
+                    //     $sales_quotation += $sales->total_quotation ?? 0;
+                    //     $sales_compare_quotation += $sales->compare_total_quotation ?? 0;
+                    //     $sales_deals += $sales->total_deals ?? 0;
+                    //     $sales_total_deals_transaction += $sales->total_deals_transaction ?? 0;
+                    //     $sales_compare_deals += $sales->compare_total_deals ?? 0;
+                    //     $sales_interior_design += $sales->interior_design ?? 0;
+                    //     $sales_interior_design_total_transaction += $sales->interior_design_total_transaction ?? 0;
+                    // }
 
+                    $pbs = $this->getPbs($channel, $startDate, $endDate, $startDateCompare, $endDateCompare);
                     $data['details'][] = [
                         'id' => $channel->id,
                         'name' => $channel->name,
                         'new_leads' => [
-                            'value' => (int)$sales_new_leads ?? 0,
-                            'compare' => (int)$sales_compare_new_leads ?? 0,
+                            'value' => (int)$channel->total_leads ?? 0,
+                            'compare' => (int)$channel->compare_total_leads ?? 0,
                             'target_leads' => (int)$channel->target_leads ?? 0,
                         ],
                         'active_leads' => [
-                            'value' => (int)$sales_active_leads ?? 0,
-                            'compare' => (int)$sales_compare_active_leads ?? 0,
+                            'value' => (int)$channel->active_leads ?? 0,
+                            'compare' => (int)$channel->compare_active_leads ?? 0,
                         ],
                         'follow_up' => [
                             'total_activities' => [
-                                'value' => (int)$sales_total_activities ?? 0,
-                                'compare' => (int)$sales_compare_total_activities ?? 0,
+                                'value' => (int)$channel->total_activities ?? 0,
+                                'compare' => (int)$channel->compare_total_activities ?? 0,
                                 'target_activities' => (int)$channel->target_activities ?? 0,
                             ],
-                            'hot_activities' => (int)$sales_hot_activities ?? 0,
-                            'warm_activities' => (int)$sales_warm_activities ?? 0,
-                            'cold_activities' => (int)$sales_cold_activities ?? 0,
+                            'hot_activities' => (int)$channel->hot_activities ?? 0,
+                            'warm_activities' => (int)$channel->warm_activities ?? 0,
+                            'cold_activities' => (int)$channel->cold_activities ?? 0,
                         ],
                         'estimation' => [
-                            'value' => (int)$sales_estimation ?? 0,
-                            'compare' => (int)$sales_compare_estimation ?? 0,
+                            'value' => (int)$pbs['estimated_value'] ?? 0,
+                            'compare' => (int)$pbs['compare_estimated_value'] ?? 0,
                         ],
                         'quotation' => [
-                            'value' => (int)$sales_quotation ?? 0,
-                            'compare' => (int)$sales_compare_quotation ?? 0,
+                            'value' => (int) $channel->total_quotation ?? 0,
+                            'compare' => (int) $channel->compare_total_quotation ?? 0,
                         ],
                         'deals' => [
-                            'value' => (int)$sales_deals ?? 0,
-                            'compare' => (int)$sales_compare_deals ?? 0,
-                            'total_transaction' => $sales_total_deals_transaction,
+                            'value' => potongPPN($channel->total_deals),
+                            'compare' => potongPPN($channel->compare_total_deals),
+                            'total_transaction' => $channel->total_deals_transaction,
                             'target_deals' => (int)$channel->target_deals ?? 0,
                         ],
-                        'interior_design' => [
-                            'value' => (int)$sales_interior_design ?? 0,
-                            'total_transaction' => (int)$sales_interior_design_total_transaction ?? 0,
-                        ],
-                        'retail' => [
-                            'value' => (int)($sales_deals - $sales_interior_design) ?? 0,
-                            'total_transaction' => (int)($sales_total_deals_transaction - $sales_interior_design_total_transaction) ?? 0,
-                        ],
+                        // 'interior_design' => [
+                        //     'value' => potongPPN($channel->interior_design),
+                        //     'total_transaction' => (int)$channel->interior_design_total_transaction ?? 0,
+                        // ],
+                        // 'retail' => [
+                        //     'value' => potongPPN($channel->total_deals - $channel->interior_design),
+                        //     'total_transaction' => (int)($channel->total_deals_transaction - $channel->interior_design_total_transaction) ?? 0,
+                        // ],
                     ];
 
-                    $summary_new_leads += $sales_new_leads ?? 0;
-                    $summary_compare_new_leads += $sales_compare_new_leads ?? 0;
-                    $summary_active_leads += $sales_active_leads ?? 0;
-                    $summary_compare_active_leads += $sales_compare_active_leads ?? 0;
-                    $summary_total_activities += $sales_total_activities ?? 0;
-                    $summary_compare_total_activities += $sales_compare_total_activities ?? 0;
-                    $summary_hot_activities += $sales_hot_activities ?? 0;
-                    $summary_warm_activities += $sales_warm_activities ?? 0;
-                    $summary_cold_activities += $sales_cold_activities ?? 0;
-                    $summary_estimation += (int)$sales_estimation ?? 0;
-                    $summary_compare_estimation += (int)$sales_compare_estimation ?? 0;
-                    $summary_quotation += $sales_quotation ?? 0;
-                    $summary_compare_quotation += $sales_compare_quotation ?? 0;
-                    $summary_deals += $sales_deals ?? 0;
-                    $summary_total_deals_transaction += $sales_total_deals_transaction ?? 0;
-                    $summary_compare_deals += $sales_compare_deals ?? 0;
-                    $summary_interior_design += $sales_interior_design ?? 0;
-                    $summary_interior_design_total_transaction += $sales_interior_design_total_transaction ?? 0;
+                    $summary_new_leads += $channel->total_leads ?? 0;
+                    $summary_compare_new_leads += $channel->compare_total_leads ?? 0;
+                    $summary_active_leads += $channel->active_leads ?? 0;
+                    $summary_compare_active_leads += $channel->compare_active_leads ?? 0;
+                    $summary_total_activities += $channel->total_activities ?? 0;
+                    $summary_compare_total_activities += $channel->compare_total_activities ?? 0;
+                    $summary_hot_activities += $channel->hot_activities ?? 0;
+                    $summary_warm_activities += $channel->warm_activities ?? 0;
+                    $summary_cold_activities += $channel->cold_activities ?? 0;
+                    $summary_estimation += (int)$pbs['estimated_value'] ?? 0;
+                    $summary_compare_estimation += (int)$pbs['compare_estimated_value'] ?? 0;
+                    $summary_quotation += $channel->total_quotation ?? 0;
+                    $summary_compare_quotation += $channel->compare_total_quotation ?? 0;
+                    $summary_deals += $channel->total_deals ?? 0;
+                    $summary_total_deals_transaction += $channel->total_deals_transaction ?? 0;
+                    $summary_compare_deals += $channel->compare_total_deals ?? 0;
+                    // $summary_interior_design += $channel->interior_design ?? 0;
+                    // $summary_interior_design_total_transaction += $channel->interior_design_total_transaction ?? 0;
                 }
 
                 $data['summary'] = [
@@ -2841,18 +2830,18 @@ class NewReportController extends BaseApiController
                         'compare' => $summary_compare_quotation,
                     ],
                     'deals' => [
-                        'value' => $summary_deals,
-                        'compare' => $summary_compare_deals,
+                        'value' => potongPPN($summary_deals),
+                        'compare' => potongPPN($summary_compare_deals),
                         'total_transaction' => $summary_total_deals_transaction,
                     ],
-                    'interior_design' => [
-                        'value' => $summary_interior_design,
-                        'total_transaction' => $summary_interior_design_total_transaction,
-                    ],
-                    'retail' => [
-                        'value' => $summary_deals - $summary_interior_design,
-                        'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
-                    ],
+                    // 'interior_design' => [
+                    //     'value' => potongPPN($summary_interior_design),
+                    //     'total_transaction' => $summary_interior_design_total_transaction,
+                    // ],
+                    // 'retail' => [
+                    //     'value' => potongPPN($summary_deals - $summary_interior_design),
+                    //     'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
+                    // ],
                 ];
 
                 return response()->json(array_merge($data, $infoDate));
@@ -2863,13 +2852,13 @@ class NewReportController extends BaseApiController
                     ->where('supervisor_id', $user->id)
                     ->whereHas('channels', fn ($q) => $q->whereIn('id', $user->channels->pluck('id')->all()));
 
-                $query = $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(start_date) >= '" . $targetDate->startOfMonth() . "' AND DATE(end_date) <= '" . $targetDate->endOfMonth() . "') as target_leads");
+                $query = $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
 
-                $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='user' AND model_id=users.id AND type=7 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_activities");
+                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=7 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
-                if ($startDate->month == $endDate->month) {
-                    $query = $query->selectRaw("(SELECT target FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_deals");
-                }
+                // if ($startDate->month == $endDate->month) {
+                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_deals");
+                // }
 
                 $query = $query->with(['channels' => function ($channel) use ($channelId, $startDate, $endDate, $startDateCompare, $endDateCompare) {
                     $channel->selectRaw("id, name");
@@ -2928,10 +2917,10 @@ class NewReportController extends BaseApiController
                                 });
                             }
                         }])
-                        ->withCount(['channelLeads as total_activities' => function ($q) use ($startDate, $endDate) {
-                            $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
-                                $q2->whereCreatedAtRange($startDate, $endDate);
-                            });
+                        ->withCount(['channelActivities as total_activities' => function ($q) use ($startDate, $endDate) {
+                            // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
+                            $q->whereCreatedAtRange($startDate, $endDate);
+                            // });
 
                             if (request()->product_brand_id) {
                                 $q->whereHas('activityBrandValues', function ($q2) {
@@ -2939,10 +2928,10 @@ class NewReportController extends BaseApiController
                                 });
                             }
                         }])
-                        ->withCount(['channelLeads as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
-                            $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
-                                $q2->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                            });
+                        ->withCount(['channelActivities as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
+                            // $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
+                            $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                            // });
 
                             if (request()->product_brand_id) {
                                 $q->whereHas('activityBrandValues', function ($q2) {
@@ -2951,7 +2940,7 @@ class NewReportController extends BaseApiController
                             }
                         }])
                         ->withCount(['channelLeads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                            $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+                            $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal())->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
 
                             if ($channelId) $q->where('channel_id', $channelId);
 
@@ -3005,53 +2994,45 @@ class NewReportController extends BaseApiController
                         // ], 'estimated_value')
                         ->withSum(['channelOrders as total_quotation' => function ($q) use ($startDate, $endDate) {
                             $q->whereCreatedAtRange($startDate, $endDate);
-                            $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                            // $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                            $q->whereDoesntHave('orderPayments');
                             $q->whereNotIn('status', [5, 6]);
                         }], 'total_price')
                         ->withSum(['channelOrders as compare_total_quotation' => function ($q) use ($startDateCompare, $endDateCompare) {
+                            $q->whereDoesntHave('orderPayments');
                             $q->whereNotIn('status', [5, 6]);
                             $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
                         }], 'total_price')
                         ->withCount([
                             'channelOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
+                                $q->whereDeal($startDate, $endDate);
                                 if ($channelId) $q->where('channel_id', $channelId);
                             }
                         ], 'total_price')
                         ->withSum([
                             'channelOrders as total_deals' => function ($q) use ($startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
+                                $q->whereDeal($startDate, $endDate);
                             }
                         ], 'total_price')
                         ->withSum([
                             'channelOrders as compare_total_deals' => function ($q) use ($startDateCompare, $endDateCompare) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDateCompare, $endDateCompare);
-                            }
-                        ], 'total_price')
-                        ->withSum([
-                            'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                $q->whereNotNull('interior_design_id');
-                                if ($channelId) $q->where('channel_id', $channelId);
-                            }
-                        ], 'total_price')
-                        ->withCount([
-                            'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                $q->whereNotNull('interior_design_id');
-                                if ($channelId) $q->where('channel_id', $channelId);
+                                $q->whereDeal($startDateCompare, $endDateCompare);
                             }
                         ], 'total_price');
+                        // ->withSum([
+                        //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                        //         $q->whereDeal($startDate, $endDate)
+                        //             ->whereNotNull('interior_design_id');
+                        //         if ($channelId) $q->where('channel_id', $channelId);
+                        //     }
+                        // ], 'total_price')
+                        // ->withCount([
+                        //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                        //         $q->whereDeal($startDate, $endDate)
+                        //             ->whereNotNull('interior_design_id');
+                        //         if ($channelId) $q->where('channel_id', $channelId);
+                        //     }
+                        // ], 'total_price');
                 }]);
 
                 if ($request->name) {
@@ -3078,8 +3059,8 @@ class NewReportController extends BaseApiController
                 $summary_deals = 0;
                 $summary_total_deals_transaction = 0;
                 $summary_compare_deals = 0;
-                $summary_interior_design = 0;
-                $summary_interior_design_total_transaction = 0;
+                // $summary_interior_design = 0;
+                // $summary_interior_design_total_transaction = 0;
 
                 $data = [];
                 foreach ($result as $sl) {
@@ -3105,8 +3086,8 @@ class NewReportController extends BaseApiController
                         $summary_deals += (int)$channel->total_deals ?? 0;
                         $summary_total_deals_transaction += (int)$channel->total_deals_transaction ?? 0;
                         $summary_compare_deals += (int)$channel->compare_total_deals ?? 0;
-                        $summary_interior_design += (int)$channel->interior_design ?? 0;
-                        $summary_interior_design_total_transaction += (int)$channel->interior_design_total_transaction ?? 0;
+                        // $summary_interior_design += (int)$channel->interior_design ?? 0;
+                        // $summary_interior_design_total_transaction += (int)$channel->interior_design_total_transaction ?? 0;
                     }
 
                     $data['details'][] = [
@@ -3140,19 +3121,19 @@ class NewReportController extends BaseApiController
                             'compare' => $summary_compare_quotation,
                         ],
                         'deals' => [
-                            'value' => $summary_deals,
-                            'compare' => $summary_compare_deals,
+                            'value' => potongPPN($summary_deals),
+                            'compare' => potongPPN($summary_compare_deals),
                             'total_transaction' => $summary_total_deals_transaction,
                             'target_deals' => (int)$sl->target_deals ?? 0,
                         ],
-                        'interior_design' => [
-                            'value' => $summary_interior_design,
-                            'total_transaction' => $summary_interior_design_total_transaction,
-                        ],
-                        'retail' => [
-                            'value' => $summary_deals - $summary_interior_design,
-                            'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
-                        ],
+                        // 'interior_design' => [
+                        //     'value' => potongPPN($summary_interior_design),
+                        //     'total_transaction' => $summary_interior_design_total_transaction,
+                        // ],
+                        // 'retail' => [
+                        //     'value' => potongPPN($summary_deals - $summary_interior_design),
+                        //     'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
+                        // ],
                     ];
                 }
 
@@ -3185,33 +3166,34 @@ class NewReportController extends BaseApiController
                         'compare' => $summary_compare_quotation,
                     ],
                     'deals' => [
-                        'value' => $summary_deals,
-                        'compare' => $summary_compare_deals,
+                        'value' => potongPPN($summary_deals),
+                        'compare' => potongPPN($summary_compare_deals),
                         'total_transaction' => $summary_total_deals_transaction,
                     ],
-                    'interior_design' => [
-                        'value' => $summary_interior_design,
-                        'total_transaction' => $summary_interior_design_total_transaction,
-                    ],
-                    'retail' => [
-                        'value' => $summary_deals - $summary_interior_design,
-                        'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
-                    ],
+                    // 'interior_design' => [
+                    //     'value' => potongPPN($summary_interior_design),
+                    //     'total_transaction' => $summary_interior_design_total_transaction,
+                    // ],
+                    // 'retail' => [
+                    //     'value' => potongPPN($summary_deals - $summary_interior_design),
+                    //     'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
+                    // ],
                 ];
 
                 return response()->json(array_merge($data, $infoDate));
             }
 
             $query = Channel::selectRaw('id,name')
-                ->with(['sales' => function ($q) use ($channelId, $targetDate, $startDate, $endDate, $startDateCompare, $endDateCompare) {
+                ->whereIn('id', $user->channels->pluck('id')->all())
+                ->with(['sales' => function ($q) use ($channelId, $startTargetDate, $endTargetDate, $startDate, $endDate, $startDateCompare, $endDateCompare) {
 
-                    $q->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(start_date) >= '" . $targetDate->startOfMonth() . "' AND DATE(end_date) <= '" . $targetDate->endOfMonth() . "') as target_leads");
+                    $q->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
 
-                    $q->selectRaw("(SELECT target FROM targets WHERE model_type='user' AND model_id=users.id AND type=7 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_activities");
+                    $q->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=7 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
-                    if ($startDate->month == $endDate->month) {
-                        $q->selectRaw("users.id, users.name, users.channel_id, (SELECT target FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_deals");
-                    }
+                    // if ($startDate->month == $endDate->month) {
+                    $q->selectRaw("users.id, users.name, users.channel_id, (SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_deals");
+                    // }
                     if (request()->name) {
                         $q->where('name', 'like', '%' . request()->name . '%');
                     }
@@ -3266,10 +3248,10 @@ class NewReportController extends BaseApiController
                                 });
                             }
                         }])
-                        ->withCount(['leads as total_activities' => function ($q) use ($startDate, $endDate) {
-                            $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
-                                $q2->whereCreatedAtRange($startDate, $endDate);
-                            });
+                        ->withCount(['userActivities as total_activities' => function ($q) use ($startDate, $endDate) {
+                            // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
+                            $q->whereCreatedAtRange($startDate, $endDate);
+                            // });
 
                             if (request()->product_brand_id) {
                                 $q->whereHas('activityBrandValues', function ($q2) {
@@ -3277,10 +3259,10 @@ class NewReportController extends BaseApiController
                                 });
                             }
                         }])
-                        ->withCount(['leads as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
-                            $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
-                                $q2->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                            });
+                        ->withCount(['userActivities as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
+                            // $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
+                            $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                            // });
 
                             if (request()->product_brand_id) {
                                 $q->whereHas('activityBrandValues', function ($q2) {
@@ -3289,7 +3271,7 @@ class NewReportController extends BaseApiController
                             }
                         }])
                         ->withCount(['leads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                            $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+                            $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal())->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
 
                             if ($channelId) $q->where('channel_id', $channelId);
 
@@ -3343,54 +3325,46 @@ class NewReportController extends BaseApiController
                         ], 'estimated_value')
                         ->withSum(['userOrders as total_quotation' => function ($q) use ($startDate, $endDate) {
                             $q->whereCreatedAtRange($startDate, $endDate);
-                            $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                            // $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                            $q->whereDoesntHave('orderPayments');
                             $q->whereNotIn('status', [5, 6]);
                         }], 'total_price')
                         ->withSum(['userOrders as compare_total_quotation' => function ($q) use ($startDateCompare, $endDateCompare) {
+                            $q->whereDoesntHave('orderPayments');
                             $q->whereNotIn('status', [5, 6]);
                             $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
                         }], 'total_price')
                         ->withCount([
                             'userOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
+                                $q->whereDeal($startDate, $endDate);
                                 if ($channelId) $q->where('channel_id', $channelId);
                             }
                         ], 'total_price')
                         ->withSum([
                             'userOrders as total_deals' => function ($q) use ($startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
+                                $q->whereDeal($startDate, $endDate);
                             }
                         ], 'total_price')
                         ->withSum([
                             'userOrders as compare_total_deals' => function ($q) use ($startDateCompare, $endDateCompare) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDateCompare, $endDateCompare);
-                            }
-                        ], 'total_price')
-                        ->withSum([
-                            'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                $q->whereNotNull('interior_design_id');
-                                if ($channelId) $q->where('channel_id', $channelId);
-                            }
-                        ], 'total_price')
-                        ->withCount([
-                            'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                $q->whereNotIn('status', [5, 6]);
-                                $q->whereIn('payment_status', [2, 3, 4, 6]);
-                                $q->whereDealAtRange($startDate, $endDate);
-                                $q->whereNotNull('interior_design_id');
-                                if ($channelId) $q->where('channel_id', $channelId);
+                                $q->whereDeal($startDateCompare, $endDateCompare);
                             }
                         ], 'total_price');
-                }])->whereIn('id', $user->channels->pluck('id')->all());
+                        // ->withSum([
+                        //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                        //         $q->whereDeal($startDate, $endDate)
+                        //             ->whereNotNull('interior_design_id');
+                        //         if ($channelId) $q->where('channel_id', $channelId);
+                        //     }
+                        // ], 'total_price')
+                        // ->withCount([
+                        //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                        //         $q->whereDeal($startDate, $endDate)
+                        //             ->whereNotNull('interior_design_id');
+                        //         if ($channelId) $q->where('channel_id', $channelId);
+                        //     }
+                        // ], 'total_price');
+                }]);
 
             if ($channelId) {
                 $query = $query->where('id', $channelId);
@@ -3415,8 +3389,8 @@ class NewReportController extends BaseApiController
             $summary_deals = 0;
             $summary_total_deals_transaction = 0;
             $summary_compare_deals = 0;
-            $summary_interior_design = 0;
-            $summary_interior_design_total_transaction = 0;
+            // $summary_interior_design = 0;
+            // $summary_interior_design_total_transaction = 0;
             foreach ($result as $channel) {
                 foreach ($channel->sales as $sales) {
                     $pbs = $this->getPbs($sales, $startDate, $endDate, $startDateCompare, $endDateCompare, $channelId, $companyId);
@@ -3450,23 +3424,23 @@ class NewReportController extends BaseApiController
                             // 'compare' => (int)$sales->compare_total_estimation ?? 0,
                         ],
                         'quotation' => [
-                            'value' => (int)$sales->total_quotation ?? 0,
-                            'compare' => (int)$sales->compare_total_quotation ?? 0,
+                            'value' => (int) $sales->total_quotation ?? 0,
+                            'compare' => (int) $sales->compare_total_quotation ?? 0,
                         ],
                         'deals' => [
-                            'value' => (int)$sales->total_deals ?? 0,
-                            'compare' => (int)$sales->compare_total_deals ?? 0,
+                            'value' => potongPPN($sales->total_deals),
+                            'compare' => potongPPN($sales->compare_total_deals),
                             'total_transaction' => $sales->total_deals_transaction,
                             'target_deals' => (int)$sales->target_deals ?? 0,
                         ],
-                        'interior_design' => [
-                            'value' => (int)$sales->interior_design ?? 0,
-                            'total_transaction' => (int)$sales->interior_design_total_transaction ?? 0,
-                        ],
-                        'retail' => [
-                            'value' => (int)($sales->total_deals - $sales->interior_design) ?? 0,
-                            'total_transaction' => (int)($sales->total_deals_transaction - $sales->interior_design_total_transaction) ?? 0,
-                        ],
+                        // 'interior_design' => [
+                        //     'value' => potongPPN($sales->interior_design),
+                        //     'total_transaction' => (int)$sales->interior_design_total_transaction ?? 0,
+                        // ],
+                        // 'retail' => [
+                        //     'value' => potongPPN($sales->total_deals - $sales->interior_design),
+                        //     'total_transaction' => (int)($sales->total_deals_transaction - $sales->interior_design_total_transaction) ?? 0,
+                        // ],
                     ];
 
                     $summary_new_leads += (int)$sales->total_leads ?? 0;
@@ -3487,8 +3461,8 @@ class NewReportController extends BaseApiController
                     $summary_deals += (int)$sales->total_deals ?? 0;
                     $summary_total_deals_transaction += (int)$sales->total_deals_transaction ?? 0;
                     $summary_compare_deals += (int)$sales->compare_total_deals ?? 0;
-                    $summary_interior_design += (int)$sales->interior_design ?? 0;
-                    $summary_interior_design_total_transaction += (int)$sales->interior_design_total_transaction ?? 0;
+                    // $summary_interior_design += (int)$sales->interior_design ?? 0;
+                    // $summary_interior_design_total_transaction += (int)$sales->interior_design_total_transaction ?? 0;
                 }
             }
 
@@ -3519,18 +3493,18 @@ class NewReportController extends BaseApiController
                     'compare' => $summary_compare_quotation,
                 ],
                 'deals' => [
-                    'value' => $summary_deals,
-                    'compare' => $summary_compare_deals,
+                    'value' => potongPPN($summary_deals),
+                    'compare' => potongPPN($summary_compare_deals),
                     'total_transaction' => $summary_total_deals_transaction,
                 ],
-                'interior_design' => [
-                    'value' => $summary_interior_design,
-                    'total_transaction' => $summary_interior_design_total_transaction,
-                ],
-                'retail' => [
-                    'value' => $summary_deals - $summary_interior_design,
-                    'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
-                ],
+                // 'interior_design' => [
+                //     'value' => potongPPN($summary_interior_design),
+                //     'total_transaction' => $summary_interior_design_total_transaction,
+                // ],
+                // 'retail' => [
+                //     'value' => potongPPN($summary_deals - $summary_interior_design),
+                //     'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction,
+                // ],
             ];
 
             return response()->json(array_merge($data, $infoDate));
@@ -3538,14 +3512,14 @@ class NewReportController extends BaseApiController
 
         // else sales
 
-        $target_leads = DB::table('new_targets')->select('target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $targetDate->startOfMonth())->whereDate('end_date', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+        $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
 
-        $target_activities = DB::table('targets')->select('target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', 7)->whereDate('created_at', '>=', $targetDate->startOfMonth())->whereDate('created_at', '<=', $targetDate->endOfMonth())->first()?->target ?? 0;
+        $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', 7)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
         $query = User::selectRaw('id, name, type');
-        if ($startDate->month == $endDate->month) {
-            $query = $query->selectRaw("users.id, users.name, users.channel_id, (SELECT target FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $targetDate->startOfMonth() . "' AND DATE(created_at) <= '" . $targetDate->endOfMonth() . "') as target_deals");
-        }
+        // if ($startDate->month == $endDate->month) {
+        $query = $query->selectRaw("users.id, users.name, users.channel_id, (SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_deals");
+        // }
 
         $query = $query->selectRaw("(
                         SELECT
@@ -3587,10 +3561,10 @@ class NewReportController extends BaseApiController
                     });
                 }
             }])
-            ->withCount(['leads as total_activities' => function ($q) use ($startDate, $endDate) {
-                $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
-                    $q2->whereCreatedAtRange($startDate, $endDate);
-                });
+            ->withCount(['userActivities as total_activities' => function ($q) use ($startDate, $endDate) {
+                // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
+                $q->whereCreatedAtRange($startDate, $endDate);
+                // });
 
                 if (request()->product_brand_id) {
                     $q->whereHas('activityBrandValues', function ($q2) {
@@ -3598,10 +3572,10 @@ class NewReportController extends BaseApiController
                     });
                 }
             }])
-            ->withCount(['leads as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
-                $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
-                    $q2->whereCreatedAtRange($startDateCompare, $endDateCompare);
-                });
+            ->withCount(['userActivities as compare_total_activities' => function ($q) use ($startDateCompare, $endDateCompare) {
+                // $q->whereHas('leadActivities', function ($q2) use ($startDateCompare, $endDateCompare) {
+                $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
+                // });
 
                 if (request()->product_brand_id) {
                     $q->whereHas('activityBrandValues', function ($q2) {
@@ -3610,7 +3584,7 @@ class NewReportController extends BaseApiController
                 }
             }])
             ->withCount(['leads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
-                $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
+                $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal())->whereHas('leadActivities', fn ($q2) => $q2->where('status', 1)->whereCreatedAtRange($startDate, $endDate));
 
                 if ($channelId) $q->where('channel_id', $channelId);
 
@@ -3664,53 +3638,45 @@ class NewReportController extends BaseApiController
             ], 'estimated_value')
             ->withSum(['userOrders as total_quotation' => function ($q) use ($startDate, $endDate) {
                 $q->whereCreatedAtRange($startDate, $endDate);
-                $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                // $q->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                $q->whereDoesntHave('orderPayments');
                 $q->whereNotIn('status', [5, 6]);
             }], 'total_price')
             ->withSum(['userOrders as compare_total_quotation' => function ($q) use ($startDateCompare, $endDateCompare) {
+                $q->whereDoesntHave('orderPayments');
                 $q->whereNotIn('status', [5, 6]);
                 $q->whereCreatedAtRange($startDateCompare, $endDateCompare);
             }], 'total_price')
             ->withCount([
                 'userOrders as total_deals_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereNotIn('status', [5, 6]);
-                    $q->whereIn('payment_status', [2, 3, 4, 6]);
-                    $q->whereDealAtRange($startDate, $endDate);
+                    $q->whereDeal($startDate, $endDate);
                     if ($channelId) $q->where('channel_id', $channelId);
                 }
             ], 'total_price')
             ->withSum([
                 'userOrders as total_deals' => function ($q) use ($startDate, $endDate) {
-                    $q->whereNotIn('status', [5, 6]);
-                    $q->whereIn('payment_status', [2, 3, 4, 6]);
-                    $q->whereDealAtRange($startDate, $endDate);
+                    $q->whereDeal($startDate, $endDate);
                 }
             ], 'total_price')
             ->withSum([
                 'userOrders as compare_total_deals' => function ($q) use ($startDateCompare, $endDateCompare) {
-                    $q->whereNotIn('status', [5, 6]);
-                    $q->whereIn('payment_status', [2, 3, 4, 6]);
-                    $q->whereDealAtRange($startDateCompare, $endDateCompare);
-                }
-            ], 'total_price')
-            ->withSum([
-                'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereNotIn('status', [5, 6]);
-                    $q->whereIn('payment_status', [2, 3, 4, 6]);
-                    $q->whereDealAtRange($startDate, $endDate);
-                    $q->whereNotNull('interior_design_id');
-                    if ($channelId) $q->where('channel_id', $channelId);
-                }
-            ], 'total_price')
-            ->withCount([
-                'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                    $q->whereNotIn('status', [5, 6]);
-                    $q->whereIn('payment_status', [2, 3, 4, 6]);
-                    $q->whereDealAtRange($startDate, $endDate);
-                    $q->whereNotNull('interior_design_id');
-                    if ($channelId) $q->where('channel_id', $channelId);
+                    $q->whereDeal($startDateCompare, $endDateCompare);
                 }
             ], 'total_price');
+            // ->withSum([
+            //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+            //         $q->whereDeal($startDate, $endDate)
+            //             ->whereNotNull('interior_design_id');
+            //         if ($channelId) $q->where('channel_id', $channelId);
+            //     }
+            // ], 'total_price')
+            // ->withCount([
+            //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+            //         $q->whereDeal($startDate, $endDate)
+            //             ->whereNotNull('interior_design_id');
+            //         if ($channelId) $q->where('channel_id', $channelId);
+            //     }
+            // ], 'total_price');
 
         $result = $query->where('id', $user->id)->first();
         $pbs = $this->getPbs($result, $startDate, $endDate, $startDateCompare, $endDateCompare, $channelId, $companyId);
@@ -3721,7 +3687,7 @@ class NewReportController extends BaseApiController
             'new_leads' => [
                 'value' => (int)$result->total_leads ?? 0,
                 'compare' => (int)$result->compare_total_leads ?? 0,
-                'target_leads' => (int)$target_leads,
+                'target_leads' => (int)$target_leads ?? 0,
             ],
             'active_leads' => [
                 'value' => (int)$result->active_leads ?? 0,
@@ -3731,7 +3697,7 @@ class NewReportController extends BaseApiController
                 'total_activities' => [
                     'value' => (int)$result->total_activities ?? 0,
                     'compare' => (int)$result->compare_total_activities ?? 0,
-                    'target_activities' => (int)$target_activities,
+                    'target_activities' => (int)$target_activities ?? 0,
                 ],
                 'hot_activities' => (int)$result->hot_activities ?? 0,
                 'warm_activities' => (int)$result->warm_activities ?? 0,
@@ -3742,23 +3708,23 @@ class NewReportController extends BaseApiController
                 'compare' => $pbs['compare_estimated_value'],
             ],
             'quotation' => [
-                'value' => (int)$result->total_quotation ?? 0,
-                'compare' => (int)$result->compare_total_quotation ?? 0,
+                'value' => (int) $result->total_quotation ?? 0,
+                'compare' => (int) $result->compare_total_quotation ?? 0,
             ],
             'deals' => [
-                'value' => (int)$result->total_deals ?? 0,
-                'compare' => (int)$result->compare_total_deals ?? 0,
+                'value' => potongPPN($result->total_deals),
+                'compare' => potongPPN($result->compare_total_deals),
                 'total_transaction' => (int)$result->total_deals_transaction ?? 0,
                 'target_deals' => (int)$result->target_deals ?? 0,
             ],
-            'interior_design' => [
-                'value' => (int)$result->interior_design ?? 0,
-                'total_transaction' => (int)$result->interior_design_total_transaction ?? 0,
-            ],
-            'retail' => [
-                'value' => (int)($result->total_deals - $result->interior_design) ?? 0,
-                'total_transaction' => (int)($result->total_deals_transaction - $result->interior_design_total_transaction) ?? 0,
-            ],
+            // 'interior_design' => [
+            //     'value' => potongPPN($result->interior_design),
+            //     'total_transaction' => (int)$result->interior_design_total_transaction ?? 0,
+            // ],
+            // 'retail' => [
+            //     'value' => potongPPN($result->total_deals - $result->interior_design),
+            //     'total_transaction' => (int)($result->total_deals_transaction - $result->interior_design_total_transaction) ?? 0,
+            // ],
         ];
 
         $data['summary'] = $data['details'][0];
@@ -3792,22 +3758,28 @@ class NewReportController extends BaseApiController
             ->join('activities', 'activities.order_id', '=', 'orders.id')
             ->join('customers', 'customers.id', '=', 'orders.customer_id')
             ->join('users', 'users.id', '=', 'orders.user_id')
-            ->join('channels', 'channels.id', '=', 'orders.channel_id')
-            ->whereNotIn('orders.status', [5, 6]);
+            ->join('channels', 'channels.id', '=', 'orders.channel_id');
 
-        if ($request->inovice_type == 'deals') {
-            $query = $query->whereIn('orders.payment_status', [2, 3, 4, 6])
-                ->whereDealAtRange($startDate, $endDate);
-        } elseif ($request->inovice_type == 'settlement') {
+        if ($request->invoice_type == 'deals') {
+            $query = $query->whereDeal($startDate, $endDate);
+            // $query = $query->join('payments', fn($join) => $join->on('orders.id', '=', 'payments.order_id')->where('payments.status', '<>', 2))
+            // $query = $query->whereHas('orderPayments', fn ($q2) => $q2->where('status', '<>', 2))
+            //     ->whereNotIn('orders.payment_status', [5])
+            //     ->whereDealAtRange($startDate, $endDate);
+        } elseif ($request->invoice_type == 'settlement') {
             $query = $query->whereIn('orders.payment_status', [3, 4])
                 ->whereDealAtRange($startDate, $endDate);
-        } elseif ($request->inovice_type == 'retail') {
-            $query = $query->whereIn('orders.payment_status', [2, 3, 4, 6])
-                ->whereDealAtRange($startDate, $endDate)->whereNull('orders.interior_design_id');
+        } elseif ($request->invoice_type == 'retail') {
+            // $query = $query->join('payments', fn($join) => $join->on('orders.id', '=', 'payments.order_id')->where('payments.status', '<>', 2))
+            $query = $query->whereHas('orderPayments', fn ($q2) => $q2->where('status', '<>', 2))
+                ->whereNotIn('orders.payment_status', [5])
+                ->whereDealAtRange($startDate, $endDate);
+                // ->whereNull('orders.interior_design_id');
         } else {
             // quotation
             $query = $query->whereCreatedAtRange($startDate, $endDate)
-                ->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
+                ->whereDoesntHave('orderPayments');
+            // ->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
         }
 
         if ($request->payment_type == 'none') {
@@ -3825,11 +3797,13 @@ class NewReportController extends BaseApiController
             $query = $query->where('orders.payment_status', OrderPaymentStatus::SETTLEMENT)
                 ->whereDealAtRange($startDate, $endDate);
         } elseif ($request->payment_type == 'deals') {
-            $query = $query->whereIn('orders.payment_status', [2, 3, 4, 6])
-                ->whereDealAtRange($startDate, $endDate);
+            $query = $query->whereDeal($startDate, $endDate);
+            // $query = $query->whereHas('orderPayments', fn ($q2) => $q2->where('status', '<>', 2))
+            //     ->whereNotIn('orders.payment_status', [5])
+            //     ->whereDealAtRange($startDate, $endDate);
         } else {
             // quotation
-            $query = $query->whereIn('orders.payment_status', [1, 2, 3, 4, 6]);
+            $query = $query->whereNotIn('orders.payment_status', [5]);
         }
 
         // $userType = null;
@@ -3927,7 +3901,7 @@ class NewReportController extends BaseApiController
             if (!is_null($paymentStatus)) $query = $query->where('orders.payment_status', $paymentStatus);
         }
 
-        $result = $query->orderBy('orders.id', 'desc')->get();
+        $result = $query->whereNotIn('orders.status', [5, 6])->orderBy('orders.id', 'desc')->get();
 
         return response()->json($result);
     }
@@ -4058,9 +4032,7 @@ class NewReportController extends BaseApiController
         interior_designs.name as interior_design
         ")
             ->join('interior_designs', 'interior_designs.id', '=', 'orders.interior_design_id')
-            ->whereNotIn('status', [5, 6])
-            ->whereIn('payment_status', [2, 3, 4, 6])
-            ->whereDealAtRange($startDate, $endDate)
+            ->whereDeal($startDate, $endDate)
             ->whereNotNull('orders.interior_design_id');
 
         $userType = $request->user_type ?? null;
@@ -4110,8 +4082,6 @@ class NewReportController extends BaseApiController
             $endDate = Carbon::createFromFormat('Y-m-d', request()->end_date)->endOfDay();
         }
 
-        // $user = user();
-
         $query = Order::selectRaw("
         orders.id,
         activities.id as activity_id,
@@ -4125,9 +4095,7 @@ class NewReportController extends BaseApiController
             ->join('users', 'users.id', '=', 'orders.user_id')
             ->join('channels', 'channels.id', '=', 'orders.channel_id')
             ->where('orders.interior_design_id', $request->interior_design_id)
-            ->whereNotIn('orders.status', [5, 6])
-            ->whereIn('orders.payment_status', [2, 3, 4, 6])
-            ->whereDealAtRange($startDate, $endDate)
+            ->whereDeal($startDate, $endDate)
             ->whereNotNull('orders.interior_design_id');
 
         if ($request->company_id) $query = $query->where('company_id', $request->company_id);
@@ -4200,7 +4168,10 @@ class NewReportController extends BaseApiController
                         ->orderBy('lead_id', 'desc')
                         ->orderBy('activity_id', 'desc');
 
-                    $q->whereHas('order', fn ($q2) => $q2->whereNotIn('status', [5, 6])->whereIn('payment_status', [2, 3, 4, 6])->whereDealAtRange($startDate, $endDate)->where('channel_id', $id));
+                    $q->whereHas(
+                        'order',
+                        fn ($q2) => $q2->whereDeal($startDate, $endDate)->where('channel_id', $id)
+                    );
                 }])
                 ->where('company_id', $user->company_id);
         } elseif ($user->type->is(UserType::DIRECTOR)) {
@@ -4224,7 +4195,10 @@ class NewReportController extends BaseApiController
                         ->orderBy('lead_id', 'desc')
                         ->orderBy('activity_id', 'desc');
 
-                    $q->whereHas('order', fn ($q2) => $q2->whereNotIn('status', [5, 6])->whereIn('payment_status', [2, 3, 4, 6])->whereDealAtRange($startDate, $endDate)->whereIn('company_id', $companyIds));
+                    $q->whereHas(
+                        'order',
+                        fn ($q2) => $q2->whereDeal($startDate, $endDate)->whereIn('company_id', $companyIds)
+                    );
                     if ($filterChannelId) $q->whereHas('order', fn ($q2) => $q2->where('channel_id', $filterChannelId));
                 }])
                 ->whereIn('company_id', $companyIds);
@@ -4249,7 +4223,10 @@ class NewReportController extends BaseApiController
                         ->orderBy('lead_id', 'desc')
                         ->orderBy('activity_id', 'desc');
 
-                    $q->whereHas('order', fn ($q2) => $q2->whereNotIn('status', [5, 6])->whereIn('payment_status', [2, 3, 4, 6])->whereDealAtRange($startDate, $endDate)->whereIn('channel_id', $channelIds));
+                    $q->whereHas(
+                        'order',
+                        fn ($q2) => $q2->whereDeal($startDate, $endDate)->whereIn('channel_id', $channelIds)
+                    );
                     if ($filterChannelId) $q->whereHas('order', fn ($q2) => $q2->where('channel_id', $filterChannelId));
                 }])
                 ->where('company_id', $companyId);
@@ -4270,7 +4247,10 @@ class NewReportController extends BaseApiController
                         ->orderBy('lead_id', 'desc')
                         ->orderBy('activity_id', 'desc');
 
-                    $q->whereHas('order', fn ($q2) => $q2->whereNotIn('status', [5, 6])->whereIn('payment_status', [2, 3, 4, 6])->whereDealAtRange($startDate, $endDate));
+                    $q->whereHas(
+                        'order',
+                        fn ($q2) => $q2->whereDeal($startDate, $endDate)
+                    );
                 }])
                 ->where('company_id', $user->company_id);
         }
@@ -4306,7 +4286,7 @@ class NewReportController extends BaseApiController
             $data[$productBrand->id]['estimated_value'] = $activityBrandValues?->sum('estimated_value');
             $data[$productBrand->id]['quotation'] = $activityBrandValues?->sum('total_order_value');
             $data[$productBrand->id]['order_value'] = $activityBrandValuesDeals?->sum('total_order_value');
-            $data[$productBrand->id]['target'] = isset($target_brands) && count($target_brands) > 0 ? (int)$target_brands[$productBrand->id] ?? 0 : 0;
+            $data[$productBrand->id]['target'] = isset($target_brands) && count($target_brands) > 0 ? (int)($target_brands[$productBrand->id] ?? 0) : 0;
         }
 
         return response()->json(array_values($data));
@@ -4349,7 +4329,10 @@ class NewReportController extends BaseApiController
                         ->orderBy('lead_id', 'desc')
                         ->orderBy('activity_id', 'desc');
 
-                    $q->whereHas('order', fn ($q2) => $q2->whereNotIn('status', [5, 6])->whereIn('payment_status', [2, 3, 4, 6])->whereDealAtRange($startDate, $endDate)->whereIn('company_id', $companyIds));
+                    $q->whereHas(
+                        'order',
+                        fn ($q2) => $q2->whereDeal($startDate, $endDate)->whereIn('company_id', $companyIds)
+                    );
                     if ($filterChannelId) $q->whereHas('order', fn ($q2) => $q2->where('channel_id', $filterChannelId));
                 }])
                 ->whereIn('company_id', $companyIds);
@@ -4370,7 +4353,10 @@ class NewReportController extends BaseApiController
                         ->orderBy('lead_id', 'desc')
                         ->orderBy('activity_id', 'desc');
 
-                    $q->whereHas('order', fn ($q2) => $q2->whereNotIn('status', [5, 6])->whereIn('payment_status', [2, 3, 4, 6])->whereDealAtRange($startDate, $endDate)->whereIn('channel_id', $channelIds));
+                    $q->whereHas(
+                        'order',
+                        fn ($q2) => $q2->whereDeal($startDate, $endDate)->whereIn('channel_id', $channelIds)
+                    );
                     if ($filterChannelId) $q->whereHas('order', fn ($q2) => $q2->where('channel_id', $filterChannelId));
                 }])
                 ->where('company_id', $companyId);

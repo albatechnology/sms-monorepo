@@ -100,6 +100,7 @@ class LeadController extends BaseApiController
 
             $userType = request()->user_type ?? null;
             $id = request()->id ?? null;
+            $user = user();
 
             if ($userType && $id) {
                 $user = match ($userType) {
