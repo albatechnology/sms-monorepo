@@ -31,15 +31,15 @@ class UserResource extends BaseResource
             }),
             ResourceData::make("as", Schema::TYPE_STRING, 'SALES', value: function ($q) {
                 if ($q->type->is(UserType::DIRECTOR())) {
-                    return 'Director';
+                    return 'DIRECTOR';
                 } elseif ($q->type->is(UserType::SUPERVISOR()) &&  $q->supervisor_type_id == 2) {
                     return 'BUM';
                 } elseif ($q->type->is(UserType::SUPERVISOR()) &&  $q->supervisor_type_id == 1) {
-                    return 'Store Leader';
+                    return 'STORE_LEADER';
                 } elseif ($q->type->is(UserType::SALES())) {
-                    return 'Sales';
+                    return 'SALES';
                 } else {
-                    return 'Admin';
+                    return 'ADMIN';
                 }
             }),
             ResourceData::make("reportable_type", Schema::TYPE_STRING, 'USER', value: function ($q) {
