@@ -91,6 +91,7 @@ class CreateActivityRequest extends BaseApiRequest
                     Schema::integer('estimated_value')->example(1000000)->description('Estimated value of product brand')
                 ),
             )),
+            RequestData::make('images', Schema::TYPE_ARRAY, ['image 1', 'image 2'], 'nullable|array'),
         ];
     }
 

@@ -11,18 +11,21 @@ use App\Jobs\QueueActivityReminder;
 use App\Services\CacheService;
 use App\Services\ReportService;
 use App\Traits\Auditable;
+use App\Traits\CustomInteractsWithMedia;
 use App\Traits\IsTenanted;
 use Carbon\Carbon;
 use DateTimeInterface;
 use Exception;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * @mixin IdeHelperActivity
  */
-class Activity extends BaseModel implements Tenanted, Reportable
+class Activity extends BaseModel implements Tenanted, Reportable, HasMedia
 {
-    use SoftDeletes, Auditable, IsTenanted;
+    use SoftDeletes, Auditable, IsTenanted, CustomInteractsWithMedia;
 
     use IsTenanted {
         IsTenanted::scopeTenanted as protected defaultScopeTenanted;
