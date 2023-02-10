@@ -29,17 +29,22 @@
     <span class="help-block">{{ trans('cruds.user.fields.supervisor_helper') }}</span>
 </div>
 <div class="form-group">
-    <label class="required" for="channel_id">{{ trans('cruds.user.fields.channels') }}</label>
+    <label class="required" for="channel_ids">{{ trans('cruds.user.fields.channels') }}</label>
     {{-- <div style="padding-bottom: 4px">
         <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
         <span class="btn btn-info btn-xs deselect-all"
             style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
     </div> --}}
-    <select class="form-control select2 {{ $errors->has('channel_id') ? 'is-invalid' : '' }}" name="channel_id"
-        id="channel_id" disabled data-placeholder="Select channels">
+    <select class="form-control select2 {{ $errors->has('channel_ids') ? 'is-invalid' : '' }}" name="channel_ids[]"
+        id="channel_ids" multiple {{ $user ? '' : 'disabled' }} data-placeholder="Select channels">
+        {{-- @if ($selectedChannels)
+            @foreach ($selectedChannels as $id => $name)
+                <option value="{{ $id }}" selected>{{ $name }}</option>
+            @endforeach
+        @endif --}}
     </select>
-    @if ($errors->has('channel_id'))
-        <span class="text-danger">{{ $errors->first('channel_id') }}</span>
+    @if ($errors->has('channel_ids'))
+        <span class="text-danger">{{ $errors->first('channel_ids') }}</span>
     @endif
     <span class="help-block">{{ trans('cruds.user.fields.channels_helper') }}</span>
 </div>
@@ -58,14 +63,14 @@
 </div>
 <script>
     var selectedProductBrands = {{ $selectedProductBrands ? json_encode($selectedProductBrands) : json_encode([]) }};
+    var selectedChannels = {{ $selectedChannels ? json_encode($selectedChannels) : json_encode([]) }};
     var selectedSupervisor = '{{ $user?->supervisor_id }}';
     var selectedCompanyId = '{{ $user?->company_id }}';
-    var selectedChannelId = '{{ $user?->channel_id }}';
 
     console.log('selectedProductBrands', selectedProductBrands)
     console.log('selectedSupervisor', selectedSupervisor)
     console.log('selectedCompanyId', selectedCompanyId)
-    console.log('selectedChannelId', selectedChannelId)
+    console.log('selectedChannels', selectedChannels)
     $('.select2').select2();
 
     function getSupervisors(companyId) {
@@ -117,19 +122,19 @@
 
     function getChannles(supervisorId) {
         var options = '';
-        $('#channel_id').attr('disabled', true).html(options).val('').change();
+        $('#channel_ids').attr('disabled', true).html(options).val('').change();
         if (supervisorId) {
             $.get("{{ url('admin/channels/get-channels') }}?supervisor_id=" + supervisorId, function(
                 res) {
                 res.forEach(data => {
-                    var selected = selectedChannelId == data.id ? 'selected' : '';
+                    var selected = selectedChannels.includes(data.id) ? 'selected' : '';
                     options += '<option value="' + data.id + '" ' + selected + '>' + data.name +
                         '</option>';
                 });
-                $('#channel_id').attr('disabled', false).html(options).change();
+                $('#channel_ids').attr('disabled', false).html(options).change();
             })
         } else {
-            $('#channel_id').attr('disabled', true).html(options).val('').change();
+            $('#channel_ids').attr('disabled', true).html(options).val('').change();
         }
     }
 

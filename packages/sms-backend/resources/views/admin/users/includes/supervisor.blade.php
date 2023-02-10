@@ -67,6 +67,10 @@
     var maxSupervisorTypeId = {{ $maxSupervisorTypeId }};
     var defaultSupervisorTypeId = '{{ $user?->supervisor_type_id }}';
     var defaultSupervisorId = '{{ $user?->supervisor_id }}';
+    console.log('selectedChannels', selectedChannels)
+    console.log('maxSupervisorTypeId', maxSupervisorTypeId)
+    console.log('defaultSupervisorTypeId', defaultSupervisorTypeId)
+    console.log('defaultSupervisorId', defaultSupervisorId)
     $('.select2').select2();
 
     function getSupervisors(supervisorTypeId) {

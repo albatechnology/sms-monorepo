@@ -206,9 +206,6 @@ class UsersController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        // dump($request->all());
-        // dump($request->validated());
-        // dd($user);
         $user->update($request->validated());
         // dd($user);
         $user->roles()->sync($request->input('role', []));
@@ -245,10 +242,11 @@ class UsersController extends Controller
             $user->channels()->sync([$request->channel_id]);
         }
 
-        if (intval($request->type) == UserType::SALES()->value) {
-            $user->update(['channel_id' => intval($request->validated()['channel_id'])]);
-            Lead::where('user_id', $user->id)->update(['channel_id' => intval($request->validated()['channel_id'])]);
-        }
+        // skg sales bisa multiple channels
+        // if (intval($request->type) == UserType::SALES()->value) {
+        //     $user->update(['channel_id' => intval($request->validated()['channel_id'])]);
+        //     Lead::where('user_id', $user->id)->update(['channel_id' => intval($request->validated()['channel_id'])]);
+        // }
 
         return redirect()->route('admin.users.index');
     }
@@ -372,7 +370,8 @@ class UsersController extends Controller
         $user = $userId ? User::findOrFail($userId) : null;
         $companies = Company::tenanted()->get()->pluck('name', 'id');
         $selectedProductBrands = $user?->productBrands?->pluck('id')->all() ?? null;
+        $selectedChannels = $user?->channels?->pluck('id')->all() ?? null;
 
-        return view('admin.users.includes.sales', ['companies' => $companies, 'user' => $user, 'selectedProductBrands' => $selectedProductBrands]);
+        return view('admin.users.includes.sales', ['companies' => $companies, 'user' => $user, 'selectedProductBrands' => $selectedProductBrands, 'selectedChannels' => $selectedChannels]);
     }
 }
