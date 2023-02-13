@@ -177,7 +177,8 @@ class PaymentController extends BaseApiController
         UploadProofOfPaymentRequest $request,
     ): JsonResponse
     {
-        $payment->addMedia($request->file('image'))->toMediaCollection(Payment::PROOF_COLLECTION, 's3-private');
+        $payment->addMedia($request->file('image'))
+            ->toMediaCollection(Payment::PROOF_COLLECTION, 's3-private');
 
         return response()->json(['message' => 'success']);
     }

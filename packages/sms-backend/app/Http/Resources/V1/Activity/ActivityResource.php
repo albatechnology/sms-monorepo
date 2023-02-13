@@ -8,7 +8,6 @@ use App\Classes\DocGenerator\ResourceData;
 use App\Enums\ActivityFollowUpMethod;
 use App\Enums\ActivityStatus;
 use App\Http\Resources\V1\Customer\CustomerResource;
-use App\Http\Resources\V1\Generic\MediaResource;
 use App\Http\Resources\V1\InteriorDesign\InteriorDesignResource;
 use App\Http\Resources\V1\Lead\LeadResource;
 use App\Http\Resources\V1\Order\OrderResource;
@@ -39,7 +38,6 @@ class ActivityResource extends BaseResource
             ResourceData::make('estimated_value', Schema::TYPE_INTEGER, 1)->nullable(),
             ResourceData::make('reminder_datetime', Schema::TYPE_STRING, ApiDataExample::TIMESTAMP)->nullable(),
             ResourceData::make('reminder_note', Schema::TYPE_STRING, 'Remind myself to follow up')->nullable(),
-            ResourceData::images(),
             ...ResourceData::timestamps()
         ];
     }

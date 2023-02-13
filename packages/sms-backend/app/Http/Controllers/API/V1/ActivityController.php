@@ -130,11 +130,6 @@ class ActivityController extends BaseApiController
 
                 $activity->update(['estimated_value' => $estimations->sum('estimated_value') ?? 0]);
             }
-
-            foreach ($request->images ?? [] as $file) {
-                $activity->addMedia($file)->toMediaCollection('photo');
-            }
-
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -214,7 +209,7 @@ class ActivityController extends BaseApiController
                 $estimations->each(function ($estimation) use ($activity) {
                     $brandValue = ActivityBrandValue::where('user_id', auth()->id())->where('lead_id', $activity->lead_id)->where('product_brand_id', $estimation['product_brand_id'])->first();
 
-                    if ($brandValue) {
+                    if($brandValue){
                         $brandValue->update(['estimated_value' => $estimation['estimated_value']]);
                     } else {
                         ActivityBrandValue::create([
@@ -283,10 +278,10 @@ class ActivityController extends BaseApiController
         // return response()->json($activities->count());
         $user = tenancy()->getUser();
 
-        if ($user->is_director) {
+        if($user->is_director){
             $userIds = DB::table('users')->where('company_id', $user->company_id)->pluck('id')->all();
             $activities = ActivityBrandValue::whereIn('user_id', $userIds ?? []);
-        } elseif ($user->is_supervisor) {
+        } elseif($user->is_supervisor) {
             $userIds = User::whereDescendantOf($user->id)->whereIsSales()->get(['id'])->pluck('id')->all();
             $activities = ActivityBrandValue::whereIn('user_id', $userIds ?? []);
         } else {
@@ -358,11 +353,10 @@ class ActivityController extends BaseApiController
     // }
 
 
-    public function active(int $lead_id)
-    {
+    public function active(int $lead_id){
         $activityValues = ActivityBrandValue::whereMy()->where('lead_id', $lead_id)->get();
         $data = [];
-        foreach ($activityValues as $a) {
+        foreach($activityValues as $a){
             $data[] = [
                 'product_brand' => $a->productBrand->name,
                 'estimated_value' => rupiah($a->estimated_value),
