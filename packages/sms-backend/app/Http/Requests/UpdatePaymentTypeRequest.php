@@ -15,7 +15,6 @@ class UpdatePaymentTypeRequest extends FormRequest
     public function rules()
     {
         return [
-            'orlan_id' => 'required|string',
             'name'                => [
                 'string',
                 'required',
