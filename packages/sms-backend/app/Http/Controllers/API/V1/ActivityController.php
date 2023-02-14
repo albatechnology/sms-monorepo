@@ -9,6 +9,7 @@ use App\Exceptions\LeadIsUnassignedException;
 use App\Exceptions\UnauthorisedTenantAccessException;
 use App\Http\Requests\API\V1\Activity\CreateActivityRequest;
 use App\Http\Requests\API\V1\Activity\UpdateActivityRequest;
+use App\Http\Requests\API\V1\Activity\UploadImageOfActivityRequest;
 use App\Http\Resources\V1\Activity\ActivityCommentResource;
 use App\Http\Resources\V1\Activity\ActivityResource;
 use App\Models\Activity;
@@ -17,6 +18,7 @@ use App\Models\ActivityComment;
 use App\Models\User;
 use App\OpenApi\Customs\Attributes as CustomOpenApi;
 use App\OpenApi\Parameters\DefaultHeaderParameters;
+use App\OpenApi\RequestBodies\Custom\ImageRequestBody;
 use App\OpenApi\Responses\Custom\GenericSuccessMessageResponse;
 use Carbon\Carbon;
 use Exception;
@@ -363,5 +365,30 @@ class ActivityController extends BaseApiController
             ];
         }
         return response()->json($data);
+    }
+
+    /**
+     * Upload image of activity
+     *
+     * Upload image of activity
+     *
+     * @param Activity $activity
+     * @param UploadImageOfActivityRequest $request
+     * @return JsonResponse
+     * @throws FileDoesNotExist
+     * @throws FileIsTooBig
+     */
+    #[CustomOpenApi\Operation(id: 'ActivityImageUpload', tags: [Tags::Activity, Tags::V1])]
+    #[CustomOpenApi\Parameters(model: Activity::class)]
+    #[OpenApi\RequestBody(factory: ImageRequestBody::class)]
+    #[OpenApi\Response(factory: GenericSuccessMessageResponse::class)]
+    public function uploadImageOfActivity(
+        Activity $activity,
+        UploadImageOfActivityRequest $request,
+    ): JsonResponse
+    {
+        $activity->addMedia($request->file('image'))->toMediaCollection('image');
+
+        return response()->json(['message' => 'success']);
     }
 }

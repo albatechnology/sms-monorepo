@@ -151,6 +151,7 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
         Route::get('activities/report', [ActivityController::class, 'report']);
         Route::get('activities/report/detail', [ActivityController::class, 'detail']);
         Route::get('activities/report/detail/{userId}', [LeadController::class, 'activityReport']);
+        Route::post('activities/{activity}/image', [ActivityController::class, 'uploadImageOfActivity'])->name('activities.image');
         Route::resource('activities', ActivityController::class);
         Route::resource('activity-comments', ActivityCommentController::class);
 
