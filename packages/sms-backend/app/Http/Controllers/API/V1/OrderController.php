@@ -407,19 +407,8 @@ class OrderController extends BaseApiController
         }
 
         $user = auth()->user();
-        switch ($user->company_id) {
-            case (1):
-                $logo = 'melandas.png';
-                break;
-            case (2):
-                $logo = 'dio-living.png';
-                break;
-            default:
-                $logo = 'melandas.png';
-                break;
-        }
 
-        $params['logo'] = asset("images/logo/$logo");
+        $params['logo'] = asset("images/logo/logo-pempek.png");
         $params['type'] = $request->type;
         $params['order'] = Order::findOrFail($request->order_id);
         $params['user'] = $user;
