@@ -13,13 +13,13 @@ class CreateUserCompaniesTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_companies', function (Blueprint $table) {
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
-        });
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('company_ids')->nullable();
-        });
+        // Schema::create('user_companies', function (Blueprint $table) {
+        //     $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+        //     $table->foreignId('company_id')->constrained()->cascadeOnDelete(); // unused
+        // });
+        // Schema::table('users', function (Blueprint $table) {
+        //     $table->string('company_ids')->nullable();
+        // });
     }
 
     /**
@@ -29,9 +29,9 @@ class CreateUserCompaniesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_companies');
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['company_ids']);
-        });
+        // Schema::dropIfExists('user_companies');
+        // Schema::table('users', function (Blueprint $table) {
+        //     $table->dropColumn(['company_ids']);
+        // });
     }
 }

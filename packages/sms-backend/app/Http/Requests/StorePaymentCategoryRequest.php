@@ -2,10 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Models\PaymentCategory;
 use Gate;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Response;
 
 class StorePaymentCategoryRequest extends FormRequest
 {
@@ -21,10 +19,10 @@ class StorePaymentCategoryRequest extends FormRequest
                 'string',
                 'nullable',
             ],
-            'company_id' => [
-                'required',
-                'integer',
-            ],
+            // 'company_id' => [
+            //     'required',
+            //     'integer',
+            // ],
         ];
     }
 }

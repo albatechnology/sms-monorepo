@@ -7,7 +7,7 @@ use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyPaymentTypeRequest;
 use App\Http\Requests\StorePaymentTypeRequest;
 use App\Http\Requests\UpdatePaymentTypeRequest;
-use App\Models\Company;
+// use App\Models\Company;
 use App\Models\PaymentCategory;
 use App\Models\PaymentType;
 use Gate;
@@ -23,20 +23,21 @@ class PaymentTypeController extends Controller
     {
         abort_if(Gate::denies('payment_type_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $paymentTypes = PaymentType::with(['payment_category', 'company'])->get();
+        $paymentTypes = PaymentType::with(['payment_category'])->get();
 
         $payment_categories = PaymentCategory::get();
 
-        $companies = Company::get();
+        // $companies = Company::get();
 
-        return view('admin.paymentTypes.index', compact('paymentTypes', 'payment_categories', 'companies'));
+        return view('admin.paymentTypes.index', compact('paymentTypes', 'payment_categories'));
     }
 
     public function create()
     {
         abort_if(Gate::denies('payment_type_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.paymentTypes.create');
+        $paymentCategories = PaymentCategory::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        return view('admin.paymentTypes.create', compact('paymentCategories'));
     }
 
     public function store(StorePaymentTypeRequest $request)
@@ -58,15 +59,11 @@ class PaymentTypeController extends Controller
     {
         abort_if(Gate::denies('payment_type_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $payment_categories = PaymentCategory::query()
-            ->tenanted()
-            ->where('company_id', $paymentType->company_id)
-            ->pluck('name', 'id')
-            ->prepend(trans('global.pleaseSelect'), '');
+        $paymentCategories = PaymentCategory::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $paymentType->load('payment_category', 'company');
+        $paymentType->load('payment_category');
 
-        return view('admin.paymentTypes.edit', compact('payment_categories', 'paymentType'));
+        return view('admin.paymentTypes.edit', compact('paymentCategories', 'paymentType'));
     }
 
     public function update(UpdatePaymentTypeRequest $request, PaymentType $paymentType)
@@ -94,7 +91,7 @@ class PaymentTypeController extends Controller
     {
         abort_if(Gate::denies('payment_type_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $paymentType->load('payment_category', 'company', 'paymentTypePayments');
+        $paymentType->load('payment_category', 'paymentTypePayments');
 
         return view('admin.paymentTypes.show', compact('paymentType'));
     }

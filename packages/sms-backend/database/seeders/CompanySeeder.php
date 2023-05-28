@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Company;
+use App\Models\CompanyAccount;
 use Illuminate\Database\Seeder;
 
 class CompanySeeder extends Seeder
@@ -14,8 +15,16 @@ class CompanySeeder extends Seeder
      */
     public function run()
     {
-        foreach (range('A', 'C') as $letter) {
-            Company::factory()->withDefaultAccount()->create(["name" => 'Company ' . $letter]);
-        }
+        $company = Company::create([
+            'name' => 'Alba Digital Technology',
+        ]);
+
+        CompanyAccount::create([
+            'name' => 'PT. Alba Digital Technology',
+            'company_id' => $company->id,
+            'bank_name' => 'BCA',
+            'account_name' => 'PT. Alba Digital Technology',
+            'account_number' => '00394851101',
+        ]);
     }
 }

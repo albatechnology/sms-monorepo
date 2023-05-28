@@ -23,22 +23,22 @@ class ProductCategoryController extends Controller
     {
         abort_if(Gate::denies('product_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $productCategories = ProductCategory::with(['company', 'media'])->get();
+        $productCategories = ProductCategory::with(['media'])->get();
 
         $product_categories = ProductCategory::get();
 
-        $companies = Company::get();
+        // $companies = Company::get();
 
-        return view('admin.productCategories.index', compact('productCategories', 'product_categories', 'companies'));
+        return view('admin.productCategories.index', compact('productCategories', 'product_categories'));
     }
 
     public function create()
     {
         abort_if(Gate::denies('product_category_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $companies = Company::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $companies = Company::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.productCategories.create', compact('companies'));
+        return view('admin.productCategories.create');
     }
 
     public function store(StoreProductCategoryRequest $request)
@@ -60,11 +60,11 @@ class ProductCategoryController extends Controller
     {
         abort_if(Gate::denies('product_category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $companies = Company::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $companies = Company::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $productCategory->load('company');
+        // $productCategory->load('company');
 
-        return view('admin.productCategories.edit', compact('companies', 'productCategory'));
+        return view('admin.productCategories.edit', compact('productCategory'));
     }
 
     public function update(UpdateProductCategoryRequest $request, ProductCategory $productCategory)
@@ -90,7 +90,7 @@ class ProductCategoryController extends Controller
     {
         abort_if(Gate::denies('product_category_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $productCategory->load('company');
+        // $productCategory->load('company');
 
         return view('admin.productCategories.show', compact('productCategory'));
     }
@@ -127,10 +127,10 @@ class ProductCategoryController extends Controller
     {
         if ($request->ajax()) {
             $productCategories = ProductCategory::query();
-            if ($request->company_id) {
-                $company_id = explode(',', $request->company_id);
-                $productCategories = $productCategories->whereIn('company_id', $company_id ?? []);
-            }
+            // if ($request->company_id) {
+            //     $company_id = explode(',', $request->company_id);
+            //     $productCategories = $productCategories->whereIn('company_id', $company_id ?? []);
+            // }
             return $productCategories->get(['id', 'name']);
         }
     }

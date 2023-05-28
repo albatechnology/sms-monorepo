@@ -51,14 +51,14 @@
                             @endif
                         </td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                         <th>
                             {{ trans('cruds.productCategory.fields.company') }}
                         </th>
                         <td>
                             {{ $productCategory->company->name ?? '' }}
                         </td>
-                    </tr>
+                    </tr> --}}
                 </tbody>
             </table>
             <div class="form-group">

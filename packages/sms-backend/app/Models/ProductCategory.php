@@ -12,9 +12,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 /**
  * @mixin IdeHelperProductCategory
  */
-class ProductCategory extends BaseModel implements HasMedia, Tenanted
+class ProductCategory extends BaseModel implements HasMedia
 {
-    use SoftDeletes, CustomInteractsWithMedia, IsCompanyTenanted;
+    use SoftDeletes, CustomInteractsWithMedia;
 
     public $table = 'product_categories';
 
@@ -31,14 +31,14 @@ class ProductCategory extends BaseModel implements HasMedia, Tenanted
     protected $fillable = [
         'name',
         'description',
-        'company_id',
+        // 'company_id',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
     protected $casts = [
-        'company_id' => 'integer',
+        // 'company_id' => 'integer',
     ];
 
     public function registerMediaConversions(Media $media = null): void

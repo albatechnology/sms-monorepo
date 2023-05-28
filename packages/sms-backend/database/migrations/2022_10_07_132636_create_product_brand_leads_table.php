@@ -17,7 +17,6 @@ class CreateProductBrandLeadsTable extends Migration
             $table->foreignId('lead_id')->constrained();
             $table->foreignId('product_brand_id')->constrained();
             $table->boolean('is_available')->default(1);
-            // $table->unsignedTinyInteger('is_taken')->nullable();
         });
     }
 

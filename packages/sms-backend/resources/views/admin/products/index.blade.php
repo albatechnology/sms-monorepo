@@ -10,7 +10,7 @@
                     {{ trans('global.app_csvImport') }}
                 </button>
                 @include('csvImport.customModal', ['model' => 'Product', 'route' => 'admin.products.parseCsvImport', 'type' => \App\Enums\Import\ImportBatchType::PRODUCT])
-                <button class="btn btn-warning" data-toggle="modal" data-target="#mdlGenerateBarcode">Generate Barcode</button>
+                {{-- <button class="btn btn-warning" data-toggle="modal" data-target="#mdlGenerateBarcode">Generate Barcode</button> --}}
                 {{-- <div class="modal fade" id="mdlGenerateBarcode" tabindex="-1" role="dialog" aria-labelledby="mdlGenerateBarcodeLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -81,9 +81,9 @@
                     <th>
                         {{ trans('cruds.product.fields.is_active') }}
                     </th>
-                    <th>
+                    {{-- <th>
                         {{ trans('cruds.product.fields.company') }}
-                    </th>
+                    </th> --}}
                     <th>
                         &nbsp;
                     </th>
@@ -120,14 +120,14 @@
                     </td>
                     <td>
                     </td>
-                    <td>
+                    {{-- <td>
                         <select class="search">
                             <option value>{{ trans('global.all') }}</option>
                             @foreach($companies as $key => $item)
                                 <option value="{{ $item->name }}">{{ $item->name }}</option>
                             @endforeach
                         </select>
-                    </td>
+                    </td> --}}
                     <td>
                     </td>
                 </tr>
@@ -191,7 +191,7 @@
                     {data: 'price', name: 'price'},
                     {data: 'photo', name: 'photo', sortable: false, searchable: false},
                     {data: 'is_active', name: 'is_active'},
-                    {data: 'company_name', name: 'company.name'},
+                    // {data: 'company_name', name: 'company.name'},
                     {data: 'actions', name: '{{ trans('global.actions') }}'}
                 ],
                 orderCellsTop: true,

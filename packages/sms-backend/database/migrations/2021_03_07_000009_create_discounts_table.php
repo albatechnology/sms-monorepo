@@ -9,21 +9,25 @@ class CreateDiscountsTable extends Migration
     public function up()
     {
         Schema::create('discounts', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
+            $table->foreignId('promo_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('name')->index();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->unsignedTinyInteger('type');
             $table->unsignedTinyInteger('scope');
             $table->string('activation_code')->nullable()->index();
-            $table->integer('value')->nullable();
-            $table->datetime('start_time');
+            $table->float('value')->default(0);
+            $table->datetime('start_time')->nullable();
             $table->datetime('end_time')->nullable();
             $table->boolean('is_active')->default(0)->nullable();
             $table->unsignedBigInteger('max_discount_price_per_order')->nullable();
             $table->unsignedInteger('max_use_per_customer')->nullable();
             $table->unsignedBigInteger('min_order_price')->nullable();
-            $table->foreignId('company_id')->constrained();
-            $table->foreignId('product_list_id')->nullable()->constrained();
+            // $table->foreignId('company_id')->constrained(); // unused
+            $table->mediumText('product_ids')->nullable();
+
+            $table->string('product_category')->nullable();
+            $table->foreignId('product_brand_id')->nullable()->constrained();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\ProductCategory;
 use App\Enums\DiscountScope;
 use App\Enums\DiscountType;
-use App\Rules\HasCompanyAccess;
+// use App\Rules\HasCompanyAccess;
 use BenSampo\Enum\Rules\EnumValue;
 use Gate;
 use Illuminate\Foundation\Http\FormRequest;
@@ -20,7 +20,7 @@ class UpdateDiscountRequest extends FormRequest
 
     public function rules()
     {
-        $companyId = $this->get('company_id');
+        // $companyId = $this->get('company_id');
 
         return [
             'name'                         => [
@@ -70,17 +70,17 @@ class UpdateDiscountRequest extends FormRequest
             'product_brand_id'              => [
                 'nullable',
                 Rule::exists('product_brands', 'id')
-                    ->where('company_id', $companyId)
+                    // ->where('company_id', $companyId)
             ],
-            'start_time'                   => [
-                'required',
-                'date_format:' . config('panel.date_format') . ' ' . config('panel.time_format'),
-            ],
-            'end_time'                     => [
-                'required',
-                'date_format:' . config('panel.date_format') . ' ' . config('panel.time_format'),
-                'after:start_time'
-            ],
+            // 'start_time'                   => [
+            //     'required',
+            //     'date_format:' . config('panel.date_format') . ' ' . config('panel.time_format'),
+            // ],
+            // 'end_time'                     => [
+            //     'required',
+            //     'date_format:' . config('panel.date_format') . ' ' . config('panel.time_format'),
+            //     'after:start_time'
+            // ],
             'max_use_per_customer'         => [
                 'nullable',
                 'integer',
@@ -100,14 +100,15 @@ class UpdateDiscountRequest extends FormRequest
                 'integer',
                 'min:0',
             ],
-            'company_id'                   => [
-                'required',
-                new HasCompanyAccess(),
-            ],
+            // 'company_id'                   => [
+            //     'required',
+            //     new HasCompanyAccess(),
+            // ],
             'product_ids'             => [
                 'nullable',
                 'array',
             ],
+            'promo_id' => ['required', 'exists:promos,id']
         ];
     }
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -27,6 +28,7 @@
     <livewire:styles />
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.1/dist/alpine.min.js" defer></script>
 </head>
+
 <body class="sidebar-mini layout-fixed" style="height: auto;">
     <div class="wrapper">
         <nav class="main-header navbar navbar-expand bg-white navbar-light border-bottom">
@@ -75,15 +77,18 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                         @if (count(
-        $alerts = Auth::user()->userUserAlerts()->withPivot('read')->limit(10)->orderBy('created_at', 'ASC')->get()->reverse(),
-    ) > 0)
+                                $alerts = Auth::user()->userUserAlerts()->withPivot('read')->limit(10)->orderBy('created_at', 'ASC')->get()->reverse()) > 0)
                             @foreach ($alerts as $alert)
                                 <div class="dropdown-item">
                                     <a href="{{ $alert->alert_link ? $alert->alert_link : '#' }}" target="_blank"
                                         rel="noopener noreferrer">
-                                        @if ($alert->pivot->read === 0) <strong> @endif
+                                        @if ($alert->pivot->read === 0)
+                                            <strong>
+                                        @endif
                                         {{ $alert->alert_text }}
-                                        @if ($alert->pivot->read === 0) </strong> @endif
+                                        @if ($alert->pivot->read === 0)
+                                            </strong>
+                                        @endif
                                     </a>
                                 </div>
                             @endforeach
@@ -156,7 +161,9 @@
     <script src="{{ asset('js/main.js') }}"></script>
     <script>
         $(function() {
-            $('.form-loading').on('submit', function(){ $(this).find(':submit').attr('disabled', true).text('Loading...') });
+            $('.form-loading').on('submit', function() {
+                $(this).find(':submit').attr('disabled', true).text('Loading...')
+            });
             let copyButtonTrans = '{{ trans('global.datatables.copy') }}'
             let csvButtonTrans = '{{ trans('global.datatables.csv') }}'
             let excelButtonTrans = '{{ trans('global.datatables.excel') }}'

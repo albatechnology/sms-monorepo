@@ -33,10 +33,10 @@ class StorePromoRequest extends FormRequest
                 'date',
                 'after:start_time'
             ],
-            'promo_category_id' => [
-                'required',
-                'exists:promo_categories,id',
-            ],
+            // 'promo_category_id' => [
+            //     'required',
+            //     'exists:promo_categories,id',
+            // ],
             // 'company_id'            => [
             //     'required',
             //     new HasCompanyAccess(),

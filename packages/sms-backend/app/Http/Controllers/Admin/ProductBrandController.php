@@ -8,7 +8,6 @@ use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyProductBrandRequest;
 use App\Http\Requests\StoreProductBrandRequest;
 use App\Http\Requests\UpdateProductBrandRequest;
-use App\Models\Company;
 use App\Models\ProductBrand;
 use App\Models\BrandCategory;
 use App\Models\Currency;
@@ -29,7 +28,7 @@ class ProductBrandController extends Controller
         abort_if(Gate::denies('product_brand_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = ProductBrand::tenanted()->with(['brandCategory','company'])->select(sprintf('%s.*', (new ProductBrand())->table));
+            $query = ProductBrand::with(['brandCategory'])->select(sprintf('%s.*', (new ProductBrand())->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -56,9 +55,9 @@ class ProductBrandController extends Controller
             $table->editColumn('name', function ($row) {
                 return $row->name ? $row->name : '';
             });
-            $table->editColumn('company_name', function ($row) {
-                return $row->company->name ? $row->company->name : '';
-            });
+            // $table->editColumn('company_name', function ($row) {
+            //     return $row->company->name ? $row->company->name : '';
+            // });
             $table->editColumn('hpp_calculation', function ($row) {
                 return $row->hpp_calculation ? $row->hpp_calculation . '%' : '';
             });
@@ -95,19 +94,19 @@ class ProductBrandController extends Controller
 
             return $table->make(true);
         }
-        $companies = Company::tenanted()->pluck('name', 'id');
-        return view('admin.productBrands.index', ['companies' => $companies]);
+        // $companies = Company::tenanted()->pluck('name', 'id');
+        return view('admin.productBrands.index');
     }
 
     public function create()
     {
         abort_if(Gate::denies('product_brand_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $companies = Company::tenanted()->get()->pluck('name', 'id');
+        // $companies = Company::tenanted()->get()->pluck('name', 'id');
         $brandCategories = BrandCategory::get();
         $currencies = Currency::all();
 
-        return view('admin.productBrands.create', compact('companies', 'brandCategories', 'currencies'));
+        return view('admin.productBrands.create', compact('brandCategories', 'currencies'));
     }
 
     public function store(StoreProductBrandRequest $request)
@@ -186,7 +185,7 @@ class ProductBrandController extends Controller
 
     public function massDestroy(MassDestroyProductBrandRequest $request)
     {
-        ProductBrand::tenanted()->whereIn('id', request('ids'))->delete();
+        ProductBrand::whereIn('id', request('ids'))->delete();
         ProductBrandCategory::whereIn('product_brand_id', request('ids'))->delete();
 
         return response(null, Response::HTTP_NO_CONTENT);
@@ -236,10 +235,10 @@ class ProductBrandController extends Controller
     {
         if ($request->ajax()) {
             $productBrands = ProductBrand::query();
-            if ($request->company_id) {
-                $company_id = explode(',', $request->company_id);
-                $productBrands = $productBrands->whereIn('company_id', $company_id ?? []);
-            }
+            // if ($request->company_id) {
+            //     $company_id = explode(',', $request->company_id);
+            //     $productBrands = $productBrands->whereIn('company_id', $company_id ?? []);
+            // }
             return $productBrands->get(['id', 'name']);
         }
     }

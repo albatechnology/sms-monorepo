@@ -2,24 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Models\Company;
+use App\Models\BrandCategory;
 use App\Models\Product;
 use App\Models\ProductBrand;
-use App\Models\ProductCategoryCode;
-use App\Models\ProductModel;
-use App\Models\ProductTag;
-use App\Models\ProductVersion;
-use App\Services\HelperService;
-use Illuminate\Database\Eloquent\Factories\Sequence;
+use App\Models\ProductCategory;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
-    public $product_count = 0;
-    public $model_count = 0;
-    public $product_names = [];
-    public $model_names = [];
-
     /**
      * Run the database seeds.
      *
@@ -27,53 +17,32 @@ class ProductSeeder extends Seeder
      */
     public function run()
     {
-        $tags    = ProductTag::all();
-        $company = Company::first();
+        $brandCategory = BrandCategory::create([
+            'name' => 'Brand Category 1',
+            'code' => 'BC1',
+            'slug' => 'brand-category-1',
+        ]);
 
-        $data['ProductTag'] = $tags;
-        $data['Company']    = $company;
+        $productBrand = ProductBrand::create([
+            'brand_category_id' => $brandCategory->id,
+            'name' => 'Product Brand 1'
+        ]);
 
-        // use sample product names
-        $this->product_names = HelperService::loadSampleData(HelperService::PRODUCT_NAMES);
-        $this->model_names   = HelperService::loadSampleData(HelperService::MODEL_NAMES);
+        $productCategory = ProductCategory::create([
+            'name' => 'Product Category 1'
+        ]);
 
-        ProductBrand::factory()->count(2)->create()->each(function (ProductBrand $brand) use ($data) {
-
-            $data['ProductBrand'] = $brand;
-
-            $models = ProductModel::factory()
-                ->count(2)
-                ->state(new Sequence(
-                    ['name' => $this->model_names[$this->model_count]],
-                    ['name' => $this->model_names[$this->model_count + 1]],
-                ))
-                ->create();
-
-            $this->model_count = $this->model_count + 2;
-
-            $models->each(function (ProductModel $model) use ($data) {
-                $data['ProductModel'] = $model;
-
-                ProductVersion::factory()->count(2)->create()->each(function (ProductVersion $version) use ($data) {
-                    $data['ProductVersion'] = $version;
-
-                    ProductCategoryCode::factory()->count(2)->create()->each(function (ProductCategoryCode $code) use ($data) {
-                        Product::factory()
-                            ->withProductUnits()
-                            ->withTags($data['ProductTag']->random(3))
-                            ->create([
-                                'name'                     => $this->product_names[$this->product_count],
-                                'company_id'               => $data['Company']->id,
-                                'product_brand_id'         => $data['ProductBrand']->id,
-                                'product_model_id'         => $data['ProductModel']->id,
-                                'product_version_id'       => $data['ProductVersion']->id,
-                                'product_category_code_id' => $code->id,
-                            ]);
-
-                        $this->product_count++;
-                    });
-                });
-            });
-        });
+        $productCategory = Product::create([
+            'product_category_id' => $productCategory->id,
+            'product_brand_id' => $productBrand->id,
+            'brand_category_id' => $brandCategory->id,
+            'name' => 'Product 1',
+            'description' => 'Description Product 1',
+            'sku' => '001',
+            'price' => 1000000,
+            'is_active' => 1,
+            'uom' => 1,
+            'production_cost' => 500000,
+        ]);
     }
 }

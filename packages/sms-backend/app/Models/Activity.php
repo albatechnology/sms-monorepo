@@ -233,10 +233,10 @@ class Activity extends BaseModel implements Tenanted, Reportable, HasMedia
         $this->attributes['follow_up_datetime'] = $value ? Carbon::parse($value) : null;
     }
 
-    public function getCompanyIdAttribute(): int
-    {
-        return app(CacheService::class)->companyOfChannel($this->channel_id)->id;
-    }
+    // public function getCompanyIdAttribute(): int
+    // {
+    //     return app(CacheService::class)->companyOfChannel($this->channel_id)->id;
+    // }
 
     public function scopeWhereUserId($query, ...$userIds)
     {
@@ -275,11 +275,11 @@ class Activity extends BaseModel implements Tenanted, Reportable, HasMedia
         return $query->whereIn('channel_id', $channelIds);
     }
 
-    public function scopeWhereCompanyId($query, $companyId)
-    {
-        $channelIds = app(CacheService::class)->channelsOfCompany((int)$companyId)->pluck('id');
-        return $query->whereIn('channel_id', $channelIds->all());
-    }
+    // public function scopeWhereCompanyId($query, $companyId)
+    // {
+    //     $channelIds = app(CacheService::class)->channelsOfCompany((int)$companyId)->pluck('id');
+    //     return $query->whereIn('channel_id', $channelIds->all());
+    // }
 
     public function scopeFollowUpDatetimeBefore($query, $datetime)
     {

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use App\Interfaces\Tenanted;
+// use App\Interfaces\Tenanted;
 use App\Traits\Auditable;
 use App\Traits\CustomInteractsWithMedia;
-use App\Traits\IsCompanyTenanted;
+// use App\Traits\IsCompanyTenanted;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
@@ -13,9 +13,9 @@ use Spatie\MediaLibrary\HasMedia;
 /**
  * @mixin IdeHelperPaymentType
  */
-class PaymentType extends BaseModel implements Tenanted, HasMedia
+class PaymentType extends BaseModel implements HasMedia
 {
-    use SoftDeletes, Auditable, CustomInteractsWithMedia, IsCompanyTenanted;
+    use SoftDeletes, Auditable, CustomInteractsWithMedia;
 
     public $table = 'payment_types';
 
@@ -33,7 +33,7 @@ class PaymentType extends BaseModel implements Tenanted, HasMedia
 
     protected $casts = [
         'payment_category_id' => 'integer',
-        'company_id'          => 'integer',
+        // 'company_id'          => 'integer',
     ];
 
     protected function serializeDate(DateTimeInterface $date)
@@ -52,10 +52,10 @@ class PaymentType extends BaseModel implements Tenanted, HasMedia
         return $this->belongsTo(PaymentCategory::class, 'payment_category_id');
     }
 
-    public function company()
-    {
-        return $this->belongsTo(Company::class, 'company_id');
-    }
+    // public function company()
+    // {
+    //     return $this->belongsTo(Company::class, 'company_id');
+    // }
 
     //endregion
 

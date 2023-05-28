@@ -54,9 +54,9 @@
                         <th>
                             {{ trans('cruds.discount.fields.is_active') }}
                         </th>
-                        <th>
+                        {{-- <th>
                             {{ trans('cruds.discount.fields.company') }}
-                        </th>
+                        </th> --}}
                         <th>&nbsp;</th>
                     </tr>
                     <tr>
@@ -89,7 +89,7 @@
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
-                        <td></td>
+                        {{-- <td></td> --}}
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
@@ -187,20 +187,20 @@
                     },
                     {
                         data: 'start_time',
-                        name: 'start_time'
+                        name: 'promo.start_time'
                     },
                     {
                         data: 'end_time',
-                        name: 'end_time'
+                        name: 'promo.end_time'
                     },
                     {
                         data: 'is_active',
                         name: 'is_active'
                     },
-                    {
-                        data: 'company',
-                        name: 'company.name'
-                    },
+                    // {
+                    //     data: 'company',
+                    //     name: 'company.name'
+                    // },
                     {
                         data: 'actions',
                         name: '{{ trans('global.actions') }}'

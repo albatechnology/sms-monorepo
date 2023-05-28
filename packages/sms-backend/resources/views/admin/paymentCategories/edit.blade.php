@@ -18,7 +18,7 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.paymentCategory.fields.name_helper') }}</span>
             </div>
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label class="required" for="company_id">{{ trans('cruds.paymentCategory.fields.company') }}</label>
                 <select class="form-control select2 {{ $errors->has('company') ? 'is-invalid' : '' }}" name="company_id"
                         id="company_id" required>
@@ -30,7 +30,7 @@
                     <span class="text-danger">{{ $errors->first('company') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.paymentCategory.fields.company_helper') }}</span>
-            </div>
+            </div> --}}
 
             <div class="form-group">
                 <label for="photo">{{ trans('cruds.productModel.fields.photo') }}</label>
@@ -42,12 +42,6 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.productModel.fields.photo_helper') }}</span>
             </div>
-            <div class="form-group">
-                <button class="btn btn-danger" type="submit">
-                    {{ trans('global.save') }}
-                </button>
-            </div>
-
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}

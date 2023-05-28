@@ -42,7 +42,7 @@
                         <span class="error invalid-feedback">{{ $message }}</span>
                     @enderror
                 </div>
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label for="user_referral_id">Sales Referral</label>
                     <select class="form-control select2 {{ $errors->has('user_referral_id') ? 'is-invalid' : '' }}"
                         name="user_referral_id" id="user_referral_id">
@@ -55,7 +55,7 @@
                     @if ($errors->has('user_referral_id'))
                         <span class="text-danger">{{ $errors->first('user_referral_id') }}</span>
                     @endif
-                </div>
+                </div> --}}
                 {{-- <div class="form-group">
                     <label class="required">{{ trans('cruds.lead.fields.type') }}</label>
                     <select class="form-control {{ $errors->has('type') ? 'is-invalid' : '' }}" name="type" id="type"

@@ -11,6 +11,10 @@ class CreateOrderDetailsTable extends Migration
         Schema::create('order_details', function (Blueprint $table) {
             $table->bigIncrements('id');
 
+            $table->foreignId('product_id')->constrained();
+            $table->foreignId('order_id')->constrained();
+            // $table->foreignId('company_id')->constrained(); // unused
+
             $table->unsignedInteger('quantity');
             $table->unsignedInteger('quantity_fulfilled')->default(0);
             $table->unsignedTinyInteger('status');
@@ -20,10 +24,7 @@ class CreateOrderDetailsTable extends Migration
             $table->bigInteger('unit_price');
             $table->bigInteger('total_discount')->default(0);
             $table->bigInteger('total_price')->default(0);
-
-            $table->foreignId('product_id')->constrained();
-            $table->foreignId('order_id')->constrained();
-            $table->foreignId('company_id')->constrained();
+            $table->unsignedBigInteger('total_cascaded_discount')->default(0);
 
             $table->timestamps();
             $table->softDeletes();

@@ -33,10 +33,6 @@ class Lead extends BaseModel implements Tenanted, HasMedia
 
     public $table = 'leads';
 
-    protected $appends = [
-        'voucher_image',
-    ];
-
     protected $dates = [
         'created_at',
         'updated_at',
@@ -66,7 +62,6 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         'user_sms_id',
         'sms_channel_id',
         // 'product_brand_id',
-        'voucher',
         'parent_id',
     ];
 
@@ -532,18 +527,6 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         return $query->whereHas('customer', function ($q) use ($flag) {
             return $q->where('has_activity', $flag);
         });
-    }
-
-    public function getVoucherImageAttribute()
-    {
-        $files = $this->getMedia('photo');
-        $files->each(function ($item) {
-            $item->url       = $item->getUrl();
-            $item->thumbnail = $item->getUrl('thumb');
-            $item->preview   = $item->getUrl('preview');
-        });
-
-        return $files;
     }
 
     public function scopeWhereCreatedAtRange($query, $startDate = null, $endDate = null)

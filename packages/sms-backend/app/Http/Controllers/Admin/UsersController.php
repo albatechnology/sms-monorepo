@@ -16,10 +16,8 @@ use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\Lead;
 use App\Enums\UserType;
 use App\Models\PermissionUser;
-use App\Models\UserCompany;
 use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller

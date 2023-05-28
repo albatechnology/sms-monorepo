@@ -34,9 +34,9 @@ class LeadsController extends Controller
 
         if ($request->ajax()) {
             $query = Lead::tenanted()->with(['sales', 'customer', 'channel'])->select(sprintf('%s.*', (new Lead)->table));
-            if (isset($request->company_id) && $request->company_id != '') {
-                $query = $query->whereCompanyId($request->company_id);
-            }
+            // if (isset($request->company_id) && $request->company_id != '') {
+            //     $query = $query->whereCompanyId($request->company_id);
+            // }
             if (isset($request->supervisor_id) && $request->supervisor_id != '') {
                 $query = $query->whereHas('user', fn ($q) => $q->where('supervisor_id', $request->supervisor_id));
             }
@@ -113,29 +113,29 @@ class LeadsController extends Controller
         $customers = Customer::get();
         $channels  = Channel::get();
         $sales = User::where('type', UserType::SALES)->get();
-        $companies = Company::tenanted()->pluck('name', 'id');
+        // $companies = Company::tenanted()->pluck('name', 'id');
         $supervisors = User::where('type', UserType::SUPERVISOR)->where('supervisor_type_id', 2)->pluck('name', 'id');
         $leadCategories = LeadCategory::pluck('name', 'id');
         $productBrands = ProductBrand::pluck('name', 'id');
-        return view('admin.leads.index', compact('customers', 'channels', 'sales', 'companies', 'supervisors', 'leadCategories', 'productBrands'));
+        return view('admin.leads.index', compact('customers', 'channels', 'sales', 'supervisors', 'leadCategories', 'productBrands'));
     }
 
     public function create()
     {
         abort_if(Gate::denies('lead_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $userReferrals = User::where('type', UserType::SALES_REFERRAL)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $userReferrals = User::where('type', UserType::SALES_REFERRAL)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         $leadCategories = LeadCategory::all()->pluck('name', 'id');
-        $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.leads.create', compact('leadCategories', 'companies', 'userReferrals'));
+        return view('admin.leads.create', compact('leadCategories'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             //lead
-            'company_id' => 'required|exists:companies,id',
+            // 'company_id' => 'required|exists:companies,id',
             'channel_id' => 'nullable|exists:channels,id',
             'user_referral_id' => 'nullable|exists:users,id',
             'type' => 'required',
@@ -160,7 +160,7 @@ class LeadsController extends Controller
         ]);
 
         $productBrandIds = $request->product_brand_ids ?? null;
-        $productBrands = ProductBrand::where('company_id', $request->company_id)->where(function ($q) use ($productBrandIds) {
+        $productBrands = ProductBrand::where(function ($q) use ($productBrandIds) {
             if ($productBrandIds) $q->whereIn('id', $productBrandIds);
         })->pluck('name', 'id');
 

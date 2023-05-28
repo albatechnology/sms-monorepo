@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->string('remember_token')->nullable();
             $table->tinyInteger('type')->default(1)->index();
             $table->foreignId('channel_id')->nullable()->constrained();
-            $table->foreignId('company_id')->nullable()->constrained();
+            // $table->foreignId('company_id')->nullable()->constrained(); // unused
             $table->foreignId('supervisor_type_id')->nullable()->constrained();
             $table->foreignId('supervisor_id')->nullable()->constrained('users');
             $table->unsignedInteger('_lft');

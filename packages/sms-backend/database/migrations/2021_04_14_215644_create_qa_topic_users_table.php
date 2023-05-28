@@ -8,16 +8,16 @@ class CreateQaTopicUsersTable extends Migration
 {
     public function up()
     {
-        Schema::create('qa_topic_user', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->foreignId('topic_id')->constrained('qa_topics');
-            $table->foreignId('user_id')->constrained();
-            $table->timestamps();
-        });
+        // Schema::create('qa_topic_user', function (Blueprint $table) {
+        //     $table->bigIncrements('id');
+        //     $table->foreignId('topic_id')->constrained('qa_topics');
+        //     $table->foreignId('user_id')->constrained();
+        //     $table->timestamps();
+        // });
     }
 
     public function down()
     {
-        Schema::dropIfExists('qa_topic_user');
+        // Schema::dropIfExists('qa_topic_user');
     }
 }

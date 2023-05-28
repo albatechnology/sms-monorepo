@@ -12,7 +12,7 @@ class CreateStocksTable extends Migration
             $table->bigIncrements('id');
             $table->integer('stock')->default(0);
             $table->foreignId('channel_id')->constrained();
-            $table->foreignId('company_id')->constrained();
+            // $table->foreignId('company_id')->constrained(); // unused
             $table->foreignId('product_id')->constrained();
             $table->timestamps();
 

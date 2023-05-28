@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Traits\Auditable;
 use App\Traits\CustomInteractsWithMedia;
-use App\Traits\IsCompanyTenanted;
+// use App\Traits\IsCompanyTenanted;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
@@ -14,7 +14,7 @@ use Spatie\MediaLibrary\HasMedia;
  */
 class Promo extends BaseModel implements HasMedia
 {
-    use SoftDeletes, CustomInteractsWithMedia, Auditable, IsCompanyTenanted;
+    use SoftDeletes, CustomInteractsWithMedia, Auditable;
 
     public $table = 'promos';
 
@@ -37,7 +37,7 @@ class Promo extends BaseModel implements HasMedia
         'start_time',
         'end_time',
         'lead_category_id',
-        'company_id',
+        // 'company_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -45,7 +45,7 @@ class Promo extends BaseModel implements HasMedia
 
     protected $casts = [
         'lead_category_id' => 'integer',
-        'company_id' => 'integer',
+        // 'company_id' => 'integer',
         'promo_category_id' => 'integer',
     ];
 
@@ -54,10 +54,10 @@ class Promo extends BaseModel implements HasMedia
         return $this->belongsTo(LeadCategory::class, 'lead_category_id');
     }
 
-    public function company()
-    {
-        return $this->belongsTo(Company::class, 'company_id');
-    }
+    // public function company()
+    // {
+    //     return $this->belongsTo(Company::class, 'company_id');
+    // }
 
     public function promoCategory()
     {

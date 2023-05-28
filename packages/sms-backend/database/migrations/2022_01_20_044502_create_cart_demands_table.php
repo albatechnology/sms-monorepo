@@ -13,19 +13,20 @@ class CreateCartDemandsTable extends Migration
      */
     public function up()
     {
-        Schema::create('cart_demands', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->json('items')->nullable();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('customer_id')->nullable()->constrained();
+        // Schema::create('cart_demands', function (Blueprint $table) {
+        //     $table->bigIncrements('id');
+        //     $table->integer('order_id')->nullable();
+        //     $table->json('items')->nullable();
+        //     $table->foreignId('user_id')->constrained();
+        //     $table->foreignId('customer_id')->nullable()->constrained();
 
-            $table->foreignId('discount_id')->nullable()->constrained();
-            $table->string('discount_error')->nullable();
-            $table->unsignedBigInteger('total_discount')->default(0);
-            $table->unsignedBigInteger('total_price')->default(0);
+        //     $table->foreignId('discount_id')->nullable()->constrained();
+        //     $table->string('discount_error')->nullable();
+        //     $table->unsignedBigInteger('total_discount')->default(0);
+        //     $table->unsignedBigInteger('total_price')->default(0);
 
-            $table->timestamps();
-        });
+        //     $table->timestamps();
+        // });
     }
 
     /**
@@ -35,6 +36,6 @@ class CreateCartDemandsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cart_demands');
+        // Schema::dropIfExists('cart_demands');
     }
 }

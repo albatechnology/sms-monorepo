@@ -33,14 +33,14 @@
                     </tr>
                     <x-show-row :model="$promo" key="start_time"></x-show-row>
                     <x-show-row :model="$promo" key="end_time"></x-show-row>
-                    <tr>
+                    {{-- <tr>
                         <th>
                             {{ trans('cruds.promo.fields.company') }}
                         </th>
                         <td>
                             {{ $promo->company->name ?? '' }}
                         </td>
-                    </tr>
+                    </tr> --}}
                 </tbody>
             </table>
             <div class="form-group">

@@ -12,13 +12,6 @@
                 @method('PUT')
                 @csrf
                 <div class="form-group">
-                    <label for="orlan_id">Orlansoft ID</label>
-                    <input class="form-control {{ $errors->has('orlan_id') ? 'is-invalid' : '' }}" type="text" name="orlan_id" id="orlan_id" value="{{ $leadCategory->orlan_id }}">
-                    @if($errors->has('orlan_id'))
-                        <span class="text-danger">{{ $errors->first('orlan_id') }}</span>
-                    @endif
-                </div>
-                <div class="form-group">
                     <label class="required" for="name">{{ trans('cruds.leadCategory.fields.name') }}</label>
                     <input required class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text"
                         name="name" id="name" value="{{ old('name', $leadCategory->name) }}">

@@ -38,9 +38,9 @@
                         <th>
                             {{ trans('cruds.productCategory.fields.photo') }}
                         </th>
-                        <th>
+                        {{-- <th>
                             {{ trans('cruds.productCategory.fields.company') }}
-                        </th>
+                        </th> --}}
                         <th>
                             &nbsp;
                         </th>
@@ -59,14 +59,14 @@
                         </td>
                         <td>
                         </td>
-                        <td>
+                        {{-- <td>
                             <select class="search">
                                 <option value>{{ trans('global.all') }}</option>
                                 @foreach($companies as $key => $item)
                                     <option value="{{ $item->name }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
-                        </td>
+                        </td> --}}
                         <td>
                         </td>
                     </tr>
@@ -93,9 +93,9 @@
                                     </a>
                                 @endif
                             </td>
-                            <td>
+                            {{-- <td>
                                 {{ $productCategory->company->name ?? '' }}
-                            </td>
+                            </td> --}}
                             <td>
                                 @can('product_category_show')
                                     <a class="btn btn-xs btn-primary" href="{{ route('admin.product-categories.show', $productCategory->id) }}">

@@ -27,7 +27,6 @@ use Illuminate\Support\Str;
 use Kalnoy\Nestedset\NodeTrait;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\NewAccessToken;
-use PDO;
 
 /**
  * @mixin IdeHelperUser
@@ -79,7 +78,7 @@ class User extends Authenticatable implements Tenanted, ReportableScope
     public static function boot()
     {
         self::deleted(function (self $model) {
-            if ($model->type == UserType::SUPERVISOR_SMS) SmsChannel::where('user_id', $model->id)->update(['user_id' => null]);
+            // if ($model->type == UserType::SUPERVISOR_SMS) SmsChannel::where('user_id', $model->id)->update(['user_id' => null]);
         });
 
         parent::boot();
@@ -249,10 +248,9 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         $hasActiveChannel = tenancy()->getActiveTenant();
         $hasActiveCompany = tenancy()->getActiveCompany();
         $user = tenancy()->getUser();
-        $isDIGITAL_MARKETING = $user->type->is(UserType::DIGITAL_MARKETING);
         $isAdmin = $user->is_admin;
 
-        if (!$hasActiveChannel && ($isAdmin || $isDIGITAL_MARKETING)) {
+        if (!$hasActiveChannel && $isAdmin) {
             return $query;
         }
 
@@ -263,7 +261,7 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         }
 
         if ($hasActiveCompany) {
-            if ($isAdmin || $isDIGITAL_MARKETING) {
+            if ($isAdmin) {
                 // lets admin see all channels in a company
                 return $query->whereHas('channels', function ($query) use ($hasActiveCompany) {
                     $query->whereIn('company_id', $hasActiveCompany->id);
@@ -276,7 +274,7 @@ class User extends Authenticatable implements Tenanted, ReportableScope
                 });
             }
         } else {
-            if ($isAdmin || $isDIGITAL_MARKETING) {
+            if ($isAdmin) {
                 // lets admin see all
                 return $query;
             } else {
@@ -347,10 +345,10 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         return $this->type->is(UserType::DIRECTOR);
     }
 
-    public function getIsDIGITAL_MARKETINGAttribute(): bool
-    {
-        return $this->type->is(UserType::DIGITAL_MARKETING);
-    }
+    // public function getIsDIGITAL_MARKETINGAttribute(): bool
+    // {
+    //     return $this->type->is(UserType::DIGITAL_MARKETING);
+    // }
 
     public function getEmailVerifiedAtAttribute($value): ?string
     {

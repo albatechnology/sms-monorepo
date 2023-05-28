@@ -16,7 +16,6 @@ class ActivityProductSeeder extends Seeder
      */
     public function run()
     {
-        //
         for($i = 0; $i < 200; $i++){
             DB::table('activity_product')->insert([
                 'activity_id' => Activity::all()->random()->id,

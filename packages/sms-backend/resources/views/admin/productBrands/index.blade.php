@@ -30,7 +30,7 @@
                         {{ trans('cruds.productBrand.fields.name') }}
                     </th>
                     <th>Brand Category</th>
-                    <th>Company</th>
+                    {{-- <th>Company</th> --}}
                     {{-- <th>
                         {{ trans('cruds.productBrand.fields.hpp_calculation') }}
                     </th> --}}
@@ -55,14 +55,14 @@
                     <td>
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
-                    <td>
+                    {{-- <td>
                         <select class="search">
                             <option value>{{ trans('global.all') }}</option>
                             @foreach($companies as $id => $name)
                                 <option value="{{ $name }}">{{ $name }}</option>
                             @endforeach
                         </select>
-                    </td>
+                    </td> --}}
                     <td></td>
                     {{-- <td></td> --}}
                     {{-- <td></td> --}}
@@ -122,7 +122,7 @@
                     {data: 'id', name: 'id'},
                     {data: 'name', name: 'name'},
                     {data: 'brand_category', name: 'brandCategory.name'},
-                    {data: 'company_name', name: 'company.name'},
+                    // {data: 'company_name', name: 'company.name'},
                     // {data: 'hpp_calculation', name: 'hpp_calculation'},
                     // {data: 'currency_id', name: 'currency_id'},
                     // {data: 'show_in_moves', name: 'show_in_moves'},

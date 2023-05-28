@@ -21,7 +21,7 @@ class CreateStockHistoriesTable extends Migration
 
             // closest PIC for this stock transaction
             $table->foreignId('user_id')->constrained();
-            $table->foreignId('company_id')->constrained();
+            // $table->foreignId('company_id')->constrained(); // unused
 
             $table->timestamps();
         });

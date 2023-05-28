@@ -7,7 +7,7 @@
         <div class="card-body">
             <form method="POST" action="{{ route("admin.product-brands.store") }}" enctype="multipart/form-data">
                 @csrf
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="required" for="companies">{{ trans('cruds.generic.fields.company') }}</label>
                     <select class="form-control select2 {{ $errors->has('company') ? 'is-invalid' : '' }}"
                             name="company_id" id="company">
@@ -19,7 +19,7 @@
                         <span class="text-danger">{{ $errors->first('company') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.user.fields.company_helper') }}</span>
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label class="required" for="name">{{ trans('cruds.productBrand.fields.name') }}</label>
                     <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name"

@@ -25,10 +25,10 @@ class UpdateProductCategoryRequest extends FormRequest
                 'string',
                 'nullable',
             ],
-            'company_id' => [
-                'required',
-                'integer',
-            ],
+            // 'company_id' => [
+            //     'required',
+            //     'integer',
+            // ],
         ];
     }
 }

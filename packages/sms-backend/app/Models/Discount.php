@@ -5,10 +5,10 @@ namespace App\Models;
 use App\Enums\ProductCategory;
 use App\Enums\DiscountScope;
 use App\Enums\DiscountType;
-use App\Interfaces\Tenanted;
+// use App\Interfaces\Tenanted;
 use App\Traits\Auditable;
 // use App\Traits\HasProductList;
-use App\Traits\IsCompanyTenanted;
+// use App\Traits\IsCompanyTenanted;
 use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,9 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @mixin IdeHelperDiscount
  */
-class Discount extends BaseModel implements Tenanted
+class Discount extends BaseModel
 {
-    use SoftDeletes, Auditable, IsCompanyTenanted;
+    use SoftDeletes, Auditable;
 
     public $table = 'discounts';
 
@@ -37,8 +37,7 @@ class Discount extends BaseModel implements Tenanted
         'max_discount_price_per_order' => 'integer',
         'max_use_per_customer'         => 'integer',
         'min_order_price'              => 'integer',
-        'company_id'                   => 'integer',
-        'product_list_id'              => 'integer',
+        // 'company_id'                   => 'integer',
         'promo_id'                     => 'integer',
         'type'                         => DiscountType::class,
         'scope'                        => DiscountScope::class,
@@ -90,10 +89,10 @@ class Discount extends BaseModel implements Tenanted
         $this->attributes['end_time'] = $value ? Carbon::parse($value) : null;
     }
 
-    public function company()
-    {
-        return $this->belongsTo(Company::class, 'company_id');
-    }
+    // public function company()
+    // {
+    //     return $this->belongsTo(Company::class, 'company_id');
+    // }
 
     public function promo()
     {

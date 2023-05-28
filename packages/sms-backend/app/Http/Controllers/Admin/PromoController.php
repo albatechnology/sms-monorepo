@@ -7,9 +7,8 @@ use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyPromoRequest;
 use App\Http\Requests\StorePromoRequest;
 use App\Http\Requests\UpdatePromoRequest;
-use App\Models\Company;
 use App\Models\Promo;
-use App\Models\PromoCategory;
+// use App\Models\PromoCategory;
 use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -25,7 +24,7 @@ class PromoController extends Controller
         abort_if(Gate::denies('promo_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Promo::with(['company','promoCategory'])->select(sprintf('%s.*', (new Promo)->table));
+            $query = Promo::select(sprintf('%s.*', (new Promo)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -66,41 +65,34 @@ class PromoController extends Controller
                 return implode(' ', $links);
             });
 
-            $table->addColumn('company_name', function ($row) {
-                return $row->company ? $row->company->name : '';
-            });
+            // $table->addColumn('company_name', function ($row) {
+            //     return $row->company ? $row->company->name : '';
+            // });
 
-            $table->addColumn('promo_category_name', function ($row) {
-                return $row->promoCategory ? $row->promoCategory->name : "";
-            });
+            // $table->addColumn('promo_category_name', function ($row) {
+            //     return $row->promoCategory ? $row->promoCategory->name : "";
+            // });
 
-            $table->rawColumns(['actions', 'placeholder', 'image', 'company']);
+            $table->rawColumns(['actions', 'placeholder', 'image']);
 
             return $table->make(true);
         }
 
-        $companies = Company::get();
-        return view('admin.promos.index', compact('companies'));
+        // $companies = Company::get();
+        return view('admin.promos.index');
     }
 
     public function create()
     {
         abort_if(Gate::denies('promo_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $promoCategories = PromoCategory::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        return view('admin.promos.create', compact('promoCategories'));
+        // $promoCategories = PromoCategory::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        return view('admin.promos.create');
     }
 
     public function store(StorePromoRequest $request)
     {
-        $promo = new Promo();
-        $promo->promo_category_id = $request->promo_category_id;
-        $promo->name = $request->name;
-        $promo->description = $request->description;
-        $promo->start_time = $request->start_time;
-        $promo->end_time = $request->end_time;
-        $promo->company_id = PromoCategory::findOrFail($request->promo_category_id)->company_id;
-        $promo->save();
+        $promo = Promo::create($request->validated());
 
         foreach ($request->input('image', []) as $file) {
             $promo->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('image');
@@ -117,20 +109,14 @@ class PromoController extends Controller
     {
         abort_if(Gate::denies('promo_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $promoCategories = PromoCategory::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $promoCategories = PromoCategory::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.promos.edit', compact('promoCategories', 'promo'));
+        return view('admin.promos.edit', compact('promo'));
     }
 
     public function update(UpdatePromoRequest $request, Promo $promo)
     {
-        $promo->promo_category_id = $request->promo_category_id;
-        $promo->name = $request->name;
-        $promo->description = $request->description;
-        $promo->start_time = $request->start_time;
-        $promo->end_time = $request->end_time;
-        $promo->company_id = PromoCategory::findOrFail($request->promo_category_id)->company_id;
-        $promo->save();
+        $promo->update($request->validated());
 
         if (count($promo->image) > 0) {
             foreach ($promo->image as $media) {
@@ -155,7 +141,7 @@ class PromoController extends Controller
     {
         abort_if(Gate::denies('promo_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $promo->load('company');
+        // $promo->load('company');
 
         return view('admin.promos.show', compact('promo'));
     }

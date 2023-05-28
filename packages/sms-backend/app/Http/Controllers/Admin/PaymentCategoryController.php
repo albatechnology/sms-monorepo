@@ -22,7 +22,7 @@ class PaymentCategoryController extends Controller
     {
         abort_if(Gate::denies('payment_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $paymentCategories = PaymentCategory::with(['company'])->get();
+        $paymentCategories = PaymentCategory::all();
 
         return view('admin.paymentCategories.index', compact('paymentCategories'));
     }
@@ -31,9 +31,9 @@ class PaymentCategoryController extends Controller
     {
         abort_if(Gate::denies('payment_category_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.paymentCategories.create', compact('companies'));
+        return view('admin.paymentCategories.create');
     }
 
     public function store(StorePaymentCategoryRequest $request)
@@ -55,11 +55,11 @@ class PaymentCategoryController extends Controller
     {
         abort_if(Gate::denies('payment_category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $paymentCategory->load('company');
+        // $paymentCategory->load('company');
 
-        return view('admin.paymentCategories.edit', compact('companies', 'paymentCategory'));
+        return view('admin.paymentCategories.edit', compact('paymentCategory'));
     }
 
     public function update(UpdatePaymentCategoryRequest $request, PaymentCategory $paymentCategory)
@@ -87,7 +87,7 @@ class PaymentCategoryController extends Controller
     {
         abort_if(Gate::denies('payment_category_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $paymentCategory->load('company', 'paymentCategoryPaymentTypes');
+        $paymentCategory->load('paymentCategoryPaymentTypes');
 
         return view('admin.paymentCategories.show', compact('paymentCategory'));
     }

@@ -15,7 +15,7 @@ class MenuService
             self::menuProduct(),
             self::menuMarketing(),
             self::menuCorporate(),
-            self::menuWarehouse(),
+            // self::menuWarehouse(),
             self::menuReport(),
             self::menuManagement(),
             self::menuFinance(),
@@ -57,14 +57,6 @@ class MenuService
         //     trans('cruds.activityComment.title'),
         // );
 
-        $submenu_customer = new Submenu(
-            'customer_access',
-            route("admin.customers.index"),
-            'admin/customers',
-            'fas fa-user-alt',
-            trans('cruds.customer.title'),
-        );
-
         $submenu_lead_categories = new Submenu(
             'lead_category_access',
             route("admin.lead-categories.index"),
@@ -81,6 +73,14 @@ class MenuService
             trans('cruds.subLeadCategory.title'),
         );
 
+        $submenu_customer = new Submenu(
+            'customer_access',
+            route("admin.customers.index"),
+            'admin/customers',
+            'fas fa-user-alt',
+            trans('cruds.customer.title'),
+        );
+
         $submenu_address = new Submenu(
             'address_access',
             route("admin.addresses.index"),
@@ -89,13 +89,13 @@ class MenuService
             trans('cruds.address.title'),
         );
 
-        $submenu_interior_designs = new Submenu(
-            'interior_design_access',
-            route("admin.interior-designs.index"),
-            'admin/interior-design',
-            'fas fa-building',
-            trans('cruds.interiorDesign.title'),
-        );
+        // $submenu_interior_designs = new Submenu(
+        //     'interior_design_access',
+        //     route("admin.interior-designs.index"),
+        //     'admin/interior-design',
+        //     'fas fa-building',
+        //     trans('cruds.interiorDesign.title'),
+        // );
 
         // $submenu_tax_invoice = new Submenu(
         //     'tax_invoice_access',
@@ -124,11 +124,11 @@ class MenuService
                 $submenu_unhandle_leads,
                 $submenu_activities,
                 // $submenu_activity_comments,
-                $submenu_customer,
                 $submenu_lead_categories,
                 $submenu_sub_lead_categories,
+                $submenu_customer,
                 $submenu_address,
-                $submenu_interior_designs,
+                // $submenu_interior_designs,
                 // $submenu_tax_invoice,
                 // $submenu_notification_access,
             ]
@@ -162,13 +162,13 @@ class MenuService
             trans('cruds.product.title'),
         );
 
-        $units = new Submenu(
-            'product_unit_access',
-            route("admin.product-units.index"),
-            'admin/product-units',
-            'fas fa-shopping-cart',
-            trans('cruds.productUnit.title'),
-        );
+        // $units = new Submenu(
+        //     'product_unit_access',
+        //     route("admin.product-units.index"),
+        //     'admin/product-units',
+        //     'fas fa-shopping-cart',
+        //     trans('cruds.productUnit.title'),
+        // );
 
         // $catalogue = new Submenu(
         //     'catalogue_access',
@@ -243,7 +243,7 @@ class MenuService
                 $categories,
                 // $tags,
                 $products,
-                $units,
+                // $units,
                 // $catalogue,
                 $brand_category,
                 $brand,
@@ -267,14 +267,14 @@ class MenuService
             0,
         );
 
-        $promoCategory = new Submenu(
-            'promo_category_access',
-            route("admin.promo-categories.index"),
-            'admin/promo-categories',
-            'fas fa-gift',
-            trans('cruds.promoCategory.title'),
-            0,
-        );
+        // $promoCategory = new Submenu(
+        //     'promo_category_access',
+        //     route("admin.promo-categories.index"),
+        //     'admin/promo-categories',
+        //     'fas fa-gift',
+        //     trans('cruds.promoCategory.title'),
+        //     0,
+        // );
 
         $promo = new Submenu(
             'promo_access',
@@ -285,14 +285,14 @@ class MenuService
             0,
         );
 
-        $voucher = new Submenu(
-            'voucher_access',
-            route("admin.vouchers.index"),
-            'admin/vouchers',
-            'fas fa-gift',
-            trans('cruds.voucher.title'),
-            0,
-        );
+        // $voucher = new Submenu(
+        //     'voucher_access',
+        //     route("admin.vouchers.index"),
+        //     'admin/vouchers',
+        //     'fas fa-gift',
+        //     trans('cruds.voucher.title'),
+        //     0,
+        // );
 
         // $banner = new Submenu(
         //     'banner_access',
@@ -308,10 +308,10 @@ class MenuService
             'fas fa-percent',
             trans('cruds.marketing.title'),
             ...[
-                $discount,
-                $promoCategory,
+                // $promoCategory,
                 $promo,
-                $voucher,
+                // $voucher,
+                $discount,
                 // $banner,
             ]
         );
@@ -319,32 +319,32 @@ class MenuService
 
     protected static function menuCorporate()
     {
-        $company = new Submenu(
-            'company_access',
-            route("admin.companies.index"),
-            'admin/companies',
-            'fas fa-building',
-            trans('cruds.company.title'),
-            0,
-        );
+        // $company = new Submenu(
+        //     'company_access',
+        //     route("admin.companies.index"),
+        //     'admin/companies',
+        //     'fas fa-building',
+        //     trans('cruds.company.title'),
+        //     0,
+        // );
 
-        $account = new Submenu(
-            'company_account_access',
-            route("admin.company-accounts.index"),
-            'admin/company-accounts',
-            'fas fa-piggy-bank',
-            trans('cruds.companyAccount.title'),
-            0,
-        );
+        // $account = new Submenu(
+        //     'company_account_access',
+        //     route("admin.company-accounts.index"),
+        //     'admin/company-accounts',
+        //     'fas fa-piggy-bank',
+        //     trans('cruds.companyAccount.title'),
+        //     0,
+        // );
 
-        $channelCategory = new Submenu(
-            'channel_category_access',
-            route("admin.channel-categories.index"),
-            'admin/channel-categories',
-            'fas fa-tags',
-            trans('cruds.channelCategory.title'),
-            0,
-        );
+        // $channelCategory = new Submenu(
+        //     'channel_category_access',
+        //     route("admin.channel-categories.index"),
+        //     'admin/channel-categories',
+        //     'fas fa-tags',
+        //     trans('cruds.channelCategory.title'),
+        //     0,
+        // );
 
         $channel = new Submenu(
             'channel_access',
@@ -355,35 +355,35 @@ class MenuService
             0,
         );
 
-        $smsChannel = new Submenu(
-            'sms_channel_access',
-            route("admin.sms-channels.index"),
-            'admin/sms-channels',
-            'fas fa-store-alt',
-            trans('cruds.smsChannel.title'),
-            0,
-        );
+        // $smsChannel = new Submenu(
+        //     'sms_channel_access',
+        //     route("admin.sms-channels.index"),
+        //     'admin/sms-channels',
+        //     'fas fa-store-alt',
+        //     trans('cruds.smsChannel.title'),
+        //     0,
+        // );
 
-        $location = new Submenu(
-            'location_access',
-            route("admin.locations.index"),
-            'admin/locations',
-            'fas fa-store-alt',
-            trans('cruds.location.title'),
-            0,
-        );
+        // $location = new Submenu(
+        //     'location_access',
+        //     route("admin.locations.index"),
+        //     'admin/locations',
+        //     'fas fa-store-alt',
+        //     trans('cruds.location.title'),
+        //     0,
+        // );
 
         return new Menu(
             'corporate_access',
             'fas fa-building',
             trans('cruds.corporate.title'),
             ...[
-                $company,
-                $account,
-                $channelCategory,
+                // $company,
+                // $account,
+                // $channelCategory,
                 $channel,
-                $smsChannel,
-                $location,
+                // $smsChannel,
+                // $location,
             ]
         );
     }
@@ -575,14 +575,14 @@ class MenuService
             0,
         );
 
-        $orderDetail = new Submenu(
-            'order_detail_access',
-            route("admin.order-details.index"),
-            'admin/order-details',
-            'fas fa-cart-arrow-down',
-            trans('cruds.orderDetail.title'),
-            0,
-        );
+        // $orderDetail = new Submenu(
+        //     'order_detail_access',
+        //     route("admin.order-details.index"),
+        //     'admin/order-details',
+        //     'fas fa-cart-arrow-down',
+        //     trans('cruds.orderDetail.title'),
+        //     0,
+        // );
 
         $paymentCategory = new Submenu(
             'payment_category_access',
@@ -617,10 +617,10 @@ class MenuService
             trans('cruds.finance.title'),
             ...[
                 $order,
-                $orderDetail,
+                // $orderDetail,
+                $payment,
                 $paymentCategory,
                 $paymentType,
-                $payment,
             ]
         );
     }

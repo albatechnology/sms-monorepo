@@ -8,13 +8,14 @@ class CreateCompaniesTable extends Migration
 {
     public function up()
     {
-        Schema::create('companies', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name');
-            $table->foreignId('company_account_id')->nullable();
-            $table->json('options')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-        });
+        // unused
+        // Schema::create('companies', function (Blueprint $table) {
+        //     $table->bigIncrements('id');
+        //     $table->string('name');
+        //     // $table->foreignId('company_account_id')->nullable();
+        //     $table->json('options')->nullable();
+        //     $table->timestamps();
+        //     $table->softDeletes();
+        // });
     }
 }

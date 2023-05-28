@@ -11,55 +11,72 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            AdminUsersTableSeeder::class,
+            SupervisorTypeSeeder::class,
+            ChannelSeeder::class,
+            UsersTableSeeder::class,
             PermissionsTableSeeder::class,
             RolesTableSeeder::class,
             PermissionRoleTableSeeder::class,
-            SupervisorTypeSeeder::class,
+            RoleUserTableSeeder::class,
+
+            ProductSeeder::class,
 
             // Ensure non empty company
-            DefaultCompanySeeder::class,
-            DefaultChannelSeeder::class,
+            // DefaultCompanySeeder::class,
+            // DefaultChannelSeeder::class,
         ]);
 
-        $this->callOnce([
-            AdminUsersTableSeeder::class,
+        //         $this->call([
+        //             PermissionsTableSeeder::class,
+        //             RolesTableSeeder::class,
+        //             PermissionRoleTableSeeder::class,
+        //             SupervisorTypeSeeder::class,
 
-            // fix old order when deal_at is added
-            OrderDealAtSeeder::class,
+        //             // Ensure non empty company
+        //             DefaultCompanySeeder::class,
+        //             DefaultChannelSeeder::class,
+        //         ]);
 
-            // new table, seed target type priority with default values
-            TargetTypePrioritySeeder::class,
+        //         $this->callOnce([
+        //             AdminUsersTableSeeder::class,
 
-            ReligionSeeder::class,
-        ]);
+        //             // fix old order when deal_at is added
+        //             OrderDealAtSeeder::class,
 
-        if (!App::environment('production')) {
-            $this->callOnce([
-                CompanySeeder::class,
-                ChannelSeeder::class,
-                UsersTableSeeder::class,
-                RoleUserTableSeeder::class,
-                CustomerSeeder::class,
+        //             // new table, seed target type priority with default values
+        //             TargetTypePrioritySeeder::class,
 
-                // product unit detail
-//                CoveringSeeder::class,
-//                ColourSeeder::class,
+        //             ReligionSeeder::class,
+        //         ]);
 
-                ProductTagSeeder::class,
-                ProductCategorySeeder::class,
-                ProductSeeder::class,
-                LeadSeeder::class,
-                AddressSeeder::class,
-                ActivitySeeder::class,
-                ActivityCommentSeeder::class,
-                QaSeeder::class,
-                ProductListSeeder::class,
-                DiscountSeeder::class,
+        //         if (!App::environment('production')) {
+        //             $this->callOnce([
+        //                 CompanySeeder::class,
+        //                 ChannelSeeder::class,
+        //                 UsersTableSeeder::class,
+        //                 RoleUserTableSeeder::class,
+        //                 CustomerSeeder::class,
 
-                PaymentCategorySeeder::class,
-                PaymentTypeSeeder::class,
-            ]);
-        }
+        //                 // product unit detail
+        // //                CoveringSeeder::class,
+        // //                ColourSeeder::class,
+
+        //                 ProductTagSeeder::class,
+        //                 ProductCategorySeeder::class,
+        //                 ProductSeeder::class,
+        //                 LeadSeeder::class,
+        //                 AddressSeeder::class,
+        //                 ActivitySeeder::class,
+        //                 ActivityCommentSeeder::class,
+        //                 QaSeeder::class,
+        //                 ProductListSeeder::class,
+        //                 DiscountSeeder::class,
+
+        //                 PaymentCategorySeeder::class,
+        //                 PaymentTypeSeeder::class,
+        //             ]);
+        //         }
     }
 
     /**

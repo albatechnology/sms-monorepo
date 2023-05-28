@@ -22,6 +22,8 @@ class CreateActivityBrandValuesTable extends Migration
             $table->integer('order_id')->nullable();
             $table->unsignedInteger('estimated_value')->default(0);
             $table->unsignedInteger('order_value')->default(0);
+            $table->double('total_discount', 15, 3)->default(0);
+            $table->double('total_order_value', 15, 3)->default(0);
             $table->timestamps();
 
             $table->index(['activity_id', 'order_id']);

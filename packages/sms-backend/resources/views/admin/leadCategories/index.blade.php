@@ -25,7 +25,6 @@
                         <th>
                             {{ trans('cruds.leadCategory.fields.id') }}
                         </th>
-                        <th>Orlansoft ID</th>
                         <th>
                             {{ trans('cruds.leadCategory.fields.name') }}
                         </th>
@@ -45,9 +44,6 @@
                         </td>
                         <td>
                             {{ $leadCategory->id ?? '' }}
-                        </td>
-                        <td>
-                            {{ $leadCategory->orlan_id ?? '' }}
                         </td>
                         <td>
                             {{ $leadCategory->name ?? '' }}
@@ -77,9 +73,7 @@
                                         <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
                                     </form>
                                 @endcan
-
                             </td>
-
                         </tr>
                     @endforeach
                 </tbody>
@@ -87,9 +81,6 @@
         </div>
     </div>
 </div>
-
-
-
 @endsection
 @section('scripts')
 @parent

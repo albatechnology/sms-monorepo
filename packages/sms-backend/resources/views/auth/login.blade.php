@@ -94,7 +94,7 @@
 
             $('#autoSignIn').change(function () {
                 $("input[name=email]").val(this.value);
-                $("input[name=password]").val("password");
+                $("input[name=password]").val("12345678");
 
                 $("form").first().submit();
             })

@@ -16,16 +16,16 @@ trait IsTenanted
     public function scopeTenanted($query)
     {
         $hasActiveChannel = tenancy()->getActiveTenant();
-        $hasActiveCompany = tenancy()->getActiveCompany();
+        // $hasActiveCompany = tenancy()->getActiveCompany();
         $user             = tenancy()->getUser();
 
         if ($hasActiveChannel) return $query->tenantedActiveChannel($hasActiveChannel);
 
-        if (!$hasActiveCompany && !$user->is_admin) throw new Exception('Non admin must have an active company!');
+        // // if (!$hasActiveCompany && !$user->is_admin) throw new Exception('Non admin must have an active company!');
 
-        if (!$hasActiveCompany) return $query;
+        // if (!$hasActiveCompany) return $query;
 
-        $query = $query->tenantedActiveCompany($hasActiveCompany);
+        // $query = $query->tenantedActiveCompany($hasActiveCompany);
 
         return $user->is_admin ? $query : $query->tenantedUserChannels();
     }

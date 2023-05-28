@@ -24,9 +24,9 @@
                         <th>
                             {{ trans('cruds.promo.fields.id') }}
                         </th>
-                        <th>
+                        {{-- <th>
                             {{ trans('cruds.promoCategory.title_singular') }}
-                        </th>
+                        </th> --}}
                         <th>
                             {{ trans('cruds.promo.fields.name') }}
                         </th>
@@ -39,9 +39,9 @@
                         <th>
                             {{ trans('cruds.promo.fields.end_time') }}
                         </th>
-                        <th>
+                        {{-- <th>
                             {{ trans('cruds.promo.fields.company') }}
-                        </th>
+                        </th> --}}
                         <th>
                             &nbsp;
                         </th>
@@ -49,10 +49,10 @@
                     <tr>
                         <td>
                         </td>
-                        <td>
+                        {{-- <td>
                             <input class="search" type="text" strict="true"
                                 placeholder="{{ trans('global.search') }}">
-                        </td>
+                        </td> --}}
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
@@ -65,14 +65,14 @@
                         </td>
                         <td>
                         </td>
-                        <td>
+                        {{-- <td>
                             <select class="search">
                                 <option value>{{ trans('global.all') }}</option>
                                 @foreach ($companies as $key => $item)
                                     <option value="{{ $item->name }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
-                        </td>
+                        </td> --}}
                         <td>
                         </td>
                     </tr>
@@ -134,10 +134,10 @@
                         data: 'id',
                         name: 'id'
                     },
-                    {
-                        data: 'promo_category_name',
-                        name: 'promoCategory.name'
-                    },
+                    // {
+                    //     data: 'promo_category_name',
+                    //     name: 'promoCategory.name'
+                    // },
                     {
                         data: 'name',
                         name: 'name'
@@ -156,10 +156,10 @@
                         data: 'end_time',
                         name: 'end_time'
                     },
-                    {
-                        data: 'company_name',
-                        name: 'company.name'
-                    },
+                    // {
+                    //     data: 'company_name',
+                    //     name: 'company.name'
+                    // },
                     {
                         data: 'actions',
                         name: '{{ trans('global.actions') }}'

@@ -32,7 +32,7 @@ class ProductController extends Controller
 
         if ($request->ajax()) {
             $query = Product::query()
-                ->with(['productCategory', 'company', 'brand'])
+                ->with(['productCategory', 'brand'])
                 ->select(sprintf('%s.*', (new Product)->table));
             $table = Datatables::of($query);
 
@@ -88,9 +88,9 @@ class ProductController extends Controller
             $table->editColumn('is_active', function ($row) {
                 return '<input type="checkbox" disabled ' . ($row->is_active ? 'checked' : null) . '>';
             });
-            $table->addColumn('company_name', function ($row) {
-                return $row->company ? $row->company->name : '';
-            });
+            // $table->addColumn('company_name', function ($row) {
+            //     return $row->company ? $row->company->name : '';
+            // });
 
             $table->rawColumns([
                 'actions', 'placeholder', 'category',
@@ -101,22 +101,27 @@ class ProductController extends Controller
             return $table->make(true);
         }
 
-        $productCategories = ProductCategory::tenanted()->get();
-        $productBrands       = ProductBrand::tenanted()->get();
-        $companies          = Company::tenanted()->get();
+        // $productCategories = ProductCategory::tenanted()->get();
+        $productCategories = ProductCategory::get();
+        // $productBrands       = ProductBrand::tenanted()->get();
+        $productBrands       = ProductBrand::get();
+        // $companies          = Company::tenanted()->get();
 
-        return view('admin.products.index', compact('productCategories', 'productBrands', 'companies'));
+        return view('admin.products.index', compact('productCategories', 'productBrands'));
     }
 
     public function create()
     {
         abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $productBrands = ProductBrand::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $categories = ProductCategory::tenanted()->pluck('name', 'id');
-        $companies = Company::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $productBrands = ProductBrand::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $productBrands = ProductBrand::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $categories = ProductCategory::tenanted()->pluck('name', 'id');
+        $categories = ProductCategory::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.products.create', compact('productBrands', 'categories', 'companies'));
+        // $companies = Company::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        return view('admin.products.create', compact('productBrands', 'categories'));
     }
 
     public function store(StoreProductRequest $request)
@@ -138,13 +143,15 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $productBrands = ProductBrand::where('company_id', $product->company_id)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $productBrands = ProductBrand::where('company_id', $product->company_id)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $productBrands = ProductBrand::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $categories = ProductCategory::where('company_id', $product->company_id)->pluck('name', 'id');
+        // $categories = ProductCategory::where('company_id', $product->company_id)->pluck('name', 'id');
+        $categories = ProductCategory::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $companies = Company::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $companies = Company::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.products.edit', compact('productBrands', 'categories', 'companies', 'product'));
+        return view('admin.products.edit', compact('productBrands', 'categories', 'product'));
     }
 
     public function update(UpdateProductRequest $request, Product $product)
@@ -174,7 +181,7 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $product->load('productCategory', 'company', 'brand');
+        $product->load('productCategory', 'brand');
 
         return view('admin.products.show', compact('product'));
     }
@@ -210,9 +217,9 @@ class ProductController extends Controller
     public function getProductSuggestion(Request $request)
     {
         $products = Product::where('name', 'like', '%' . $request->name . '%');
-        if ($request->has('company_id') && $request->company_id != '') {
-            $products->where('company_id', $request->company_id);
-        }
+        // if ($request->has('company_id') && $request->company_id != '') {
+        //     $products->where('company_id', $request->company_id);
+        // }
         $products = $products->get()->pluck('name', 'id');
         return response()->json($products);
     }

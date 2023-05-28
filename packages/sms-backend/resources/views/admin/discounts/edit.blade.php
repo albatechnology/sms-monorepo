@@ -10,6 +10,19 @@
 			@method('PUT')
 			@csrf
             <div class="form-group">
+                <label class="required" for="promo_id">Promo</label>
+                <select class="form-control select2 {{ $errors->has('promo_id') ? 'is-invalid' : '' }}"
+                    name="promo_id" id="promo_id" required>
+                    @foreach ($promos as $id => $name)
+                        <option value="{{ $id }}" {{ $discount->promo_id ?? null == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+                @if ($errors->has('promo_id'))
+                    <span class="text-danger">{{ $errors->first('promo_id') }}</span>
+                @endif
+                <span class="help-block">{{ trans('cruds.product.fields.brand_helper') }}</span>
+            </div>
+            {{-- <div class="form-group">
                 <label class="required" for="company_id">{{ trans('cruds.generic.fields.company') }}</label>
                 <select wire:model="company_id" class="form-control {{ $errors->has('company_id') ? 'is-invalid' : '' }}"
                     name="company_id" id="company_id">
@@ -22,7 +35,7 @@
                 <span class="text-danger">{{ $errors->first('company_id') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.generic.fields.company_helper') }}</span>
-            </div>
+            </div> --}}
 			<x-input key='name' :model='$discount'></x-input>
 			<x-input key='description' :model='$discount' required="0"></x-input>
 			<x-enum key='type' :model='$discount'></x-enum>
@@ -36,7 +49,7 @@
             </div>
 			<x-enum key='scope' :model='$discount'></x-enum>
 
-            <div wire:ignore class="form-group" id="product_brand_div">
+            {{-- <div wire:ignore class="form-group" id="product_brand_div">
 				<label class="" id="product_brand_label" for="product_brand">{{ trans('cruds.discount.fields.product_brand') }}</label>
 				<select class="form-control {{ $errors->has('product_brand_id') ? 'is-invalid' : '' }}" name="product_brand_id" id="product_brand" disabled>
 					<option selected value=""> </option>
@@ -48,9 +61,9 @@
 				<span class="text-danger">{{ $errors->first('product_brand_id') }}</span>
 				@endif
 				<span class="help-block">{{ trans('cruds.discount.fields.product_brand_helper') }}</span>
-			</div>
+			</div> --}}
 
-			<div class="form-group" id="select_product_unit_ids" style="display: none">
+			{{-- <div class="form-group" id="select_product_unit_ids" style="display: none">
 				<label>{{ trans('global.product_units') }}</label>
 				<select name="product_unit_ids[]" class="form-control" id="selectProduct" multiple style="width: 100%;">
 					@foreach($selectedProducts as $id => $name)
@@ -61,9 +74,9 @@
 				<span class="text-danger">{{ $errors->first('product_unit_ids') }}</span>
 				@endif
 				<span class="help-block">{{ trans('cruds.discount.fields.discount_by_products_helper') }}</span>
-			</div>
+			</div> --}}
 
-			<div wire:ignore class="form-group" id="product_category_div" style="{{ $discount->scope == \App\Enums\DiscountScope::CATEGORY() ? null : 'display: none;' }}">
+			{{-- <div wire:ignore class="form-group" id="product_category_div" style="{{ $discount->scope == \App\Enums\DiscountScope::CATEGORY() ? null : 'display: none;' }}">
 				<label class="" id="product_category_label" for="product_category">{{ trans('cruds.discount.fields.product_category') }}</label>
 				<select class="form-control {{ $errors->has('product_category') ? 'is-invalid' : '' }}"
 					name="product_category" id="product_category" style="width: 100%">
@@ -76,10 +89,10 @@
 				<span class="text-danger">{{ $errors->first('product_category') }}</span>
 				@endif
 				<span class="help-block">{{ trans('cruds.discount.fields.product_category_helper') }}</span>
-			</div>
+			</div> --}}
 
-			<x-input key='start_time' :model='$discount' type="datetime"></x-input>
-			<x-input key='end_time' :model='$discount' type="datetime"></x-input>
+			{{-- <x-input key='start_time' :model='$discount' type="datetime"></x-input>
+			<x-input key='end_time' :model='$discount' type="datetime"></x-input> --}}
 			<div class="form-group">
 				<div class="form-check {{ $errors->has('is_active') ? 'is-invalid' : '' }}">
 					<input type="hidden" name="is_active" value="0">

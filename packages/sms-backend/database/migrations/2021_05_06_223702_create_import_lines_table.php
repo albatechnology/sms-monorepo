@@ -17,7 +17,7 @@ class CreateImportLinesTable extends Migration
             $table->json('data');
             $table->text('exception_message')->nullable();
             $table->foreignId('import_batch_id')->constrained();
-            $table->foreignId('company_id')->constrained();
+            // $table->foreignId('company_id')->constrained(); // unused
             $table->timestamps();
         });
     }

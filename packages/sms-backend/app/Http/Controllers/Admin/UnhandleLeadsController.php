@@ -32,9 +32,9 @@ class UnhandleLeadsController extends Controller
                 $query = Lead::tenanted()->unhandled()->with(['sales', 'customer', 'channel'])->select(sprintf('%s.*', (new Lead)->table));
             }
 
-            if(isset($request->company_id) && $request->company_id != ''){
-                $query = $query->whereCompanyId($request->company_id);
-            }
+            // if(isset($request->company_id) && $request->company_id != ''){
+            //     $query = $query->whereCompanyId($request->company_id);
+            // }
             if(isset($request->supervisor_id) && $request->supervisor_id != ''){
                 $query = $query->whereHas('user', fn($q) => $q->where('supervisor_id', $request->supervisor_id));
             }
@@ -102,11 +102,11 @@ class UnhandleLeadsController extends Controller
         $channels  = Channel::pluck('name', 'id')->all();
         $supervisors = User::where('type', UserType::SUPERVISOR)->pluck('name', 'id')->all();
 
-        $companies = Company::tenanted()->pluck('name','id');
+        // $companies = Company::tenanted()->pluck('name','id');
         // $supervisors = User::where('type', UserType::SUPERVISOR)->where('supervisor_type_id', 2)->pluck('name','id');
         $leadCategories = LeadCategory::pluck('name','id');
 
-        return view('admin.unhandleLeads.index', compact('customers', 'channels', 'supervisors','companies','leadCategories'));
+        return view('admin.unhandleLeads.index', compact('customers', 'channels', 'supervisors','leadCategories'));
     }
 
     public function getUsers($companyId, $userType)

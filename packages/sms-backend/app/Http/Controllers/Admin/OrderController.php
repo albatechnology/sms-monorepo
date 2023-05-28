@@ -342,7 +342,7 @@ class OrderController extends Controller
         $detail = new OrderDetail();
         $detail->status = OrderDetailStatus::NOT_FULFILLED();
         $detail->order_id = $cartDemand->order->id;
-        $detail->company_id = $cartDemand->order->company_id;
+        // $detail->company_id = $cartDemand->order->company_id;
         $detail->quantity = (int)$item['quantity'];
         $detail->product_unit_id = $product->id;
         $detail->unit_price = $product->price;
@@ -417,7 +417,7 @@ class OrderController extends Controller
         $detail = new OrderDetail();
         $detail->status = OrderDetailStatus::NOT_FULFILLED();
         $detail->order_id = $cartDemand->order->id;
-        $detail->company_id = $cartDemand->order->company_id;
+        // $detail->company_id = $cartDemand->order->company_id;
         $detail->quantity = (int)$item['quantity'];
         $detail->product_unit_id = $product->id;
         $detail->unit_price = $product->price;
@@ -458,9 +458,9 @@ class OrderController extends Controller
         $data = [];
         if ($request->has('q') && $request->input('q') != '') {
             $data = Product::whereActive()->select("id", "name");
-            if ($request->has('company_id') && $request->input('company_id') != '' && $request->input('company_id') != null && $request->input('company_id') != 'null') {
-                $data = $data->where('company_id', $request->input('company_id'));
-            }
+            // if ($request->has('company_id') && $request->input('company_id') != '' && $request->input('company_id') != null && $request->input('company_id') != 'null') {
+            //     $data = $data->where('company_id', $request->input('company_id'));
+            // }
 
             if ($request->has('product_brand') && $request->input('product_brand') != '' && $request->input('product_brand') != null && $request->input('product_brand') != 'null') {
                 $product_brand_id = $request->input('product_brand');
@@ -521,9 +521,9 @@ class OrderController extends Controller
 
             $paymentType = PaymentType::findOrFail($request->payment_type_id);
 
-            if ($order->company_id != $paymentType->company_id) {
-                return redirect()->back()->withInput()->with('message', 'Invalid payment type for this order');
-            }
+            // if ($order->company_id != $paymentType->company_id) {
+            //     return redirect()->back()->withInput()->with('message', 'Invalid payment type for this order');
+            // }
 
             if ($order->approval_status->is(OrderApprovalStatus::WAITING_APPROVAL)) {
                 return redirect()->back()->withInput()->with('message', 'Unable to make payment, order awaiting supervisor approval.');
@@ -538,7 +538,7 @@ class OrderController extends Controller
                         'payment_type_id' => $request->payment_type_id,
                         'added_by_id'     => auth()->id(),
                         'order_id'        => $order->id,
-                        'company_id'      => $order->company_id,
+                        // 'company_id'      => $order->company_id,
                     ]
                 );
                 $payment->save();
@@ -546,7 +546,8 @@ class OrderController extends Controller
             });
             return redirect()->back()->with('message', 'Order #' . $order->invoice_number . ' successfully paid.');
         }
-        $payment_categories = PaymentCategory::where('company_id', $order->company_id)->pluck('name', 'id');
+        // $payment_categories = PaymentCategory::where('company_id', $order->company_id)->pluck('name', 'id');
+        $payment_categories = PaymentCategory::pluck('name', 'id');
         return view('admin.orders.payment', compact('order', 'payment_categories'));
     }
 

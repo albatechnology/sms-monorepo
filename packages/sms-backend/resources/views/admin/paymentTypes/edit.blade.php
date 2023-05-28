@@ -11,11 +11,17 @@
             @method('PUT')
             @csrf
             <div class="form-group">
-                <label for="orlan_id" class="required">Orlansoft ID</label>
-                <input class="form-control {{ $errors->has('orlan_id') ? 'is-invalid' : '' }}" type="text" name="orlan_id" id="orlan_id" value="{{ $paymentType->orlan_id }}" required>
-                @if($errors->has('orlan_id'))
-                    <span class="text-danger">{{ $errors->first('orlan_id') }}</span>
+                <label class="required" for="payment_category_id">Promo</label>
+                <select class="form-control select2 {{ $errors->has('payment_category_id') ? 'is-invalid' : '' }}"
+                    name="payment_category_id" id="payment_category_id" required>
+                    @foreach ($paymentCategories as $id => $name)
+                        <option value="{{ $id }}" {{ $paymentType->payment_category_id ?? null == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+                @if ($errors->has('payment_category_id'))
+                    <span class="text-danger">{{ $errors->first('payment_category_id') }}</span>
                 @endif
+                <span class="help-block">{{ trans('cruds.product.fields.brand_helper') }}</span>
             </div>
             <div class="form-group">
                 <label class="required" for="name">{{ trans('cruds.paymentType.fields.name') }}</label>
@@ -26,33 +32,6 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.paymentType.fields.name_helper') }}</span>
             </div>
-            <div class="form-group">
-                <label class="required"
-                       for="payment_category_id">{{ trans('cruds.paymentType.fields.payment_category') }}</label>
-                <select required class="form-control select2 {{ $errors->has('payment_category') ? 'is-invalid' : '' }}"
-                        name="payment_category_id" id="payment_category_id">
-                    @foreach($payment_categories as $id => $payment_category)
-                        <option value="{{ $id }}" {{ (old('payment_category_id') ? old('payment_category_id') : $paymentType->payment_category->id ?? '') == $id ? 'selected' : '' }}>{{ $payment_category }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('payment_category'))
-                    <span class="text-danger">{{ $errors->first('payment_category') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.paymentType.fields.payment_category_helper') }}</span>
-            </div>
-            {{--            <div class="form-group">--}}
-            {{--                <div class="form-check {{ $errors->has('require_approval') ? 'is-invalid' : '' }}">--}}
-            {{--                    <input type="hidden" name="require_approval" value="0">--}}
-            {{--                    <input class="form-check-input" type="checkbox" name="require_approval" id="require_approval" value="1" {{ $paymentType->require_approval || old('require_approval', 0) === 1 ? 'checked' : '' }}>--}}
-            {{--                    <label class="form-check-label" for="require_approval">{{ trans('cruds.paymentType.fields.require_approval') }}</label>--}}
-            {{--                </div>--}}
-            {{--                @if($errors->has('require_approval'))--}}
-            {{--                    <span class="text-danger">{{ $errors->first('require_approval') }}</span>--}}
-            {{--                @endif--}}
-            {{--                <span class="help-block">{{ trans('cruds.paymentType.fields.require_approval_helper') }}</span>--}}
-            {{--            </div>--}}
-
-
             <div class="form-group">
                 <label for="photo">{{ trans('cruds.paymentType.fields.photo') }}</label>
                 <div class="needsclick dropzone {{ $errors->has('photo') ? 'is-invalid' : '' }}"
@@ -71,12 +50,7 @@
         </form>
     </div>
 </div>
-
-
-
 @endsection
-
-
 @section('scripts')
     <script>
         var uploadedPhotoMap = {}

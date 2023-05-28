@@ -25,6 +25,7 @@ use App\Services\OrderService;
 use App\Traits\Auditable;
 use App\Traits\IsCompanyTenanted;
 use App\Traits\IsDiscountable;
+use App\Traits\IsTenanted;
 use App\Traits\IsVoucherable;
 use Carbon\Carbon;
 use DateTimeInterface;
@@ -42,7 +43,7 @@ use function PHPUnit\Framework\returnSelf;
  */
 class Order extends BaseModel implements Tenanted, Discountable, Reportable, Voucherable
 {
-    use SoftDeletes, Auditable, IsCompanyTenanted, IsDiscountable, IsVoucherable;
+    use SoftDeletes, Auditable, IsTenanted, IsDiscountable, IsVoucherable;
 
     public $table = 'orders';
 
@@ -76,7 +77,6 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable, Vou
         'orlan_tr_no',
         'expected_shipping_datetime',
         'total_discount',
-        'total_voucher',
     ];
 
     protected $dates = [
@@ -91,7 +91,6 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable, Vou
     protected $casts = [
         'approved_by'               => 'integer',
         'total_discount'            => 'integer',
-        'total_voucher'            => 'integer',
         'total_price'               => 'integer',
         'user_id'                   => 'integer',
         'lead_id'                   => 'integer',
@@ -285,7 +284,6 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable, Vou
     {
         return ($this->total_price ?? 0) +
             ($this->total_discount ?? 0) +
-            ($this->total_voucher ?? 0) +
             ($this->additional_discount ?? 0) -
             ($this->shipping_fee ?? 0) -
             ($this->packing_fee ?? 0);

@@ -52,11 +52,6 @@ class Customer extends BaseModel
         'title'              => PersonTitle::class,
     ];
 
-    public function vouchers()
-    {
-        return $this->belongsToMany(Voucher::class, 'customer_vouchers', 'customer_id');
-    }
-
     public function customerLeads()
     {
         return $this->hasMany(Lead::class, 'customer_id', 'id');

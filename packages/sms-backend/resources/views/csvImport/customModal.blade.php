@@ -33,7 +33,7 @@
                                     @endif
                                 </div>
                                 <br>
-                                <div class="col-md-6 {{ $type == \App\Enums\Import\ImportBatchType::INTERIOR_DESIGN ? 'd-none' : null  }}">
+                                {{-- <div class="col-md-6 {{ $type == \App\Enums\Import\ImportBatchType::INTERIOR_DESIGN ? 'd-none' : null  }}">
                                     <label class="required"
                                            for="companies">{{ trans('cruds.user.fields.company') }}</label> <br>
                                     <select class="form-control select2 {{ $errors->has('company') ? 'is-invalid' : '' }}"
@@ -46,7 +46,7 @@
                                         <span class="text-danger">{{ $errors->first('company') }}</span>
                                     @endif
                                     <span class="help-block">{{ trans('cruds.user.fields.company_helper') }}</span>
-                                </div>
+                                </div> --}}
                             </div>
 
                             {{--                            <div class="form-group">--}}

@@ -33,7 +33,6 @@ class UpdateLeadCategoryRequest extends FormRequest
                 'string',
                 'nullable',
             ],
-            'orlan_id' => 'string|unique:lead_categories,orlan_id,' . $leadCategory->id
         ];
     }
 }

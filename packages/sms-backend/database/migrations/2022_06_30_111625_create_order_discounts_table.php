@@ -13,10 +13,10 @@ class CreateOrderDiscountsTable extends Migration
      */
     public function up()
     {
-        Schema::create('order_discounts', function (Blueprint $table) {
-            $table->foreignId('order_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('discount_id')->constrained()->cascadeOnDelete();
-        });
+        // Schema::create('order_discounts', function (Blueprint $table) {
+        //     $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+        //     $table->foreignId('discount_id')->constrained()->cascadeOnDelete();
+        // });
     }
 
     /**
@@ -26,6 +26,6 @@ class CreateOrderDiscountsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('order_discounts');
+        // Schema::dropIfExists('order_discounts');
     }
 }

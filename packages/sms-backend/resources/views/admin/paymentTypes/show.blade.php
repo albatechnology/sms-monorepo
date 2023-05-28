@@ -39,22 +39,22 @@
                             {{ $paymentType->payment_category->name ?? '' }}
                         </td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                         <th>
                             {{ trans('cruds.paymentType.fields.require_approval') }}
                         </th>
                         <td>
                             <input type="checkbox" disabled="disabled" {{ $paymentType->require_approval ? 'checked' : '' }}>
                         </td>
-                    </tr>
-                    <tr>
+                    </tr> --}}
+                    {{-- <tr>
                         <th>
                             {{ trans('cruds.paymentType.fields.company') }}
                         </th>
                         <td>
                             {{ $paymentType->company->name ?? '' }}
                         </td>
-                    </tr>
+                    </tr> --}}
                     <tr>
                         <th>
                             {{ trans('cruds.paymentType.fields.photo') }}
@@ -95,5 +95,4 @@
         </div>
     </div>
 </div>
-
 @endsection

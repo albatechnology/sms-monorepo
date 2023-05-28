@@ -12,6 +12,8 @@ class CreateActivityBrandTable extends Migration
             $table->bigIncrements('id');
             $table->foreignId('activity_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_brand_id')->constrained()->cascadeOnDelete();
+            $table->unsignedInteger('estimated_value')->default(0);
+            $table->unsignedInteger('order_value')->default(0);
             $table->timestamps();
         });
     }

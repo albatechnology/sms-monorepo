@@ -45,41 +45,41 @@ class MultiTenancyService
      * For admin and director, it may be null (means select all company) or a company saved on the session
      * @return Company|null
      */
-    function getActiveCompany(): ?Company
-    {
-        $user = $this->getUser();
-        if (!$user) abort(500, "Can't get active company, no login session detected.");
+    // function getActiveCompany(): ?Company
+    // {
+    //     $user = $this->getUser();
+    //     if (!$user) abort(500, "Can't get active company, no login session detected.");
 
-        if ($user->type->is(UserType::DIRECTOR) || $user->is_admin) {
-            return session('active-company');
+    //     if ($user->type->is(UserType::DIRECTOR) || $user->is_admin) {
+    //         return session('active-company');
 
-            //            if(session('active-company')) return session('active-company');
-            //
-            //            if($channel = $this->getActiveTenant()){
-            //                return $channel->company;
-            //            }
-        }
+    //         //            if(session('active-company')) return session('active-company');
+    //         //
+    //         //            if($channel = $this->getActiveTenant()){
+    //         //                return $channel->company;
+    //         //            }
+    //     }
 
-        return $user->company;
-    }
+    //     return $user->company;
+    // }
 
     /**
      * Set active company to use for the logged in user
      * @param Company $company
      * @return Company|null
      */
-    function setActiveCompany(Company $company): ?Company
-    {
-        $user = $this->getUser();
+    // function setActiveCompany(Company $company): ?Company
+    // {
+    //     $user = $this->getUser();
 
-        if (!$user) abort(500, "Can't set active company, no login session detected.");
+    //     if (!$user) abort(500, "Can't set active company, no login session detected.");
 
-        if (!($user->type->is(UserType::DIRECTOR) || $user->is_admin)) {
-            return null;
-        }
+    //     if (!($user->type->is(UserType::DIRECTOR) || $user->is_admin)) {
+    //         return null;
+    //     }
 
-        return session(['active-company' => $company]);
-    }
+    //     return session(['active-company' => $company]);
+    // }
 
     /**
      * Set active tenant to use for the logged in user
@@ -127,17 +127,17 @@ class MultiTenancyService
      * Get all companies accessible to the logged in user
      * @return Collection|null
      */
-    public function getCompanies(): ?Collection
-    {
-        $user = $this->getUser();
-        if (!$user) return null;
+    // public function getCompanies(): ?Collection
+    // {
+    //     $user = $this->getUser();
+    //     if (!$user) return null;
 
-        if ($user->type->is(UserType::DIRECTOR) || $user->is_admin) {
-            return Company::all();
-        } else {
-            return collect([$user->company]);
-        }
-    }
+    //     if ($user->type->is(UserType::DIRECTOR) || $user->is_admin) {
+    //         return Company::all();
+    //     } else {
+    //         return collect([$user->company]);
+    //     }
+    // }
 
     /**
      * Set the given tenant as current active tenant
@@ -153,26 +153,26 @@ class MultiTenancyService
 
         $validator = Validator::make($request->all(), [
             'channel_id' => 'nullable|exists:channels,id',
-            'company_id' => 'nullable|exists:companies,id'
+            // 'company_id' => 'nullable|exists:companies,id'
         ]);
 
         if ($validator->fails()) {
             session()->forget('active-tenant');
-            session()->forget('active-company');
+            // session()->forget('active-company');
         } else {
             $validated = $validator->validated();
 
             $validated['channel_id'] ? $this->setActiveTenant(Channel::findOrfail($validated['channel_id'])) : session()->forget('active-tenant');
 
-            if ($validated['company_id']) {
-                $company = Company::find($validated['company_id']);
-                if (!$this->activeCompanyIs($company)) {
-                    session()->forget('active-tenant');
-                    $this->setActiveCompany($company);
-                }
-            } else {
-                session()->forget('active-company');
-            }
+            // if ($validated['company_id']) {
+            //     $company = Company::find($validated['company_id']);
+            //     if (!$this->activeCompanyIs($company)) {
+            //         session()->forget('active-tenant');
+            //         $this->setActiveCompany($company);
+            //     }
+            // } else {
+            //     session()->forget('active-company');
+            // }
         }
     }
 
@@ -194,16 +194,16 @@ class MultiTenancyService
      * @param  Company|int $company
      * @return bool
      */
-    public function activeCompanyIs(Company|int $company): bool
-    {
-        if (!$activeCompany = $this->getActiveCompany()) return false;
+    // public function activeCompanyIs(Company|int $company): bool
+    // {
+    //     if (!$activeCompany = $this->getActiveCompany()) return false;
 
-        if (is_int($company)) {
-            $company = Company::findOrFail($company);
-        }
+    //     if (is_int($company)) {
+    //         $company = Company::findOrFail($company);
+    //     }
 
-        return $activeCompany->id === $company->id;
-    }
+    //     return $activeCompany->id === $company->id;
+    // }
 
     /**
      * Check whether current logged in user have access to a given tenant

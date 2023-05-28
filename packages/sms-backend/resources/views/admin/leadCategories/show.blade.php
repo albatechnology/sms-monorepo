@@ -3,13 +3,13 @@
 
 <div class="card">
     <div class="card-header">
-        {{ trans('global.show') }} {{ trans('cruds.customerCategory.title') }}
+        {{ trans('global.show') }} {{ trans('cruds.leadCategory.title') }}
     </div>
 
     <div class="card-body">
         <div class="form-group">
             <div class="form-group">
-                <a class="btn btn-default" href="{{ route('admin.customer-categories.index') }}">
+                <a class="btn btn-default" href="{{ route('admin.lead-categories.index') }}">
                     {{ trans('global.back_to_list') }}
                 </a>
             </div>
@@ -17,38 +17,32 @@
                 <tbody>
                     <tr>
                         <th>
-                            {{ trans('cruds.customerCategory.fields.id') }}
+                            {{ trans('cruds.leadCategory.fields.id') }}
                         </th>
                         <td>
-                            {{ $customerCategory->id }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Orlansoft ID</th>
-                        <td>
-                            {{ $customerCategory->orlan_id }}
+                            {{ $leadCategory->id }}
                         </td>
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.customerCategory.fields.name') }}
+                            {{ trans('cruds.leadCategory.fields.name') }}
                         </th>
                         <td>
-                            {{ $customerCategory->name }}
+                            {{ $leadCategory->name }}
                         </td>
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.customerCategory.fields.description') }}
+                            {{ trans('cruds.leadCategory.fields.description') }}
                         </th>
                         <td>
-                            {{ $customerCategory->description ?? '' }}
+                            {{ $leadCategory->description ?? '' }}
                         </td>
                     </tr>
                 </tbody>
             </table>
             <div class="form-group">
-                <a class="btn btn-default" href="{{ route('admin.customer-categories.index') }}">
+                <a class="btn btn-default" href="{{ route('admin.lead-categories.index') }}">
                     {{ trans('global.back_to_list') }}
                 </a>
             </div>

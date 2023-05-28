@@ -19,9 +19,9 @@ class StoreProductBrandRequest extends FormRequest
                 'string',
                 'required',
             ],
-            'company_id' => [
-                'required',
-            ],
+            // 'company_id' => [
+            //     'required',
+            // ],
             // 'hpp_calculation' => [
             //     'required',
             //     'integer',

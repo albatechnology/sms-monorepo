@@ -9,7 +9,7 @@
             <form method="POST" action="{{ route('admin.products.update', [$product->id]) }}" enctype="multipart/form-data">
                 @method('PUT')
                 @csrf
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="required" for="company_id">{{ trans('cruds.product.fields.company') }}</label>
                     <select class="form-control select2 {{ $errors->has('company') ? 'is-invalid' : '' }}" name="company_id"
                         id="company_id" required>
@@ -23,7 +23,7 @@
                         <span class="text-danger">{{ $errors->first('company') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.product.fields.company_helper') }}</span>
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label class="required" for="product_brand_id">{{ trans('cruds.product.fields.brand') }}</label>
                     <select class="form-control select2 {{ $errors->has('product_brand_id') ? 'is-invalid' : '' }}"
@@ -102,7 +102,7 @@
                     @endif
                     <span class="help-block">{{ trans('cruds.product.fields.is_active_helper') }}</span>
                 </div>
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label for="tags">Tags</label>
                     <select class="form-control {{ $errors->has('tags') ? 'is-invalid' : '' }}" name="tags[]"
                         id="tags" multiple>
@@ -116,7 +116,7 @@
                         <span class="text-danger">{{ $errors->first('tags') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.product.fields.category_helper') }}</span>
-                </div>
+                </div> --}}
                 {{-- <div class="form-group">
                 <label for="video_url">Video URL</label>
                 <input class="form-control {{ $errors->has('video_url') ? 'is-invalid' : '' }}" type="text" name="video_url" id="video_url" value="{{ $product->video_url }}">
@@ -135,45 +135,45 @@
 @endsection
 @push('js')
     <script type="text/javascript">
-        function getProductBrands(companyId) {
-            var options = '';
-            $('#product_brand_id').attr('disabled', true).html(options).val('').change();
-            if (companyId) {
-                $.get("{{ url('admin/product-brands/get-product-brands') }}?company_id=" + companyId, function(
-                    res) {
-                    res.forEach(data => {
-                        options += '<option value="' + data.id + '">' + data.name +
-                            '</option>';
-                    });
-                    $('#product_brand_id').attr('disabled', false).html(options).change();
-                });
-            } else {
-                $('#product_brand_id').attr('disabled', true).html(options).val('').change();
-            }
-        }
+        // function getProductBrands(companyId) {
+        //     var options = '';
+        //     $('#product_brand_id').attr('disabled', true).html(options).val('').change();
+        //     if (companyId) {
+        //         $.get("{{ url('admin/product-brands/get-product-brands') }}?company_id=" + companyId, function(
+        //             res) {
+        //             res.forEach(data => {
+        //                 options += '<option value="' + data.id + '">' + data.name +
+        //                     '</option>';
+        //             });
+        //             $('#product_brand_id').attr('disabled', false).html(options).change();
+        //         });
+        //     } else {
+        //         $('#product_brand_id').attr('disabled', true).html(options).val('').change();
+        //     }
+        // }
 
-        function getProductCategories(companyId) {
-            var options = '';
-            $('#product_category_id').attr('disabled', true).html(options).val('').change();
-            if (companyId) {
-                $.get("{{ url('admin/product-categories/get-product-categories') }}?company_id=" + companyId, function(
-                    res) {
-                    res.forEach(data => {
-                        options += '<option value="' + data.id + '">' + data.name +
-                            '</option>';
-                    });
-                    $('#product_category_id').attr('disabled', false).html(options).change();
-                });
-            } else {
-                $('#product_category_id').attr('disabled', true).html(options).val('').change();
-            }
-        }
+        // function getProductCategories(companyId) {
+        //     var options = '';
+        //     $('#product_category_id').attr('disabled', true).html(options).val('').change();
+        //     if (companyId) {
+        //         $.get("{{ url('admin/product-categories/get-product-categories') }}?company_id=" + companyId, function(
+        //             res) {
+        //             res.forEach(data => {
+        //                 options += '<option value="' + data.id + '">' + data.name +
+        //                     '</option>';
+        //             });
+        //             $('#product_category_id').attr('disabled', false).html(options).change();
+        //         });
+        //     } else {
+        //         $('#product_category_id').attr('disabled', true).html(options).val('').change();
+        //     }
+        // }
 
         $(document).ready(function() {
-            $('#company_id').on('change', function() {
-                getProductBrands($(this).val());
-                getProductCategories($(this).val());
-            });
+            // $('#company_id').on('change', function() {
+            //     getProductBrands($(this).val());
+            //     getProductCategories($(this).val());
+            // });
 
             $("#tags").select2({
                 tags: true,

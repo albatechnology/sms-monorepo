@@ -10,15 +10,23 @@ class CreatePromosTable extends Migration
     {
         Schema::create('promos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->nullable();
-            $table->longText('description');
-            $table->date('start_date');
-            $table->date('end_date')->nullable();
-            $table->string('promotable_type')->nullable();
-            $table->string('promotable_identifier')->nullable();
-            $table->foreignId('company_id')->constrained();
+            // $table->foreignId('company_id')->constrained(); // unused
+            $table->string('name');
+            $table->longText('description')->nullable();
+            $table->dateTime('start_time');
+            $table->dateTime('end_time');
             $table->timestamps();
             $table->softDeletes();
         });
+    }
+
+     /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('promos');
     }
 }

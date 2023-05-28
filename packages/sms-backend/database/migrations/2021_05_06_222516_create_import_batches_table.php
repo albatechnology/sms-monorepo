@@ -19,7 +19,7 @@ class CreateImportBatchesTable extends Migration
             $table->json('errors');
             $table->datetime('all_jobs_added_to_batch_at')->nullable();
             $table->uuid('job_batch_id')->nullable();
-            $table->foreignId('company_id')->constrained();
+            // $table->foreignId('company_id')->constrained(); // unused
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
         });

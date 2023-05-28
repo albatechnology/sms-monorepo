@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Interfaces\Tenanted;
+// use App\Interfaces\Tenanted;
 use App\Traits\CustomInteractsWithMedia;
-use App\Traits\IsCompanyTenanted;
+// use App\Traits\IsCompanyTenanted;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
@@ -12,9 +12,9 @@ use Spatie\MediaLibrary\HasMedia;
 /**
  * @mixin IdeHelperPaymentCategory
  */
-class PaymentCategory extends BaseModel implements Tenanted, HasMedia
+class PaymentCategory extends BaseModel implements HasMedia
 {
-    use SoftDeletes, CustomInteractsWithMedia, IsCompanyTenanted;
+    use SoftDeletes, CustomInteractsWithMedia;
 
     public $table = 'payment_categories';
 
@@ -30,7 +30,7 @@ class PaymentCategory extends BaseModel implements Tenanted, HasMedia
 
     protected $fillable = [
         'name',
-        'company_id',
+        // 'company_id',
         'created_at',
         'updated_at',
         'deleted_at',

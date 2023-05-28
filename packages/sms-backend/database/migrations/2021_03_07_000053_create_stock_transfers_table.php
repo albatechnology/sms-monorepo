@@ -19,7 +19,7 @@ class CreateStockTransfersTable extends Migration
 
             $table->unsignedInteger('amount');
             $table->unsignedTinyInteger('status');
-            $table->foreignId('company_id')->constrained();
+            // $table->foreignId('company_id')->constrained(); // unused
 
             $table->timestamps();
             $table->softDeletes();

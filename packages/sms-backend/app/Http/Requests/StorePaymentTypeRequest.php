@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\HasCompanyAccess;
 use Gate;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,7 +23,7 @@ class StorePaymentTypeRequest extends FormRequest
                 'required',
                 'exists:payment_categories,id',
             ],
-            'company_id'          => 'required', new HasCompanyAccess,
+            // 'company_id'          => 'required', new HasCompanyAccess,
         ];
     }
 }

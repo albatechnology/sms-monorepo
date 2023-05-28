@@ -8,7 +8,7 @@ use App\Events\PaymentDisapproved;
 use App\Interfaces\Reportable;
 use App\Interfaces\Tenanted;
 use App\Traits\Auditable;
-use App\Traits\IsCompanyTenanted;
+use App\Traits\IsTenanted;
 use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,7 +21,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class Payment extends BaseModel implements HasMedia, Tenanted, Reportable
 {
-    use SoftDeletes, InteractsWithMedia, Auditable, IsCompanyTenanted;
+    use SoftDeletes, InteractsWithMedia, Auditable, IsTenanted;
 
     public const PROOF_COLLECTION = 'proof';
 
@@ -52,7 +52,7 @@ class Payment extends BaseModel implements HasMedia, Tenanted, Reportable
         'approved_by_id',
         'status',
         'order_id',
-        'company_id',
+        // 'company_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -64,7 +64,7 @@ class Payment extends BaseModel implements HasMedia, Tenanted, Reportable
         'added_by_id'     => 'integer',
         'approved_by_id'  => 'integer',
         'order_id'        => 'integer',
-        'company_id'      => 'integer',
+        // 'company_id'      => 'integer',
         'status'          => PaymentStatus::class,
     ];
 
@@ -179,8 +179,8 @@ class Payment extends BaseModel implements HasMedia, Tenanted, Reportable
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function getCompanyIdAttribute($value)
-    {
-        return (int) $value;
-    }
+    // public function getCompanyIdAttribute($value)
+    // {
+    //     return (int) $value;
+    // }
 }

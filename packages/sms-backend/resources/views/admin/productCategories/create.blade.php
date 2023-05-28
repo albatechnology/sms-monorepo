@@ -34,7 +34,7 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.productCategory.fields.photo_helper') }}</span>
             </div>
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label class="required" for="company_id">{{ trans('cruds.productCategory.fields.company') }}</label>
                 <select class="form-control select2 {{ $errors->has('company') ? 'is-invalid' : '' }}" name="company_id" id="company_id" required>
                     @foreach($companies as $id => $company)
@@ -45,7 +45,7 @@
                     <span class="text-danger">{{ $errors->first('company') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.productCategory.fields.company_helper') }}</span>
-            </div>
+            </div> --}}
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}

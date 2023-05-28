@@ -20,6 +20,7 @@ class RecreateReportTargetTable extends Migration
             $table->dateTime('end_date')->index();
             $table->morphs('reportable');
             $table->string('reportable_label');
+            $table->bigInteger('time_diff')->default(0);
             $table->timestamps();
         });
 
@@ -36,6 +37,7 @@ class RecreateReportTargetTable extends Migration
 
         Schema::create('target_lines', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('label');
             $table->morphs('model');
             $table->foreignId('target_id')->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('target')->default(0);
@@ -51,21 +53,10 @@ class RecreateReportTargetTable extends Migration
             $table->json('context')->nullable();
             $table->timestamps();
         });
-
-        Schema::table('orders', function (Blueprint $table) {
-            // the time this order is considered to be a deal
-            $table->datetime('deal_at')->nullable();
-        });
     }
 
     public function down()
     {
-
-        Schema::table('orders', function (Blueprint $table) {
-            // the time this order is considered to be a deal
-            $table->dropColumn(['deal_at']);
-        });
-
         Schema::dropIfExists('target_maps');
         Schema::dropIfExists('target_lines');
         Schema::dropIfExists('targets');

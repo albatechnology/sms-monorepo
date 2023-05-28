@@ -12,7 +12,7 @@ class CreateActivitiesTable extends Migration
             $table->bigIncrements('id');
             $table->datetime('follow_up_datetime');
             $table->longText('feedback')->nullable();
-            $table->unsignedTinyInteger('follow_up_method')->nullable();
+            $table->unsignedTinyInteger('follow_up_method')->nullable()->index();
             $table->unsignedTinyInteger('status')->nullable()->index();
             $table->foreignId('lead_id')->constrained();
             $table->foreignId('customer_id')->constrained();

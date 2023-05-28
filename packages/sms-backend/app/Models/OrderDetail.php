@@ -51,7 +51,6 @@ class OrderDetail extends BaseModel implements HasMedia, DiscountableLine, Repor
         'created_at',
         'updated_at',
         'deleted_at',
-        'is_ready',
         'location_id',
     ];
 
@@ -67,7 +66,6 @@ class OrderDetail extends BaseModel implements HasMedia, DiscountableLine, Repor
         'records'                 => 'json',
         'status'                  => OrderDetailStatus::class,
         'shipment_status'         => OrderDetailShipmentStatus::class,
-        'is_ready'                => 'boolean',
     ];
 
     public function registerMediaConversions(Media $media = null): void

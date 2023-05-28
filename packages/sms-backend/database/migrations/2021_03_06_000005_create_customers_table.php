@@ -18,6 +18,7 @@ class CreateCustomersTable extends Migration
             $table->longText('description')->nullable();
             $table->unsignedBigInteger('default_address_id')->nullable();
             $table->tinyInteger('title')->nullable();
+            $table->boolean('has_activity')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

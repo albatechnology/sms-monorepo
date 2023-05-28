@@ -9,10 +9,10 @@
                   enctype="multipart/form-data">
                 @method('PUT')
                 @csrf
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="required" for="name">{{ trans('cruds.productBrand.fields.name') }}</label>
                     <input class="form-control" type="text" value="{{ $productBrand->company->name }}" disabled>
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label class="required" for="name">{{ trans('cruds.productBrand.fields.name') }}</label>
                     <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name"

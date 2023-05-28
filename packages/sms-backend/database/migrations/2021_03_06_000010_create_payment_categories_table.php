@@ -11,7 +11,7 @@ class CreatePaymentCategoriesTable extends Migration
         Schema::create('payment_categories', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable();
-            $table->foreignId('company_id')->constrained();
+            // $table->foreignId('company_id')->constrained(); // unused
             $table->timestamps();
             $table->softDeletes();
         });

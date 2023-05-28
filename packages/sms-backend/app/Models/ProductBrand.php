@@ -14,7 +14,7 @@ use Spatie\MediaLibrary\HasMedia;
  */
 class ProductBrand extends BaseModel implements HasMedia
 {
-    use IsCompanyTenanted, CustomInteractsWithMedia, ProductListable, Auditable, SoftDeletes;
+    use CustomInteractsWithMedia, ProductListable, Auditable, SoftDeletes;
 
     public $table = 'product_brands';
 
@@ -30,14 +30,14 @@ class ProductBrand extends BaseModel implements HasMedia
 
     protected $fillable = [
         'name',
-        'company_id',
+        // 'company_id',
         'hpp_calculation',
         'currency_id',
         'brand_category_id',
     ];
 
     protected $casts = [
-        'company_id' => 'integer',
+        // 'company_id' => 'integer',
         'currency_id' => 'integer',
         'hpp_calculation' => 'integer',
         'brand_category_id' => 'integer',
@@ -94,7 +94,7 @@ class ProductBrand extends BaseModel implements HasMedia
             $data['created_at'],
             $data['updated_at'],
             $data['deleted_at'],
-            $data['company_id'],
+            // $data['company_id'],
             $data['photo'],
             $data['media'],
         );

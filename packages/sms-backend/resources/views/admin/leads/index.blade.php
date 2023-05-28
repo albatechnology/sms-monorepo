@@ -64,7 +64,7 @@
             <form id="form-filter">
                 @csrf
                 <div class="row">
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <div class="form-group">
                             <label>Company</label>
                             <select name="company_id" id="company_id" class="form-control">
@@ -74,7 +74,7 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>BUM</label>
@@ -290,7 +290,7 @@
                 ajax: {
                     url: "{{ route('admin.leads.index') }}",
                     data: function(d) {
-                        d.company_id = $('#company_id').val();
+                        // d.company_id = $('#company_id').val();
                         d.supervisor_id = $('#supervisor_id').val();
                         d.lead_category_id = $('#lead_category_id').val();
                         d.sub_lead_category_id = $('#sub_lead_category_id').val();
@@ -385,9 +385,9 @@
                 $('#btn_import').attr('disabled', true).text('Importing...');
             });
 
-            $('#company_id').change(function() {
-                table.ajax.reload();
-            });
+            // $('#company_id').change(function() {
+            //     table.ajax.reload();
+            // });
             $('#supervisor_id').change(function() {
                 table.ajax.reload();
             });

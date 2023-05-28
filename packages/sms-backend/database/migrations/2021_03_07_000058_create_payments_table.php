@@ -17,7 +17,8 @@ class CreatePaymentsTable extends Migration
             $table->foreignId('approved_by_id')->nullable()->constrained('users');
             $table->foreignId('added_by_id')->constrained('users');
             $table->foreignId('order_id')->constrained();
-            $table->foreignId('company_id')->constrained();
+            $table->foreignId('channel_id')->constrained(); // unused
+            // $table->foreignId('company_id')->constrained(); // unused
             $table->timestamps();
             $table->softDeletes();
         });

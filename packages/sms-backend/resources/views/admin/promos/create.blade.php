@@ -8,7 +8,7 @@
         <div class="card-body">
             <form method="POST" action="{{ route('admin.promos.store') }}" enctype="multipart/form-data">
                 @csrf
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="required" for="promo_category_id">{{ trans('cruds.promoCategory.title_singular') }}</label>
                     <select class="form-control select2 {{ $errors->has('promo_category_id') ? 'is-invalid' : '' }}"
                         name="promo_category_id" id="promo_category_id" required>
@@ -20,7 +20,7 @@
                     @if ($errors->has('promo_category_id'))
                         <span class="text-danger">{{ $errors->first('promo_category_id') }}</span>
                     @endif
-                </div>
+                </div> --}}
                 <x-input key='name' :model='app(\App\Models\Promo::class)'></x-input>
                 <div class="form-group">
                     <label for="description">{{ trans('cruds.promo.fields.description') }}</label>

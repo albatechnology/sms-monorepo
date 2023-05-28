@@ -1,5 +1,5 @@
 <div>
-	<div class="form-group">
+	{{-- <div class="form-group">
 		<label class="required" for="company_id">{{ trans('cruds.generic.fields.company') }}</label>
 		<select wire:model="company_id" class="form-control {{ $errors->has('company_id') ? 'is-invalid' : '' }}"
 			name="company_id" id="company_id">
@@ -12,7 +12,7 @@
 		<span class="text-danger">{{ $errors->first('company_id') }}</span>
 		@endif
 		<span class="help-block">{{ trans('cruds.generic.fields.company_helper') }}</span>
-	</div>
+	</div> --}}
 	<x-input key='name' :model='app(\App\Models\Discount::class)'></x-input>
 	<x-input key='description' :model='app(\App\Models\Discount::class)' required="0"></x-input>
 	<x-enum key='type' :model='app(\App\Models\Discount::class)'></x-enum>
