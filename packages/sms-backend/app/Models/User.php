@@ -246,7 +246,7 @@ class User extends Authenticatable implements Tenanted, ReportableScope
     public function scopeTenanted($query): mixed
     {
         $hasActiveChannel = tenancy()->getActiveTenant();
-        $hasActiveCompany = tenancy()->getActiveCompany();
+        // $hasActiveCompany = tenancy()->getActiveCompany();
         $user = tenancy()->getUser();
         $isAdmin = $user->is_admin;
 
@@ -260,20 +260,20 @@ class User extends Authenticatable implements Tenanted, ReportableScope
             });
         }
 
-        if ($hasActiveCompany) {
-            if ($isAdmin) {
-                // lets admin see all channels in a company
-                return $query->whereHas('channels', function ($query) use ($hasActiveCompany) {
-                    $query->whereIn('company_id', $hasActiveCompany->id);
-                });
-            } else {
-                // lets user see all resource available to the user's channel within a company
-                return $query->whereHas('channels', function ($query) use ($hasActiveCompany) {
-                    $query->whereIn('id', tenancy()->getTenants()->pluck('id'))
-                        ->whereIn('company_id', $hasActiveCompany->id);
-                });
-            }
-        } else {
+        // if ($hasActiveCompany) {
+        //     if ($isAdmin) {
+        //         // lets admin see all channels in a company
+        //         return $query->whereHas('channels', function ($query) use ($hasActiveCompany) {
+        //             $query->whereIn('company_id', $hasActiveCompany->id);
+        //         });
+        //     } else {
+        //         // lets user see all resource available to the user's channel within a company
+        //         return $query->whereHas('channels', function ($query) use ($hasActiveCompany) {
+        //             $query->whereIn('id', tenancy()->getTenants()->pluck('id'))
+        //                 ->whereIn('company_id', $hasActiveCompany->id);
+        //         });
+        //     }
+        // } else {
             if ($isAdmin) {
                 // lets admin see all
                 return $query;
@@ -283,7 +283,7 @@ class User extends Authenticatable implements Tenanted, ReportableScope
                     $query->whereIn('id', tenancy()->getTenants()->pluck('id'));
                 });
             }
-        }
+        // }
     }
 
 

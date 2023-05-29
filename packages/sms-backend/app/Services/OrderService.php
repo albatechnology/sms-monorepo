@@ -259,9 +259,9 @@ class OrderService
 
                     // apply discount
                     ApplyDiscount::class,
-                    ApplyVouchers::class,
+                    // ApplyVouchers::class,
                     // calculateCartDemand
-                    CalculateCartDemand::class,
+                    // CalculateCartDemand::class,
                     AddAdditionalDiscount::class,
 
                     // add shipping and packing fee

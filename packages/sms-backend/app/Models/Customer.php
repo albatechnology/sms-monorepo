@@ -31,8 +31,9 @@ class Customer extends BaseModel
 
     protected $fillable = [
         'title',
-        'first_name',
-        'last_name',
+        'name',
+        // 'name',
+        // 'last_name',
         'email',
         'phone',
         'date_of_birth',
@@ -94,22 +95,22 @@ class Customer extends BaseModel
 
     public function scopeWhereNameLike($query, $name)
     {
-        return $query->where('first_name', 'LIKE', "%$name%")
-            ->orWhere('last_name', 'LIKE', "%$name%");
+        return $query->where('name', 'LIKE', "%$name%");
+        // ->orWhere('last_name', 'LIKE', "%$name%");
     }
 
     public function scopeWhereSearch($query, $key)
     {
-        return $query->where('first_name', 'LIKE', "%$key%")
-            ->orWhere('last_name', 'LIKE', "%$key%")
+        return $query->where('name', 'LIKE', "%$key%")
+            // ->orWhere('last_name', 'LIKE', "%$key%")
             ->orWhere('email', 'LIKE', "%$key%")
             ->orWhere('phone', 'LIKE', "%$key%");
     }
 
-    public function getFullNameAttribute()
-    {
-        return implode(' ', [$this->first_name, $this->last_name]);
-    }
+    // public function getFullNameAttribute()
+    // {
+    //     return implode(' ', [$this->name, $this->last_name]);
+    // }
 
     protected function serializeDate(DateTimeInterface $date)
     {
@@ -118,11 +119,11 @@ class Customer extends BaseModel
 
     public function evaluateHasActivity(): void
     {
-        if($this->has_activity){
+        if ($this->has_activity) {
             return;
         }
 
-        if(!$this->customerActivity()->exists()){
+        if (!$this->customerActivity()->exists()) {
             return;
         }
 

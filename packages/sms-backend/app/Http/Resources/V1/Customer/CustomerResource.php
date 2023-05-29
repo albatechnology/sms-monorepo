@@ -30,8 +30,9 @@ class CustomerResource extends BaseResource
         return [
             ResourceData::make("id", Schema::TYPE_INTEGER, 1),
             ResourceData::makeEnum('title', PersonTitle::class),
-            ResourceData::make('first_name', Schema::TYPE_STRING, 'Barrack'),
-            ResourceData::make('last_name', Schema::TYPE_STRING, 'Obama')->nullable(),
+            ResourceData::make('name', Schema::TYPE_STRING, 'Masfud Difa'),
+            // ResourceData::make('first_name', Schema::TYPE_STRING, 'Barrack'),
+            // ResourceData::make('last_name', Schema::TYPE_STRING, 'Obama')->nullable(),
             ResourceData::make('email', Schema::TYPE_STRING, ApiDataExample::EMAIL),
             ResourceData::make('phone', Schema::TYPE_STRING, '+923182732932'),
             ResourceData::make('date_of_birth', Schema::TYPE_STRING, ApiDataExample::TIMESTAMP)->nullable(),

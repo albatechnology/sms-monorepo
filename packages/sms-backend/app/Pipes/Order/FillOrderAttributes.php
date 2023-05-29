@@ -41,7 +41,7 @@ class FillOrderAttributes
         $order->user_id                        = $user->id;
         $order->customer_id                    = Lead::findOrFail($order->raw_source['lead_id'])->customer_id;
         $order->channel_id                     = $user->channel_id;
-        $order->company_id                     = $user->company_id;
+        // $order->company_id                     = $user->company_id;
         $order->interior_design_id             = $order->raw_source['interior_design_id'] ?? null;
         $order->sum_total_discount             = 0;
         $order->total_discount                 = 0;

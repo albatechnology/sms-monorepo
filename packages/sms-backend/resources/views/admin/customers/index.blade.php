@@ -27,7 +27,6 @@
                     <th>
                         {{ trans('cruds.customer.fields.id') }}
                     </th>
-                    <th>Orlansoft ID</th>
                     <th>
                         {{ trans('cruds.customer.fields.title') }}
                     </th>
@@ -54,9 +53,6 @@
                     <td></td>
                     <td>
                         <input class="search" type="text" strict="true" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td>
                         <select class="search" strict="true">

@@ -655,25 +655,4 @@ class MenuService
             ]
         );
     }
-
-    protected static function template()
-    {
-        $categories = new Submenu(
-            'product_category_access',
-            route("admin.product-categories.index"),
-            'admin/product-categories',
-            'fas fa-tags',
-            trans('cruds.productCategory.title'),
-            1,
-        );
-
-        return new Menu(
-            'product_management_access',
-            'fas fa-shopping-cart',
-            trans('cruds.productManagement.title'),
-            ...[
-                $categories,
-            ]
-        );
-    }
 }

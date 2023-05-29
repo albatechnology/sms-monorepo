@@ -29,7 +29,7 @@ class MakeOrderLines
 
                 $order_detail             = new OrderDetail();
                 $order_detail->status     = OrderDetailStatus::NOT_FULFILLED();
-                $order_detail->company_id = user()->company_id;
+                // $order_detail->company_id = user()->company_id;
 
                 // We do not bother with stock fulfilment and discount
                 // calculation yet at this stage

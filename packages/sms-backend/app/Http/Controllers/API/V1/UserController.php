@@ -9,7 +9,6 @@ use App\Exceptions\UnauthorisedTenantAccessException;
 use App\Http\Requests\API\V1\User\ChangePasswordRequest;
 use App\Http\Resources\V1\Channel\ChannelResource;
 use App\Http\Resources\V1\Product\BaseProductBrandResource;
-use App\Http\Resources\V1\Product\ProductBrandResource;
 use App\Http\Resources\V1\User\SupervisorTypeResource;
 use App\Http\Resources\V1\User\UserResource;
 use App\Models\Channel;
@@ -28,7 +27,7 @@ use Vyuldashev\LaravelOpenApi\Attributes as OpenApi;
 #[OpenApi\PathItem]
 class UserController extends BaseApiController
 {
-    public const load_relation = ['supervisorType', 'company'];
+    public const load_relation = ['supervisorType'];
 
     /**
      * Get logged in user detail
