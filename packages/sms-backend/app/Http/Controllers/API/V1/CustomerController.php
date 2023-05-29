@@ -20,7 +20,6 @@ use App\Models\Customer;
 use App\Models\CustomerVoucher;
 use App\Models\Lead;
 use App\OpenApi\Customs\Attributes as CustomOpenApi;
-use App\OpenApi\Parameters\Customer\CustomerVouchersParameter;
 use App\OpenApi\Parameters\DefaultHeaderParameters;
 use App\OpenApi\Responses\Custom\GenericSuccessMessageResponse;
 use Exception;
@@ -43,11 +42,11 @@ class CustomerController extends BaseApiController
     {
         $user = auth()->user();
         $query = null;
-        if ($user->type->is(\App\Enums\UserType::SALES_SMS)) {
-            $query = function ($query) use ($user) {
-                return $query->where('user_sms_id', $user->id);
-            };
-        }
+        // if ($user->type->is(\App\Enums\UserType::SALES_SMS)) {
+        //     $query = function ($query) use ($user) {
+        //         return $query->where('user_sms_id', $user->id);
+        //     };
+        // }
         return CustomQueryBuilder::buildResource(Customer::class, CustomerResource::class, $query);
     }
 

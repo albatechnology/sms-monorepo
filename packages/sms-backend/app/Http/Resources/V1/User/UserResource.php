@@ -57,10 +57,10 @@ class UserResource extends BaseResource
                 ->description("User type determine the feature should be made avaiable to them. The available enum options are hard coded."),
 
             ResourceData::makeRelationship('company', BaseCompanyResource::class),
-            ResourceData::make("company_id", Schema::TYPE_INTEGER, 1)
-                ->description("The company that this user belongs to")
-                ->nullable()
-                ->sortable(),
+            // ResourceData::make("company_id", Schema::TYPE_INTEGER, 1)
+            //     ->description("The company that this user belongs to")
+            //     ->nullable()
+            //     ->sortable(),
 
             ResourceData::make("channel_id", Schema::TYPE_INTEGER, 1)
                 ->description("The default channel currently selected for this user")
