@@ -13,12 +13,15 @@
         <div class="card-header">
             {{ trans('cruds.supervisorType.title_singular') }} {{ trans('global.list') }}
         </div>
+
         <div class="card-body">
             <div class="table-responsive">
                 <table class=" table table-bordered table-striped table-hover datatable datatable-SupervisorType">
                     <thead>
                         <tr>
-                            <th width="10"></th>
+                            <th width="10">
+
+                            </th>
                             <th>
                                 {{ trans('cruds.supervisorType.fields.id') }}
                             </th>
@@ -38,11 +41,13 @@
                     </thead>
                     <tbody>
                         @foreach ($supervisorTypes as $key => $supervisorType)
-                            @php
-                                $limits = $supervisorType->supervisorDiscountApprovalLimits->pluck('limit', 'product_brand_id');
-                            @endphp
+                        @php
+                            $limits = $supervisorType->supervisorDiscountApprovalLimits->pluck('limit','product_brand_id');
+                        @endphp
                             <tr data-entry-id="{{ $supervisorType->id }}">
-                                <td></td>
+                                <td>
+
+                                </td>
                                 <td>
                                     {{ $supervisorType->id ?? '' }}
                                 </td>
@@ -53,15 +58,22 @@
                                     {{ $supervisorType->level ?? '' }}
                                 </td>
                                 <td>
-                                    {{ $supervisorType->discount_approval_limit_percentage ?? 0 }}%
+                                    <table class="table">
+                                        @foreach ($productBrands as $id => $name)
+                                        <tr>
+                                            <td>{{$name}}</td>
+                                            <td>: {{ isset($limits[$id]) ? $limits[$id] : 0 }}%</td>
+                                        </tr>
+                                        @endforeach
+                                    </table>
                                 </td>
                                 <td>
-                                    {{-- @can('supervisor_type_show')
+                                    @can('supervisor_type_show')
                                         <a class="btn btn-xs btn-primary"
                                             href="{{ route('admin.supervisor-types.show', $supervisorType->id) }}">
                                             {{ trans('global.view') }}
                                         </a>
-                                    @endcan --}}
+                                    @endcan
 
                                     @can('supervisor_type_edit')
                                         <a class="btn btn-xs btn-info"
@@ -80,7 +92,9 @@
                                                 value="{{ trans('global.delete') }}">
                                         </form>
                                     @endcan
+
                                 </td>
+
                             </tr>
                         @endforeach
                     </tbody>
@@ -97,39 +111,29 @@
             @can('supervisor_type_delete')
                 let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
                 let deleteButton = {
-                    text: deleteButtonTrans,
-                    url: "{{ route('admin.supervisor-types.massDestroy') }}",
-                    className: 'btn-danger',
-                    action: function(e, dt, node, config) {
-                        var ids = $.map(dt.rows({
-                            selected: true
-                        }).nodes(), function(entry) {
-                            return $(entry).data('entry-id')
-                        });
+                text: deleteButtonTrans,
+                url: "{{ route('admin.supervisor-types.massDestroy') }}",
+                className: 'btn-danger',
+                action: function (e, dt, node, config) {
+                var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
+                return $(entry).data('entry-id')
+                });
 
-                        if (ids.length === 0) {
-                            alert('{{ trans('global.datatables.zero_selected') }}')
+                if (ids.length === 0) {
+                alert('{{ trans('global.datatables.zero_selected') }}')
 
-                            return
-                        }
+                return
+                }
 
-                        if (confirm('{{ trans('global.areYouSure') }}')) {
-                            $.ajax({
-                                    headers: {
-                                        'x-csrf-token': _token
-                                    },
-                                    method: 'POST',
-                                    url: config.url,
-                                    data: {
-                                        ids: ids,
-                                        _method: 'DELETE'
-                                    }
-                                })
-                                .done(function() {
-                                    location.reload()
-                                })
-                        }
-                    }
+                if (confirm('{{ trans('global.areYouSure') }}')) {
+                $.ajax({
+                headers: {'x-csrf-token': _token},
+                method: 'POST',
+                url: config.url,
+                data: { ids: ids, _method: 'DELETE' }})
+                .done(function () { location.reload() })
+                }
+                }
                 }
                 dtButtons.push(deleteButton)
             @endcan

@@ -49,7 +49,7 @@
                         <th>
                             {{ trans('cruds.order.fields.channel') }}
                         </th>
-                        <th>Interior Design</th>
+                        {{-- <th>Interior Design</th> --}}
                         <th>
                             {{ trans('cruds.order.fields.status') }}
                         </th>
@@ -103,9 +103,9 @@
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
-                        <td>
+                        {{-- <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td>
+                        </td> --}}
                         <x-filter-enum base-enum="{{ \App\Enums\OrderStatus::class }}"></x-filter-enum>
                         <x-filter-enum base-enum="{{ \App\Enums\OrderPaymentStatus::class }}"></x-filter-enum>
                         <x-filter-enum base-enum="{{ \App\Enums\OrderShipmentStatus::class }}"></x-filter-enum>
@@ -122,9 +122,6 @@
             </table>
         </div>
     </div>
-
-
-
 @endsection
 @section('scripts')
     @parent
@@ -212,10 +209,10 @@
                         data: 'channel_name',
                         name: 'channel.name'
                     },
-                    {
-                        data: 'interior_design_id',
-                        name: 'interiorDesign.name'
-                    },
+                    // {
+                    //     data: 'interior_design_id',
+                    //     name: 'interiorDesign.name'
+                    // },
                     {
                         data: 'status',
                         name: 'status'

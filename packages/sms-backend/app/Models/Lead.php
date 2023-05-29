@@ -465,7 +465,14 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         // if we have reached the end of status progression
         if (!$next_status = $this->status->nextStatus()) return;
 
-        $duration = $this->channel->company->getLeadStatusDuration($this->status);
+        // $duration = $this->channel->company->getLeadStatusDuration($this->status);
+
+        if ($this->status->in([LeadStatus::SALES, LeadStatus::OTHER_SALES, LeadStatus::EXPIRED])) {
+            $duration = 0;
+        } else {
+            // $duration = $this['options']['lead_status_duration_days'][$this->status->value] ?? config('core.lead_status_duration_days.' . $this->status->value);
+            $duration = config('core.lead_status_duration_days.' . $this->status->value);
+        }
 
         if ($duration <= 0) {
             Log::error("Unable to queue Lead status change for Lead id {$this->id}, unknown duration");

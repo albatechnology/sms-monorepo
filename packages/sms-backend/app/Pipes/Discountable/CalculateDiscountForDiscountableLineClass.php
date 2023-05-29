@@ -30,9 +30,10 @@ class CalculateDiscountForDiscountableLineClass
 
             if ($discount->scope->is(DiscountScope::TYPE)) {
                 $discountable = $this->discountScopeType($discountable, $discount);
-            } elseif ($discount->scope->is(DiscountScope::CATEGORY)) {
-                $discountable = $this->discountScopeCategory($discountable, $discount);
             }
+            // elseif ($discount->scope->is(DiscountScope::CATEGORY)) {
+            //     $discountable = $this->discountScopeCategory($discountable, $discount);
+            // }
             // elseif ($discount->scope->is(DiscountScope::SECOND_PLACE_BRAND_PRICE)) {
             //     $discountable = $this->discountScopeSecondPlaceBrandPrice($discountable, $discount);
             // }
@@ -185,7 +186,4 @@ class CalculateDiscountForDiscountableLineClass
 
         return $discountable;
     }
-
-    // public function discountScopePackage(){
-    // }
 }

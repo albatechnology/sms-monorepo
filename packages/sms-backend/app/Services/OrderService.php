@@ -78,7 +78,8 @@ class OrderService
 
         if ($discount->type->is(DiscountType::NOMINAL)) {
 
-            if ($discount->scope->in([DiscountScope::QUANTITY, DiscountScope::CATEGORY])) {
+            // if ($discount->scope->in([DiscountScope::QUANTITY, DiscountScope::CATEGORY])) {
+            if ($discount->scope->is(DiscountScope::QUANTITY)) {
                 // dont let discount to be greater than the total price
                 $value = min($discount->value * $discountable->getQuantity(), $discountable->getTotalPrice());
             }
@@ -120,7 +121,7 @@ class OrderService
     public static function setDiscount(Discountable $discountable, Discount $discount)
     {
         // set discount, before it is ready to be processed in pipeline
-        // $discountable->discount_id = $discount->id;
+        $discountable->discount_id = $discount->id;
         $discountable->discount    = $discount;
 
         app(Pipeline::class)
@@ -131,7 +132,7 @@ class OrderService
                 CheckDiscountUseLimit::class,
                 CalculateDiscountForDiscountableClass::class,
                 CalculateDiscountForDiscountableLineClass::class,
-                SyncSumDiscount::class,
+                // SyncSumDiscount::class,
                 CheckMaxDiscountLimit::class,
                 CheckDiscountApplied::class,
                 CalculateDiscountCascadeForDiscountableLine::class,

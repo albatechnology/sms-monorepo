@@ -18,7 +18,7 @@ class CalculateDiscountCascadeForDiscountableLine
     public function handle(Discountable $discountable, Closure $next)
     {
         // moved method to service as this is reused in migration to fix old data
-        $discountable->tmp_total_discount = $discountable->getTotalDiscount();
+        // $discountable->tmp_total_discount = $discountable->getTotalDiscount();
         app(OrderService::class)->setOrderDetailCascadedDiscount($discountable);
 
         return $next($discountable);

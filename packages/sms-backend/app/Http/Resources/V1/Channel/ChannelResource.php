@@ -13,7 +13,7 @@ class ChannelResource extends BaseResource
         return [
             ResourceData::make("id", Schema::TYPE_INTEGER, 1),
             ResourceData::make("name", Schema::TYPE_STRING, 'Toko ABC'),
-            ResourceData::make("company_id", Schema::TYPE_INTEGER, 1),
+            // ResourceData::make("company_id", Schema::TYPE_INTEGER, 1),
             //            ResourceData::makeRelationship("company", CompanyResource::class),
             //            ResourceData::makeRelationship("category", ChannelCategoryResource::class, 'channelCategory'),
         ];

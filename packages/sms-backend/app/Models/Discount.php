@@ -160,8 +160,8 @@ class Discount extends BaseModel
     public function isActiveNow(): bool
     {
         if (!$this->is_active) return false;
-        if (now()->isBefore($this->start_time)) return false;
-        if (!empty($this->end_time) && now()->isAfter($this->end_time)) return false;
+        if (now()->isBefore($this->promo->start_time)) return false;
+        if (!empty($this->promo->end_time) && now()->isAfter($this->promo->end_time)) return false;
 
         return true;
     }

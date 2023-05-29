@@ -49,7 +49,7 @@ class OrderController extends Controller
         abort_if(Gate::denies('order_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Order::with(['user', 'customer', 'channel', 'orderPayments', 'interiorDesign'])
+            $query = Order::with(['user', 'customer', 'channel', 'orderPayments'])
                 ->select(sprintf('%s.*', (new Order)->table));
             $table = Datatables::of($query);
 
@@ -85,9 +85,9 @@ class OrderController extends Controller
             $table->addColumn('channel_name', function ($row) {
                 return $row->channel ? $row->channel->name : '';
             });
-            $table->editColumn('interior_design_id', function ($row) {
-                return $row->interiorDesign ? $row->interiorDesign->name : "";
-            });
+            // $table->editColumn('interior_design_id', function ($row) {
+            //     return $row->interiorDesign ? $row->interiorDesign->name : "";
+            // });
             $table->editColumn('invoice_number', function ($row) {
                 return $row->invoice_number ? $row->invoice_number : "";
             });
@@ -150,7 +150,7 @@ class OrderController extends Controller
         }
 
         $data = [
-            'interior_design_id' => $request->interior_design_id,
+            // 'interior_design_id' => $request->interior_design_id,
             // 'discount_id' => (int)$request->discount_id,
             'expected_price' => (int)$request->expected_price,
             'lead_id' => (int)$request->lead_id,
@@ -198,7 +198,7 @@ class OrderController extends Controller
         }
 
         $data = [
-            'interior_design_id' => $request->interior_design_id,
+            // 'interior_design_id' => $request->interior_design_id,
             // 'discount_id' => (int)$request->discount_id,
             'expected_price' => (int)$request->expected_price,
             'lead_id' => (int)$request->lead_id,

@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             LeadSeeder::class,
             PaymentSeeder::class,
 
+            CustomerSeeder::class,
+
             // Ensure non empty company
             // DefaultCompanySeeder::class,
             // DefaultChannelSeeder::class,

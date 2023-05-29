@@ -19,7 +19,7 @@ use App\Pipes\Order\AddAdditionalDiscount;
 use App\Pipes\Order\AddAdditionalFees;
 use App\Pipes\Order\ApplyDiscount;
 use App\Pipes\Order\ApplyVouchers;
-use App\Pipes\Order\CalculateCartDemand;
+// use App\Pipes\Order\CalculateCartDemand;
 use App\Pipes\Order\CheckExpectedOrderPrice;
 use App\Pipes\Order\FillOrderAttributes;
 use App\Pipes\Order\FillOrderRecord;
@@ -39,7 +39,7 @@ use Illuminate\Http\Request;
 #[OpenApi\PathItem]
 class OrderController extends BaseApiController
 {
-    const load_relation = ['customer', 'order_details', 'user', 'channel', 'approvedBy', 'cartDemand', 'order_discounts.discount'];
+    const load_relation = ['customer', 'order_details', 'user', 'channel', 'approvedBy'];
 
     /**
      * Get order
@@ -120,7 +120,7 @@ class OrderController extends BaseApiController
                     UpdateOrderLines::class,
                     UpdateApplyDiscount::class,
                     UpdateApplyVouchers::class,
-                    CalculateCartDemand::class,
+                    // CalculateCartDemand::class,
                     UpdateAdditionalDiscount::class,
                     AddAdditionalFees::class,
                 ]
@@ -158,7 +158,7 @@ class OrderController extends BaseApiController
                     UpdateOrderLines::class,
                     UpdateApplyDiscount::class,
                     UpdateApplyVouchers::class,
-                    CalculateCartDemand::class,
+                    // CalculateCartDemand::class,
                     UpdateAdditionalDiscount::class,
                     AddAdditionalFees::class,
                     CheckExpectedOrderPrice::class,
@@ -213,7 +213,6 @@ class OrderController extends BaseApiController
     #[CustomOpenApi\Response(resource: OrderResource::class, statusCode: 200)]
     public function preview(PreviewOrderRequest $request): OrderResource
     {
-        // dd($request->validated());
         $order = app(Pipeline::class)
             ->send(Order::make(['raw_source' => $request->all()]))
             ->through(
@@ -222,8 +221,8 @@ class OrderController extends BaseApiController
                     FillOrderRecord::class,
                     MakeOrderLines::class,
                     ApplyDiscount::class,
-                    ApplyVouchers::class,
-                    CalculateCartDemand::class,
+                    // ApplyVouchers::class,
+                    // CalculateCartDemand::class,
                     AddAdditionalDiscount::class,
                     AddAdditionalFees::class,
                     CheckExpectedOrderPrice::class,
@@ -251,7 +250,7 @@ class OrderController extends BaseApiController
             return $query->with(self::load_relation)
                 ->tenanted()
                 ->where('status', OrderStatus::QUOTATION)
-                ->where('company_id', auth()->user()->company_id)
+                // ->where('company_id', auth()->user()->company_id)
                 ->waitingApproval()
                 ->canBeApprovedBy(user())
                 ->approvalSendToMe();
@@ -275,7 +274,7 @@ class OrderController extends BaseApiController
             $user = auth()->user();
             $q = $query->with(self::load_relation)
                 ->where('status', OrderStatus::QUOTATION)
-                ->where('company_id', auth()->user()->company_id)
+                // ->where('company_id', auth()->user()->company_id)
                 ->requiredApproval()
                 ->canBeApprovedBy($user);
 
@@ -330,7 +329,7 @@ class OrderController extends BaseApiController
                 [
                     UpdateOrderLines::class,
                     UpdateApplyDiscount::class,
-                    CalculateCartDemand::class,
+                    // CalculateCartDemand::class,
                     UpdateAdditionalDiscount::class,
                     AddAdditionalFees::class,
                     CheckExpectedOrderPrice::class,
@@ -342,9 +341,11 @@ class OrderController extends BaseApiController
         $user = auth()->user();
         if ($order->approval_send_to->is(\App\Enums\UserType::SUPERVISOR)) {
             // $users = \App\Models\User::where('type', \App\Enums\UserType::SUPERVISOR)->where('company_id', $order->company_id)->where('supervisor_type_id', 2)->has('notificationDevices')->get();
-            $users = \App\Models\User::where('type', \App\Enums\UserType::SUPERVISOR)->where('company_id', $order->company_id)->where('supervisor_type_id', $order->approval_supervisor_type_id)->has('notificationDevices')->get();
+            // $users = \App\Models\User::where('type', \App\Enums\UserType::SUPERVISOR)->where('company_id', $order->company_id)->where('supervisor_type_id', $order->approval_supervisor_type_id)->has('notificationDevices')->get();
+            $users = \App\Models\User::where('type', \App\Enums\UserType::SUPERVISOR)->where('supervisor_type_id', $order->approval_supervisor_type_id)->has('notificationDevices')->get();
         } else {
-            $users = \App\Models\User::where('type', \App\Enums\UserType::DIRECTOR)->where('company_id', $order->company_id)->has('notificationDevices')->get();
+            // $users = \App\Models\User::where('type', \App\Enums\UserType::DIRECTOR)->where('company_id', $order->company_id)->has('notificationDevices')->get();
+            $users = \App\Models\User::where('type', \App\Enums\UserType::DIRECTOR)->has('notificationDevices')->get();
         }
 
         // $message = 'Notification not sent to director';

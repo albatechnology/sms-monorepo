@@ -40,37 +40,60 @@ class AddAdditionalDiscount
         $order->approval_status = OrderApprovalStatus::WAITING_APPROVAL();
         $order->additional_discount_ratio = app(OrderService::class)->calculateOrderAdditionalDiscountRatio($order);
 
-        $productBrandIds = $order->raw_source['product_brand_ids'];
-        $storeLeader = $user->supervisor;
+        // $productBrandIds = $order->raw_source['product_brand_ids'];
+        // $storeLeader = $user->supervisor;
 
-        if (count($productBrandIds) > 1) {
-            $additional_discount_ratio = $order->additional_discount_ratio;
-            $storeLeaderLimitApprovals = $storeLeader->supervisorApprovalLimits->whereIn('product_brand_id', $order->raw_source['product_brand_ids'])->filter(function ($data) use ($additional_discount_ratio) {
-                return $data->limit >= $additional_discount_ratio;
-            });
+        // if (count($productBrandIds) > 1) {
+        //     $additional_discount_ratio = $order->additional_discount_ratio;
+        //     $storeLeaderLimitApprovals = $storeLeader->supervisorApprovalLimits->whereIn('product_brand_id', $order->raw_source['product_brand_ids'])->filter(function ($data) use ($additional_discount_ratio) {
+        //         return $data->limit >= $additional_discount_ratio;
+        //     });
 
-            if(count($storeLeaderLimitApprovals) > 0){
-                $approval_supervisor_type_id = 1;
-            } else {
-                $approval_supervisor_type_id = 2;
-            }
-        } else {
-            $productBrandId = $productBrandIds[0];
+        //     if(count($storeLeaderLimitApprovals) > 0){
+        //         $approval_supervisor_type_id = 1;
+        //     } else {
+        //         $approval_supervisor_type_id = 2;
+        //     }
+        // } else {
+        //     $productBrandId = $productBrandIds[0];
 
-            if(isset($productBrandId) && $productBrandId != null && $productBrandId != ''){
-                $storeLeaderLimitApproval = $storeLeader->supervisorApprovalLimits->first(fn ($data) => $data->product_brand_id == $productBrandId);
-                $approval_supervisor_type_id = 1;
+        //     if(isset($productBrandId) && $productBrandId != null && $productBrandId != ''){
+        //         $storeLeaderLimitApproval = $storeLeader->supervisorApprovalLimits->first(fn ($data) => $data->product_brand_id == $productBrandId);
+        //         $approval_supervisor_type_id = 1;
 
-                if ($order->additional_discount_ratio > $storeLeaderLimitApproval->limit) {
-                    $approval_supervisor_type_id = 2;
-                }
-            } else {
-                $approval_supervisor_type_id = 2;
-            }
+        //         if ($order->additional_discount_ratio > $storeLeaderLimitApproval->limit) {
+        //             $approval_supervisor_type_id = 2;
+        //         }
+        //     } else {
+        //         $approval_supervisor_type_id = 2;
+        //     }
+        // }
+
+        $supervisor = $user->supervisor ?? null;
+        if ($supervisor && (($supervisor->supervisorType?->discount_approval_limit_percentage ?? 0) >= $order->additional_discount_ratio)) {
+            $order->approval_supervisor_type_id = $supervisor->supervisor_type_id;
+            return $next($order);
         }
 
-        $order->approval_supervisor_type_id = $approval_supervisor_type_id;
+        $supervisor = $supervisor?->supervisor ?? null;
+        if ($supervisor && (($supervisor->supervisorType?->discount_approval_limit_percentage ?? 0) >= $order->additional_discount_ratio)) {
+            $order->approval_supervisor_type_id = $supervisor->supervisor_type_id;
+            return $next($order);
+        }
 
+        $supervisor = $supervisor?->supervisor ?? null;
+        if ($supervisor && (($supervisor->supervisorType?->discount_approval_limit_percentage ?? 0) >= $order->additional_discount_ratio)) {
+            $order->approval_supervisor_type_id = $supervisor->supervisor_type_id;
+            return $next($order);
+        }
+
+        $supervisor = $supervisor?->supervisor ?? null;
+        if ($supervisor && (($supervisor->supervisorType?->discount_approval_limit_percentage ?? 0) >= $order->additional_discount_ratio)) {
+            $order->approval_supervisor_type_id = $supervisor->supervisor_type_id;
+            return $next($order);
+        }
+
+        $order->approval_supervisor_type_id = 2;
         return $next($order);
     }
 }

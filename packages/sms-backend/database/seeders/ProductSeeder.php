@@ -32,7 +32,7 @@ class ProductSeeder extends Seeder
             'name' => 'Product Category 1'
         ]);
 
-        $productCategory = Product::create([
+        Product::create([
             'product_category_id' => $productCategory->id,
             'product_brand_id' => $productBrand->id,
             'brand_category_id' => $brandCategory->id,

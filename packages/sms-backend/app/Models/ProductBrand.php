@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Traits\Auditable;
 use App\Traits\CustomInteractsWithMedia;
-use App\Traits\IsCompanyTenanted;
+// use App\Traits\IsCompanyTenanted;
 use App\Traits\ProductListable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;

@@ -26,8 +26,8 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.supervisorType.fields.level_helper') }}</span>
             </div>
-            <x-input key='discount_approval_limit_percentage' :model='$supervisorType' type="number" required="0"></x-input>
-            {{-- <div class="form-group">
+            {{-- <x-input key='discount_approval_limit_percentage' :model='$supervisorType' type="number" required="0"></x-input> --}}
+            <div class="form-group">
                 <label>{{ trans('cruds.supervisorType.fields.discount_approval_limit_percentage') }}</label>
                 <span class="help-block">(percentage)</span>
                 <div class="table-responsive">
@@ -40,8 +40,8 @@
                         @endforeach
                     </table>
                 </div>
-            </div> --}}
-            {{-- <div class="form-group">
+            </div>
+            <div class="form-group">
                 <div class="form-check {{ $errors->has('can_assign_lead') ? 'is-invalid' : '' }}">
                     <input type="hidden" name="can_assign_lead" value="0">
                     <input class="form-check-input" type="checkbox" name="can_assign_lead" id="can_assign_lead" value="1" {{ $supervisorType->can_assign_lead || old('can_assign_lead', 0) === 1 ? 'checked' : '' }}>
@@ -51,7 +51,7 @@
                     <span class="text-danger">{{ $errors->first('can_assign_lead') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.supervisorType.fields.can_assign_lead_helper') }}</span>
-            </div> --}}
+            </div>
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}

@@ -15,18 +15,18 @@ use App\Events\OrderCancelled;
 use App\Events\OrderCreated;
 use App\Events\OrderDealReversal;
 use App\Events\OrderIsDeal;
-use App\Events\OrderPaymentDownPayment;
+// use App\Events\OrderPaymentDownPayment;
 use App\Events\OrderPaymentSettlement;
 use App\Interfaces\Discountable;
 use App\Interfaces\Reportable;
 use App\Interfaces\Tenanted;
-use App\Interfaces\Voucherable;
+// use App\Interfaces\Voucherable;
 use App\Services\OrderService;
 use App\Traits\Auditable;
-use App\Traits\IsCompanyTenanted;
+// use App\Traits\IsCompanyTenanted;
 use App\Traits\IsDiscountable;
 use App\Traits\IsTenanted;
-use App\Traits\IsVoucherable;
+// use App\Traits\IsVoucherable;
 use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,14 +36,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 
-use function PHPUnit\Framework\returnSelf;
-
 /**
  * @mixin IdeHelperOrder
  */
-class Order extends BaseModel implements Tenanted, Discountable, Reportable, Voucherable
+class Order extends BaseModel implements Tenanted, Discountable, Reportable
 {
-    use SoftDeletes, Auditable, IsTenanted, IsDiscountable, IsVoucherable;
+    use SoftDeletes, Auditable, IsTenanted, IsDiscountable;
 
     public $table = 'orders';
 
@@ -57,7 +55,6 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable, Vou
         'raw_source',
         'note',
         'channel_id',
-        'interior_design_id',
         'discount_error',
         'payment_status',
         'approval_status',
@@ -97,7 +94,6 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable, Vou
         'customer_id'               => 'integer',
         'company_id'                => 'integer',
         'channel_id'                => 'integer',
-        'interior_design_id'        => 'integer',
         'activity_id'               => 'integer',
         'tax_invoice_sent'          => 'integer',
         'additional_discount'       => 'integer',
@@ -166,10 +162,10 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable, Vou
         return $this->belongsTo(Company::class);
     }
 
-    public function interiorDesign(): BelongsTo
-    {
-        return $this->belongsTo(InteriorDesign::class);
-    }
+    // public function interiorDesign(): BelongsTo
+    // {
+    //     return $this->belongsTo(InteriorDesign::class);
+    // }
 
     public function orderOrderTrackings(): HasMany
     {
@@ -186,15 +182,15 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable, Vou
         return $this->hasMany(OrderDetail::class, 'order_id', 'id');
     }
 
-    public function order_discounts(): HasMany
-    {
-        return $this->hasMany(OrderDiscount::class, 'order_id', 'id');
-    }
+    // public function order_discounts(): HasMany
+    // {
+    //     return $this->hasMany(OrderDiscount::class, 'order_id', 'id');
+    // }
 
-    public function orderVouchers(): HasMany
-    {
-        return $this->hasMany(OrderVoucher::class, 'order_id', 'id');
-    }
+    // public function orderVouchers(): HasMany
+    // {
+    //     return $this->hasMany(OrderVoucher::class, 'order_id', 'id');
+    // }
 
     public function orderShipments()
     {

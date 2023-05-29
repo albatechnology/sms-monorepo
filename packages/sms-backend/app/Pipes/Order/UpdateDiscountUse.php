@@ -16,13 +16,13 @@ class UpdateDiscountUse
 {
     public function handle(Order $order, Closure $next)
     {
-        // if ($order->getDiscount()) {
-        //     OrderService::recordDiscountUse($order);
-        // }
-
-        if ($order->getOrderDiscounts()) {
-            OrderService::recordDiscountsUse($order);
+        if ($order->getDiscount()) {
+            OrderService::recordDiscountUse($order);
         }
+
+        // if ($order->getOrderDiscounts()) {
+        //     OrderService::recordDiscountsUse($order);
+        // }
 
         return $next($order);
     }

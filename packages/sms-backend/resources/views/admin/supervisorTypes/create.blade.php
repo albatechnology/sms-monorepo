@@ -25,8 +25,8 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.supervisorType.fields.level_helper') }}</span>
             </div>
-            {{-- <x-input key='discount_approval_limit_percentage' :model='app(\App\Models\SupervisorType::class)' type="number" required="0"></x-input> --}}
-            <div class="form-group">
+            <x-input key='discount_approval_limit_percentage' :model='app(\App\Models\SupervisorType::class)' type="number" required="0"></x-input>
+            {{-- <div class="form-group">
                 <label>{{ trans('cruds.supervisorType.fields.discount_approval_limit_percentage') }}</label>
                 <span class="help-block">(percentage)</span>
                 <div class="table-responsive">
@@ -51,7 +51,7 @@
                 @endif
 
                 <span class="help-block">{{ trans('cruds.supervisorType.fields.can_assign_lead_helper') }}</span>
-            </div>
+            </div> --}}
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}

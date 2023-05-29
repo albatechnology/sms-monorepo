@@ -30,12 +30,7 @@
                     <th>
                         {{ trans('cruds.customer.fields.title') }}
                     </th>
-                    <th>
-                        {{ trans('cruds.customer.fields.first_name') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.customer.fields.last_name') }}
-                    </th>
+                    <th>Name</th>
                     <th>
                         {{ trans('cruds.customer.fields.email') }}
                     </th>
@@ -75,18 +70,12 @@
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
                     </td>
                 </tr>
                 </thead>
             </table>
         </div>
     </div>
-
-
-
 @endsection
 @section('scripts')
     @parent
@@ -136,10 +125,8 @@
                 columns: [
                     {data: 'placeholder', name: 'placeholder'},
                     {data: 'id', name: 'id'},
-                    {data: 'orlan_customer_id', name: 'orlan_customer_id'},
                     {data: 'title', name: 'title'},
-                    {data: 'first_name', name: 'first_name'},
-                    {data: 'last_name', name: 'last_name'},
+                    {data: 'name', name: 'name'},
                     {data: 'email', name: 'email'},
                     {data: 'phone', name: 'phone'},
                     {data: 'description', name: 'description'},

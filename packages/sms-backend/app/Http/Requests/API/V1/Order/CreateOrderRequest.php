@@ -23,7 +23,7 @@ class CreateOrderRequest extends BaseApiRequest
                 Schema::object()->properties(
                     Schema::integer('id')->example(1)->description('The product id to add to cart'),
                     Schema::integer('quantity')->example(1),
-                    Schema::boolean('is_ready')->example(1),
+                    // Schema::boolean('is_ready')->example(1),
                     // Schema::string('location_id')
                 ),
             ),
@@ -63,11 +63,11 @@ class CreateOrderRequest extends BaseApiRequest
         return [
             'items'            => 'nullable|array',
             // 'items.*.location_id' => 'nullable|exists:locations,orlan_id',
-            'items.*.is_ready' => 'nullable|boolean',
+            // 'items.*.is_ready' => 'nullable|boolean',
             'items.*.id'       => [
                 Rule::requiredIf(!empty(request()->input('items'))),
                 function ($attribute, $value, $fail) {
-                    $unit = Product::tenanted()->whereActive()->where('id', $value)->first();
+                    $unit = Product::whereActive()->where('id', $value)->first();
                     if (!$unit) {
                         $fail('Invalid or inactive product unit.');
                         return;

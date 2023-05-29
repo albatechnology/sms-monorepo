@@ -21,19 +21,19 @@ class CreateLeadRequest extends BaseApiRequest
             Schema::boolean('is_unhandled')->nullable()->example(true),
             Schema::integer('lead_category_id')->example(1),
             Schema::string('interest')->example('Lagi Pengen LazyBoy'),
-            Schema::integer('user_referral_id')->example(1),
+            // Schema::integer('user_referral_id')->example(1),
             Schema::integer('channel_id')->example(1)->nullable(),
 
             Schema::array('product_brand_ids')->items(
                 Schema::integer('id')->example(1)->description('Product brand id'),
             )->nullable(),
 
-            Schema::array('vouchers')->items(
-                Schema::object()->properties(
-                    Schema::string('id')->example("GratisOngkir")->description('Voucher id'),
-                    Schema::integer('value')->example(1000000)->description('Voucher value in nominal'),
-                ),
-            )->nullable(),
+            // Schema::array('vouchers')->items(
+            //     Schema::object()->properties(
+            //         Schema::string('id')->example("GratisOngkir")->description('Voucher id'),
+            //         Schema::integer('value')->example(1000000)->description('Voucher value in nominal'),
+            //     ),
+            // )->nullable(),
         ];
 
         // $channelIdValidation = 'nullable|exists:channels,id';
@@ -85,13 +85,13 @@ class CreateLeadRequest extends BaseApiRequest
             'is_unhandled' => 'nullable|boolean',
             'lead_category_id' => 'required|exists:lead_categories,id',
             'interest' => 'nullable',
-            'user_referral_id' => 'nullable|exists:users,id',
+            // 'user_referral_id' => 'nullable|exists:users,id',
             'channel_id' => 'nullable|exists:channels,id',
             'product_brand_ids' => 'nullable|array',
             'product_brand_ids.*' => 'exists:product_brands,id',
-            'vouchers' => 'nullable|array',
-            'vouchers.*.id' => 'string',
-            'vouchers.*.value' => 'integer',
+            // 'vouchers' => 'nullable|array',
+            // 'vouchers.*.id' => 'string',
+            // 'vouchers.*.value' => 'integer',
         ];
     }
 

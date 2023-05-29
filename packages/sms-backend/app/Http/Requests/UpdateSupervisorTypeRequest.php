@@ -25,16 +25,22 @@ class UpdateSupervisorTypeRequest extends FormRequest
                 'min:1',
                 'max:2147483647',
             ],
-            'discount_approval_limit_percentage.*' => [
+            'discount_approval_limit_percentage' => [
                 'required',
                 'integer',
                 'min:0',
                 'max:100',
             ],
-            'can_assign_lead' => [
-                'nullable',
-                'boolean'
-            ]
+            // 'discount_approval_limit_percentage.*' => [
+            //     'required',
+            //     'integer',
+            //     'min:0',
+            //     'max:100',
+            // ],
+            // 'can_assign_lead' => [
+            //     'nullable',
+            //     'boolean'
+            // ]
         ];
     }
 }

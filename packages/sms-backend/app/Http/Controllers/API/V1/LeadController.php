@@ -169,6 +169,7 @@ class LeadController extends BaseApiController
     #[CustomOpenApi\ErrorResponse(exception: SalesOnlyActionException::class)]
     public function store(CreateLeadRequest $request): LeadWithLatestActivityResource
     {
+        // dd($request->all());
         $user = user();
         $data = array_merge($request->validated(), [
             'channel_id' => $user->type->is(UserType::SALES) ? $user->channel_id : ($request->validated()['channel_id'] ?? null),
@@ -178,7 +179,7 @@ class LeadController extends BaseApiController
         ]);
 
         $productBrandIds = $request->product_brand_ids ?? null;
-        $productBrands = ProductBrand::tenanted()->where(function ($q) use ($productBrandIds) {
+        $productBrands = ProductBrand::where(function ($q) use ($productBrandIds) {
             if (!is_null($productBrandIds)) $q->whereIn('id', $productBrandIds);
         })->pluck('name', 'id');
 
@@ -204,9 +205,9 @@ class LeadController extends BaseApiController
         if (!is_null($lead->channel_id)) $lead->queueStatusChange();
         $lead->refresh()->loadMissing(self::load_relation);
 
-        if ($request->vouchers && count($request->vouchers) > 0) {
-            CoreService::createAndAssignVoucher(Customer::findOrFail($request->customer_id), $request->vouchers, $lead?->channel?->company_id ?? $user->company_id);
-        }
+        // if ($request->vouchers && count($request->vouchers) > 0) {
+        //     CoreService::createAndAssignVoucher(Customer::findOrFail($request->customer_id), $request->vouchers, $lead?->channel?->company_id ?? $user->company_id);
+        // }
 
         return $this->show($lead);
     }

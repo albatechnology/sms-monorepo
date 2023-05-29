@@ -33,20 +33,19 @@ class FillOrderAttributes
 
         $order->note                           = $order->raw_source['note'] ?? null;
         $order->lead_id                        = $order->raw_source['lead_id'];
-        $order->shipping_fee                   = $order->raw_source['shipping_fee'] ?? 0;
-        $order->packing_fee                    = $order->raw_source['packing_fee'] ?? 0;
-        $order->additional_discount            = $order->raw_source['additional_discount'] ?? 0;
+        $order->shipping_fee                   = (int) $order->raw_source['shipping_fee'] ?? 0;
+        $order->packing_fee                    = (int) $order->raw_source['packing_fee'] ?? 0;
+        $order->additional_discount            = (int) $order->raw_source['additional_discount'] ?? 0;
         $order->expected_shipping_datetime     = $order->raw_source['expected_shipping_datetime'] ?? null;
         $order->quotation_valid_until_datetime = $order->raw_source['quotation_valid_until_datetime'] ?? now()->addMinutes(config('quotation_valid_for_minutes'));
         $order->user_id                        = $user->id;
         $order->customer_id                    = Lead::findOrFail($order->raw_source['lead_id'])->customer_id;
         $order->channel_id                     = $user->channel_id;
         // $order->company_id                     = $user->company_id;
-        $order->interior_design_id             = $order->raw_source['interior_design_id'] ?? null;
         $order->sum_total_discount             = 0;
         $order->total_discount                 = 0;
         // $order->sum_total_voucher             = 0;
-        $order->total_voucher                 = 0;
+        // $order->total_voucher                 = 0;
         $order->status                         = OrderStatus::QUOTATION();
         $order->stock_status                   = OrderStockStatus::INDENT();
         $order->approval_status                = OrderApprovalStatus::NOT_REQUIRED();

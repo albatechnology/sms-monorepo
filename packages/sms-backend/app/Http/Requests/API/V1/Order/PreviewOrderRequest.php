@@ -23,13 +23,13 @@ class PreviewOrderRequest extends BaseApiRequest
                 Schema::object()->properties(
                     Schema::integer('id')->example(1)->description('The product unit id to add to cart'),
                     Schema::integer('quantity')->example(1),
-                    Schema::boolean('is_ready')->example(1),
+                    // Schema::boolean('is_ready')->example(1),
                     // Schema::string('location_id')
                 ),
             ),
-            Schema::array('voucher_ids')->example(['GratisOngkir', 'Clearance', 'CuciGudang']),
-            Schema::array('discount_ids')->example([1, 2, 3]),
-            // Schema::integer('discount_id')->example(1),
+            // Schema::array('voucher_ids')->example(['GratisOngkir', 'Clearance', 'CuciGudang']),
+            // Schema::array('discount_ids')->example([1, 2, 3]),
+            Schema::integer('discount_id')->example(1),
             Schema::integer('interior_design_id')->example(1),
             Schema::integer('expected_price')
                 ->example(1000)
@@ -67,7 +67,7 @@ class PreviewOrderRequest extends BaseApiRequest
             'items.*.id'       => [
                 Rule::requiredIf(!empty(request()->input('items'))),
                 function ($attribute, $value, $fail) {
-                    $unit = Product::tenanted()->whereActive()->where('id', $value)->first();
+                    $unit = Product::whereActive()->where('id', $value)->first();
                     if (!$unit) {
                         $fail('Invalid or inactive product unit.');
                         return;
@@ -85,10 +85,11 @@ class PreviewOrderRequest extends BaseApiRequest
                 }
             ],
             'items.*.quantity' => [Rule::requiredIf(!empty(request()->input('items'))), 'integer', 'min:1'],
-            'voucher_ids' => 'nullable|array',
-            'voucher_ids.*' => 'string|exists:vouchers,id',
-            'discount_ids' => 'nullable|array',
-            'discount_ids.*' => 'integer|exists:discounts,id',
+            // 'voucher_ids' => 'nullable|array',
+            // 'voucher_ids.*' => 'string|exists:vouchers,id',
+            'discount_id' => 'nullable|exists:discounts,id',
+            // 'discount_ids' => 'nullable|array',
+            // 'discount_ids.*' => 'integer|exists:discounts,id',
             'interior_design_id'      => 'nullable|integer|exists:interior_designs,id',
             'expected_price'      => 'nullable|integer',
             'shipping_address_id' => [

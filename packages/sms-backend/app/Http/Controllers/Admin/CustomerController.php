@@ -53,12 +53,12 @@ class CustomerController extends Controller
             $table->editColumn('title', function ($row) {
                 return $row->title?->key ?? '';
             });
-            $table->editColumn('first_name', function ($row) {
-                return $row->first_name ? $row->first_name : "";
-            });
-            $table->editColumn('last_name', function ($row) {
-                return $row->last_name ? $row->last_name : "";
-            });
+            // $table->editColumn('first_name', function ($row) {
+            //     return $row->first_name ? $row->first_name : "";
+            // });
+            // $table->editColumn('last_name', function ($row) {
+            //     return $row->last_name ? $row->last_name : "";
+            // });
             $table->editColumn('email', function ($row) {
                 return $row->email ? $row->email : "";
             });

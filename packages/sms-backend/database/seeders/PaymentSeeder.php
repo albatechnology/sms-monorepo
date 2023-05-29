@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Payment;
 use App\Models\PaymentCategory;
 use App\Models\PaymentType;
 use Illuminate\Database\Seeder;

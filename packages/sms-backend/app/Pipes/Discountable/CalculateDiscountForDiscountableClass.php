@@ -25,7 +25,7 @@ class CalculateDiscountForDiscountableClass
         if (!$discount = $discountable->getDiscount()) return $next($discountable);
 
         if ($discount->applyToOrder()) {
-            $discountable->setSumTotalDiscount(OrderService::calculateTotalDiscount($discountable, $discount));
+            // $discountable->setSumTotalDiscount(OrderService::calculateTotalDiscount($discountable, $discount));
             $discountable->setTotalDiscount(OrderService::calculateTotalDiscount($discountable, $discount));
             $discountable->setTotalPrice($discountable->getTotalPrice() - $discountable->getTotalDiscount());
         }

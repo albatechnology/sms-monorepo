@@ -30,7 +30,7 @@ class OrderResource extends BaseResource
             ResourceData::make('orlan_tr_no', Schema::TYPE_STRING, '125SSMV22093408')->nullable(),
             ResourceData::make('original_price', Schema::TYPE_INTEGER, 1),
             ResourceData::make('total_discount', Schema::TYPE_INTEGER, 1),
-            ResourceData::make('total_voucher', Schema::TYPE_INTEGER, 1),
+            // ResourceData::make('total_voucher', Schema::TYPE_INTEGER, 1),
             ResourceData::make('total_price', Schema::TYPE_INTEGER, 1),
             ResourceData::make('shipping_fee', Schema::TYPE_INTEGER, 0),
             ResourceData::make('packing_fee', Schema::TYPE_INTEGER, 0),
@@ -99,7 +99,7 @@ class OrderResource extends BaseResource
             ResourceData::makeRelationship('billing_address', BaseAddressResource::class, null, fn ($q) => $q->records['billing_address']),
             ResourceData::makeRelationship('shipping_address', BaseAddressResource::class, null, fn ($q) => $q->records['shipping_address']),
             // ResourceData::makeRelationship('discount', BaseDiscountResource::class, null, fn ($q) => $q->records['discount'] ?? new MissingValue()),
-            ResourceData::makeRelationshipCollection('order_discounts', OrderDiscountResource::class),
+            // ResourceData::makeRelationshipCollection('order_discounts', OrderDiscountResource::class),
             // TODO: TAX invoice resource
 
             ResourceData::make('expected_shipping_datetime', Schema::TYPE_STRING, ApiDataExample::TIMESTAMP)->nullable(),
