@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Payment;
+use App\Models\PaymentCategory;
+use App\Models\PaymentType;
 use Illuminate\Database\Seeder;
 
 class PaymentSeeder extends Seeder
@@ -14,7 +16,14 @@ class PaymentSeeder extends Seeder
      */
     public function run()
     {
-        //
-        Payment::factory()->count(15)->create();
+        $paymentCategory = PaymentCategory::create([
+            'name' => 'Transfer'
+        ]);
+
+        PaymentType::create([
+            'payment_category_id' => $paymentCategory->id,
+            'name' => 'BCA Prioritas',
+        ]);
+        // Payment::factory()->count(15)->create();
     }
 }

@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             RoleUserTableSeeder::class,
 
             ProductSeeder::class,
+            LeadSeeder::class,
+            PaymentSeeder::class,
 
             // Ensure non empty company
             // DefaultCompanySeeder::class,
