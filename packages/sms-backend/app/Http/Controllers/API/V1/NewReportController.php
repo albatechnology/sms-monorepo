@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\DB;
 
 class NewReportController extends BaseApiController
 {
-    protected function getDates($start_date, $end_date){
+    protected function getDates($start_date, $end_date)
+    {
         $startTargetDate = Carbon::createFromFormat('Y-m-d', $start_date)->startOfMonth();
         $endTargetDate = Carbon::createFromFormat('Y-m-d', $end_date)->endOfMonth();
 
@@ -309,20 +310,20 @@ class NewReportController extends BaseApiController
                         if ($channelId) $q->where('channel_id', $channelId);
                     }
                 ], 'total_price');
-                // ->withSum([
-                //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                //         $q->whereDeal($startDate, $endDate)
-                //             ->whereNotNull('interior_design_id');
-                //         if ($channelId) $q->where('channel_id', $channelId);
-                //     }
-                // ], 'total_price')
-                // ->withCount([
-                //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                //         $q->whereDeal($startDate, $endDate)
-                //             ->whereNotNull('interior_design_id');
-                //         if ($channelId) $q->where('channel_id', $channelId);
-                //     }
-                // ], 'total_price');
+            // ->withSum([
+            //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+            //         $q->whereDeal($startDate, $endDate)
+            //             ->whereNotNull('interior_design_id');
+            //         if ($channelId) $q->where('channel_id', $channelId);
+            //     }
+            // ], 'total_price')
+            // ->withCount([
+            //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+            //         $q->whereDeal($startDate, $endDate)
+            //             ->whereNotNull('interior_design_id');
+            //         if ($channelId) $q->where('channel_id', $channelId);
+            //     }
+            // ], 'total_price');
 
             $result = $query->get();
 
@@ -592,20 +593,20 @@ class NewReportController extends BaseApiController
                         if ($channelId) $q->where('channel_id', $channelId);
                     }
                 ], 'total_price');
-                // ->withSum([
-                //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                //         $q->whereDeal($startDate, $endDate)
-                //             ->whereNotNull('interior_design_id');
-                //         if ($channelId) $q->where('channel_id', $channelId);
-                //     }
-                // ], 'total_price')
-                // ->withCount([
-                //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                //         $q->whereDeal($startDate, $endDate)
-                //             ->whereNotNull('interior_design_id');
-                //         if ($channelId) $q->where('channel_id', $channelId);
-                //     }
-                // ], 'total_price');
+            // ->withSum([
+            //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+            //         $q->whereDeal($startDate, $endDate)
+            //             ->whereNotNull('interior_design_id');
+            //         if ($channelId) $q->where('channel_id', $channelId);
+            //     }
+            // ], 'total_price')
+            // ->withCount([
+            //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+            //         $q->whereDeal($startDate, $endDate)
+            //             ->whereNotNull('interior_design_id');
+            //         if ($channelId) $q->where('channel_id', $channelId);
+            //     }
+            // ], 'total_price');
 
             $result = $query->get();
 
@@ -874,20 +875,20 @@ class NewReportController extends BaseApiController
                     if ($channelId) $q->where('channel_id', $channelId);
                 }
             ], 'total_price');
-            // ->withSum([
-            //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-            //         $q->whereDeal($startDate, $endDate)
-            //             ->whereNotNull('interior_design_id');
-            //         if ($channelId) $q->where('channel_id', $channelId);
-            //     }
-            // ], 'total_price')
-            // ->withCount([
-            //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-            //         $q->whereDeal($startDate, $endDate)
-            //             ->whereNotNull('interior_design_id');
-            //         if ($channelId) $q->where('channel_id', $channelId);
-            //     }
-            // ], 'total_price');
+        // ->withSum([
+        //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+        //         $q->whereDeal($startDate, $endDate)
+        //             ->whereNotNull('interior_design_id');
+        //         if ($channelId) $q->where('channel_id', $channelId);
+        //     }
+        // ], 'total_price')
+        // ->withCount([
+        //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+        //         $q->whereDeal($startDate, $endDate)
+        //             ->whereNotNull('interior_design_id');
+        //         if ($channelId) $q->where('channel_id', $channelId);
+        //     }
+        // ], 'total_price');
 
         $result = $query->first();
 
@@ -1159,20 +1160,20 @@ class NewReportController extends BaseApiController
                                         if ($channelId) $q->where('channel_id', $channelId);
                                     }
                                 ], 'total_price');
-                                // ->withSum([
-                                //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                                //         $q->whereDeal($startDate, $endDate)
-                                //             ->whereNotNull('interior_design_id');
-                                //         if ($channelId) $q->where('channel_id', $channelId);
-                                //     }
-                                // ], 'total_price')
-                                // ->withCount([
-                                //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                                //         $q->whereDeal($startDate, $endDate)
-                                //             ->whereNotNull('interior_design_id');
-                                //         if ($channelId) $q->where('channel_id', $channelId);
-                                //     }
-                                // ], 'total_price');
+                            // ->withSum([
+                            //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                            //         $q->whereDeal($startDate, $endDate)
+                            //             ->whereNotNull('interior_design_id');
+                            //         if ($channelId) $q->where('channel_id', $channelId);
+                            //     }
+                            // ], 'total_price')
+                            // ->withCount([
+                            //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                            //         $q->whereDeal($startDate, $endDate)
+                            //             ->whereNotNull('interior_design_id');
+                            //         if ($channelId) $q->where('channel_id', $channelId);
+                            //     }
+                            // ], 'total_price');
                         }]);
 
                     if ($channelId) {
@@ -1576,20 +1577,20 @@ class NewReportController extends BaseApiController
                                 $q->whereDeal($startDateCompare, $endDateCompare);
                             }
                         ], 'total_price');
-                        // ->withSum([
-                        //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                        //         $q->whereDeal($startDate, $endDate)
-                        //             ->whereNotNull('interior_design_id');
-                        //         if ($channelId) $q->where('channel_id', $channelId);
-                        //     }
-                        // ], 'total_price')
-                        // ->withCount([
-                        //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                        //         $q->whereDeal($startDate, $endDate)
-                        //             ->whereNotNull('interior_design_id');
-                        //         if ($channelId) $q->where('channel_id', $channelId);
-                        //     }
-                        // ], 'total_price');
+                    // ->withSum([
+                    //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                    //         $q->whereDeal($startDate, $endDate)
+                    //             ->whereNotNull('interior_design_id');
+                    //         if ($channelId) $q->where('channel_id', $channelId);
+                    //     }
+                    // ], 'total_price')
+                    // ->withCount([
+                    //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                    //         $q->whereDeal($startDate, $endDate)
+                    //             ->whereNotNull('interior_design_id');
+                    //         if ($channelId) $q->where('channel_id', $channelId);
+                    //     }
+                    // ], 'total_price');
                 }]);
 
                 if ($request->name) {
@@ -1968,20 +1969,20 @@ class NewReportController extends BaseApiController
                             $q->whereDeal($startDateCompare, $endDateCompare);
                         }
                     ], 'total_price');
-                    // ->withSum([
-                    //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                    //         $q->whereDeal($startDate, $endDate)
-                    //             ->whereNotNull('interior_design_id');
-                    //         if ($channelId) $q->where('channel_id', $channelId);
-                    //     }
-                    // ], 'total_price')
-                    // ->withCount([
-                    //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                    //         $q->whereDeal($startDate, $endDate)
-                    //             ->whereNotNull('interior_design_id');
-                    //         if ($channelId) $q->where('channel_id', $channelId);
-                    //     }
-                    // ], 'total_price');
+                // ->withSum([
+                //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                //         $q->whereDeal($startDate, $endDate)
+                //             ->whereNotNull('interior_design_id');
+                //         if ($channelId) $q->where('channel_id', $channelId);
+                //     }
+                // ], 'total_price')
+                // ->withCount([
+                //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                //         $q->whereDeal($startDate, $endDate)
+                //             ->whereNotNull('interior_design_id');
+                //         if ($channelId) $q->where('channel_id', $channelId);
+                //     }
+                // ], 'total_price');
 
                 if ($channelId) {
                     $query = $query->where('id', $channelId);
@@ -2322,20 +2323,20 @@ class NewReportController extends BaseApiController
                         $q->whereDeal($startDateCompare, $endDateCompare);
                     }
                 ], 'total_price');
-                // ->withSum([
-                //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                //         $q->whereDeal($startDate, $endDate)
-                //             ->whereNotNull('interior_design_id');
-                //         if ($channelId) $q->where('channel_id', $channelId);
-                //     }
-                // ], 'total_price')
-                // ->withCount([
-                //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                //         $q->whereDeal($startDate, $endDate)
-                //             ->whereNotNull('interior_design_id');
-                //         if ($channelId) $q->where('channel_id', $channelId);
-                //     }
-                // ], 'total_price');
+            // ->withSum([
+            //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+            //         $q->whereDeal($startDate, $endDate)
+            //             ->whereNotNull('interior_design_id');
+            //         if ($channelId) $q->where('channel_id', $channelId);
+            //     }
+            // ], 'total_price')
+            // ->withCount([
+            //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+            //         $q->whereDeal($startDate, $endDate)
+            //             ->whereNotNull('interior_design_id');
+            //         if ($channelId) $q->where('channel_id', $channelId);
+            //     }
+            // ], 'total_price');
 
             if ($request->name) {
                 $query = $query->where('name', 'like', '%' . $request->name . '%');
@@ -2646,20 +2647,20 @@ class NewReportController extends BaseApiController
                             $q->whereDeal($startDateCompare, $endDateCompare);
                         }
                     ], 'total_price');
-                    // ->withSum([
-                    //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                    //         $q->whereDeal($startDate, $endDate)
-                    //             ->whereNotNull('interior_design_id');
-                    //         if ($channelId) $q->where('channel_id', $channelId);
-                    //     }
-                    // ], 'total_price')
-                    // ->withCount([
-                    //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                    //         $q->whereDeal($startDate, $endDate)
-                    //             ->whereNotNull('interior_design_id');
-                    //         if ($channelId) $q->where('channel_id', $channelId);
-                    //     }
-                    // ], 'total_price');
+                // ->withSum([
+                //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                //         $q->whereDeal($startDate, $endDate)
+                //             ->whereNotNull('interior_design_id');
+                //         if ($channelId) $q->where('channel_id', $channelId);
+                //     }
+                // ], 'total_price')
+                // ->withCount([
+                //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                //         $q->whereDeal($startDate, $endDate)
+                //             ->whereNotNull('interior_design_id');
+                //         if ($channelId) $q->where('channel_id', $channelId);
+                //     }
+                // ], 'total_price');
 
                 if ($channelId) {
                     $query = $query->where('id', $channelId);
@@ -3019,20 +3020,20 @@ class NewReportController extends BaseApiController
                                 $q->whereDeal($startDateCompare, $endDateCompare);
                             }
                         ], 'total_price');
-                        // ->withSum([
-                        //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                        //         $q->whereDeal($startDate, $endDate)
-                        //             ->whereNotNull('interior_design_id');
-                        //         if ($channelId) $q->where('channel_id', $channelId);
-                        //     }
-                        // ], 'total_price')
-                        // ->withCount([
-                        //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                        //         $q->whereDeal($startDate, $endDate)
-                        //             ->whereNotNull('interior_design_id');
-                        //         if ($channelId) $q->where('channel_id', $channelId);
-                        //     }
-                        // ], 'total_price');
+                    // ->withSum([
+                    //     'channelOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                    //         $q->whereDeal($startDate, $endDate)
+                    //             ->whereNotNull('interior_design_id');
+                    //         if ($channelId) $q->where('channel_id', $channelId);
+                    //     }
+                    // ], 'total_price')
+                    // ->withCount([
+                    //     'channelOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                    //         $q->whereDeal($startDate, $endDate)
+                    //             ->whereNotNull('interior_design_id');
+                    //         if ($channelId) $q->where('channel_id', $channelId);
+                    //     }
+                    // ], 'total_price');
                 }]);
 
                 if ($request->name) {
@@ -3350,20 +3351,20 @@ class NewReportController extends BaseApiController
                                 $q->whereDeal($startDateCompare, $endDateCompare);
                             }
                         ], 'total_price');
-                        // ->withSum([
-                        //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-                        //         $q->whereDeal($startDate, $endDate)
-                        //             ->whereNotNull('interior_design_id');
-                        //         if ($channelId) $q->where('channel_id', $channelId);
-                        //     }
-                        // ], 'total_price')
-                        // ->withCount([
-                        //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-                        //         $q->whereDeal($startDate, $endDate)
-                        //             ->whereNotNull('interior_design_id');
-                        //         if ($channelId) $q->where('channel_id', $channelId);
-                        //     }
-                        // ], 'total_price');
+                    // ->withSum([
+                    //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+                    //         $q->whereDeal($startDate, $endDate)
+                    //             ->whereNotNull('interior_design_id');
+                    //         if ($channelId) $q->where('channel_id', $channelId);
+                    //     }
+                    // ], 'total_price')
+                    // ->withCount([
+                    //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+                    //         $q->whereDeal($startDate, $endDate)
+                    //             ->whereNotNull('interior_design_id');
+                    //         if ($channelId) $q->where('channel_id', $channelId);
+                    //     }
+                    // ], 'total_price');
                 }]);
 
             if ($channelId) {
@@ -3663,20 +3664,20 @@ class NewReportController extends BaseApiController
                     $q->whereDeal($startDateCompare, $endDateCompare);
                 }
             ], 'total_price');
-            // ->withSum([
-            //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
-            //         $q->whereDeal($startDate, $endDate)
-            //             ->whereNotNull('interior_design_id');
-            //         if ($channelId) $q->where('channel_id', $channelId);
-            //     }
-            // ], 'total_price')
-            // ->withCount([
-            //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
-            //         $q->whereDeal($startDate, $endDate)
-            //             ->whereNotNull('interior_design_id');
-            //         if ($channelId) $q->where('channel_id', $channelId);
-            //     }
-            // ], 'total_price');
+        // ->withSum([
+        //     'userOrders as interior_design' => function ($q) use ($channelId, $startDate, $endDate) {
+        //         $q->whereDeal($startDate, $endDate)
+        //             ->whereNotNull('interior_design_id');
+        //         if ($channelId) $q->where('channel_id', $channelId);
+        //     }
+        // ], 'total_price')
+        // ->withCount([
+        //     'userOrders as interior_design_total_transaction' => function ($q) use ($channelId, $startDate, $endDate) {
+        //         $q->whereDeal($startDate, $endDate)
+        //             ->whereNotNull('interior_design_id');
+        //         if ($channelId) $q->where('channel_id', $channelId);
+        //     }
+        // ], 'total_price');
 
         $result = $query->where('id', $user->id)->first();
         $pbs = $this->getPbs($result, $startDate, $endDate, $startDateCompare, $endDateCompare, $channelId, $companyId);
@@ -3774,7 +3775,7 @@ class NewReportController extends BaseApiController
             $query = $query->whereHas('orderPayments', fn ($q2) => $q2->where('status', '<>', 2))
                 ->whereNotIn('orders.payment_status', [5])
                 ->whereDealAtRange($startDate, $endDate);
-                // ->whereNull('orders.interior_design_id');
+            // ->whereNull('orders.interior_design_id');
         } else {
             // quotation
             $query = $query->whereCreatedAtRange($startDate, $endDate)
@@ -4154,7 +4155,6 @@ class NewReportController extends BaseApiController
             $target_brands = DB::table('new_targets')->where('model_type', 'channel')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
             // $salesIds = User::where('channel_id', $user->id)->where('type', 2)->pluck('id')->all();
             $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
-                ->where('show_in_moves', 1)
                 ->with(['activityBrandValues' => function ($q) use ($id, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate)
                         // ->whereIn('user_id', $salesIds)
@@ -4180,7 +4180,6 @@ class NewReportController extends BaseApiController
             $companyIds = [$companyId] ?? $user->companies->pluck('id')->all() ?? [];
 
             $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
-                ->where('show_in_moves', 1)
                 ->with(['activityBrandValues' => function ($q) use ($filterChannelId, $companyIds, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate)
                         // ->where('user_id', $id)
@@ -4208,7 +4207,6 @@ class NewReportController extends BaseApiController
             $channelIds = $user->channels->pluck('id')->all();
 
             $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
-                ->where('show_in_moves', 1)
                 ->with(['activityBrandValues' => function ($q) use ($filterChannelId, $channelIds, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate)
                         // ->where('user_id', $id)
@@ -4234,7 +4232,6 @@ class NewReportController extends BaseApiController
             $target_brands = DB::table('new_targets')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
 
             $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
-                ->where('show_in_moves', 1)
                 ->with(['activityBrandValues' => function ($q) use ($id, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate)
                         ->where('user_id', $id)
@@ -4294,7 +4291,7 @@ class NewReportController extends BaseApiController
 
     public function getPbs($user, $startDate, $endDate, $startDateCompare, $endDateCompare, $filterChannelId = null, $companyId = null)
     {
-        $query = ProductBrand::selectRaw('id')->where('show_in_moves', 1);
+        $query = ProductBrand::selectRaw('id');
         if ($user instanceof Channel) {
             $query = $query->with(['activityBrandValues' => function ($q) use ($user, $filterChannelId, $startDate, $endDate) {
                 $q->whereHas('lead', fn ($q2) => $q2->where('channel_id', $user->id));
@@ -4432,7 +4429,6 @@ class NewReportController extends BaseApiController
 
     //     if ($user instanceof Channel) {
     //         $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
-    //             ->where('show_in_moves', 1)
     //             ->with(['activityBrandValues' => function ($q) use ($id, $startDate, $endDate) {
     //                 $q->whereCreatedAtRange($startDate, $endDate)
     //                     // ->where('user_id', $id)
@@ -4453,7 +4449,6 @@ class NewReportController extends BaseApiController
     //         $companyIds = [$companyId] ?? $user->companies->pluck('id')->all() ?? [];
 
     //         $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
-    //             ->where('show_in_moves', 1)
     //             ->with(['activityBrandValues' => function ($q) use ($filterChannelId, $companyIds, $startDate, $endDate) {
     //                 $q->whereCreatedAtRange($startDate, $endDate)
     //                     // ->where('user_id', $id)
@@ -4476,7 +4471,6 @@ class NewReportController extends BaseApiController
     //         $channelIds = $user->channels->pluck('id')->all();
 
     //         $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
-    //             ->where('show_in_moves', 1)
     //             ->with(['activityBrandValues' => function ($q) use ($filterChannelId, $channelIds, $startDate, $endDate) {
     //                 $q->whereCreatedAtRange($startDate, $endDate)
     //                     // ->where('user_id', $id)
@@ -4497,7 +4491,6 @@ class NewReportController extends BaseApiController
     //             ->where('company_id', $companyId);
     //     } else {
     //         $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
-    //             ->where('show_in_moves', 1)
     //             ->with(['activityBrandValues' => function ($q) use ($id, $startDate, $endDate) {
     //                 $q->whereCreatedAtRange($startDate, $endDate)
     //                     ->where('user_id', $id)

@@ -67,14 +67,6 @@ class ProductBrandController extends Controller
             $table->editColumn('code', function ($row) {
                 return $row->code ? $row->code : '';
             });
-            $table->editColumn('show_in_moves', function ($row) {
-                $checked = $row->show_in_moves == 1 ? 'checked' : '';
-                return '<input type="checkbox" ' . $checked . ' class="check_active" data-id="' . $row->id . '" data-column="show_in_moves" />';
-            });
-            $table->editColumn('show_in_sms', function ($row) {
-                $checked = $row->show_in_sms == 1 ? 'checked' : '';
-                return '<input type="checkbox" ' . $checked . ' class="check_active" data-id="' . $row->id . '" data-column="show_in_sms" />';
-            });
             $table->addColumn('brand_category', function ($row) {
                 return $row->brandCategory?->name ?? '';
             });
@@ -90,7 +82,7 @@ class ProductBrandController extends Controller
                 return implode(' ', $links);
             });
 
-            $table->rawColumns(['actions', 'placeholder', 'photo', 'show_in_moves', 'show_in_sms']);
+            $table->rawColumns(['actions', 'placeholder', 'photo']);
 
             return $table->make(true);
         }
