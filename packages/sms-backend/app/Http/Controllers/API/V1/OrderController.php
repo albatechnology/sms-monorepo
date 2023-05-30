@@ -18,7 +18,7 @@ use App\OpenApi\Parameters\DefaultHeaderParameters;
 use App\Pipes\Order\AddAdditionalDiscount;
 use App\Pipes\Order\AddAdditionalFees;
 use App\Pipes\Order\ApplyDiscount;
-use App\Pipes\Order\ApplyVouchers;
+// use App\Pipes\Order\ApplyVouchers;
 // use App\Pipes\Order\CalculateCartDemand;
 use App\Pipes\Order\CheckExpectedOrderPrice;
 use App\Pipes\Order\FillOrderAttributes;
@@ -26,7 +26,7 @@ use App\Pipes\Order\FillOrderRecord;
 use App\Pipes\Order\MakeOrderLines;
 use App\Pipes\Order\Update\UpdateAdditionalDiscount;
 use App\Pipes\Order\Update\UpdateApplyDiscount;
-use App\Pipes\Order\Update\UpdateApplyVouchers;
+// use App\Pipes\Order\Update\UpdateApplyVouchers;
 use App\Pipes\Order\Update\UpdateOrderLines;
 use App\Services\OrderService;
 use Exception;
@@ -158,7 +158,7 @@ class OrderController extends BaseApiController
                 [
                     UpdateOrderLines::class,
                     UpdateApplyDiscount::class,
-                    UpdateApplyVouchers::class,
+                    // UpdateApplyVouchers::class,
                     // CalculateCartDemand::class,
                     UpdateAdditionalDiscount::class,
                     AddAdditionalFees::class,

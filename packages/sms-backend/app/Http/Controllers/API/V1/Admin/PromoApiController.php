@@ -9,7 +9,6 @@ use App\Http\Requests\UpdatePromoRequest;
 use App\Http\Resources\Admin\PromoResource;
 use App\Models\Promo;
 use Gate;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class PromoApiController extends Controller

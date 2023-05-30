@@ -169,7 +169,7 @@ class CartController extends BaseApiController
                     'cart_id' => tenancy()->getUser()->cart->id,
                     'from_channel_id' => $stock['channel_id'],
                     'product_id' => $request->product_id,
-                    'company_id' => tenancy()->getUser()->company_id,
+                    // 'company_id' => tenancy()->getUser()->company_id,
                     'to_channel_id' => tenancy()->getUser()->channel_id,
                     'amount' => $stock['amount'],
                     'status' => StockTransferStatus::PENDING

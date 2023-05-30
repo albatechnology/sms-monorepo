@@ -50,9 +50,10 @@ class ClosingDealsController extends BaseApiController
 
         $user = user();
         if ($user->is_director || $user->is_digital_marketing) {
-            $company_id = request()->company_id ? [request()->company_id] : $user->company_ids;
+            // $company_id = request()->company_id ? [request()->company_id] : $user->company_ids;
 
-            $channel_ids = DB::table('channels')->whereIn('company_id', $company_id)->pluck('id')->all();
+            // $channel_ids = DB::table('channels')->whereIn('company_id', $company_id)->pluck('id')->all();
+            $channel_ids = DB::table('channels')->pluck('id')->all();
             $query = $query->whereIn('leads.channel_id', $channel_ids ?? []);
         } elseif ($user->is_supervisor) {
             $user_ids = $user->getAllChildrenSales()->pluck('id')->all();

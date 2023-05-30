@@ -257,11 +257,12 @@ class ActivityController extends BaseApiController
         }
 
         $activities = Activity::whereNull('activities.order_id')->doesntHave('child')->whereBetween('activities.created_at', [$startDate, $endDate]);
-        if ($request->has('company_id') && $request->company_id != '') $activities = $activities->whereHas('channel', fn ($q) => $q->where('company_id', $request->company_id));
+        // if ($request->has('company_id') && $request->company_id != '') $activities = $activities->whereHas('channel', fn ($q) => $q->where('company_id', $request->company_id));
         if ($request->has('channel_id') && $request->channel_id != '') $activities = $activities->where('activities.channel_id', $request->channel_id);
 
         if ($user->is_director) {
-            $activities = $activities->whereHas('user', fn ($q) => $q->where('type', 2)->where('company_id', $user->company_id));
+            // $activities = $activities->whereHas('user', fn ($q) => $q->where('type', 2)->where('company_id', $user->company_id));
+            $activities = $activities->whereHas('user', fn ($q) => $q->where('type', 2));
         } elseif ($user->is_sales) {
             $activities = $activities->where('activities.user_id', $user->id);
         } elseif ($user->is_supervisor) {
@@ -281,7 +282,8 @@ class ActivityController extends BaseApiController
         $user = tenancy()->getUser();
 
         if($user->is_director){
-            $userIds = DB::table('users')->where('company_id', $user->company_id)->pluck('id')->all();
+            // $userIds = DB::table('users')->where('company_id', $user->company_id)->pluck('id')->all();
+            $userIds = DB::table('users')->pluck('id')->all();
             $activities = ActivityBrandValue::whereIn('user_id', $userIds ?? []);
         } elseif($user->is_supervisor) {
             $userIds = User::whereDescendantOf($user->id)->whereIsSales()->get(['id'])->pluck('id')->all();
@@ -306,11 +308,12 @@ class ActivityController extends BaseApiController
 
         $activities = ActivityBrandValue::whereActive();
 
-        if ($request->has('company_id') && $request->company_id != '') $activities = $activities->whereHas('user', fn ($q) => $q->where('company_id', $request->company_id));
+        // if ($request->has('company_id') && $request->company_id != '') $activities = $activities->whereHas('user', fn ($q) => $q->where('company_id', $request->company_id));
         if ($request->has('channel_id') && $request->channel_id != '') $activities = $activities->whereHas('user', fn ($q) => $q->where('channel_id', $request->channel_id));
 
         if ($user->is_director) {
-            $activities = $activities->whereHas('user', fn ($q) => $q->where('type', 2)->where('company_id', $user->company_id));
+            // $activities = $activities->whereHas('user', fn ($q) => $q->where('type', 2)->where('company_id', $user->company_id));
+            $activities = $activities->whereHas('user', fn ($q) => $q->where('type', 2));
         } elseif ($user->is_sales) {
             $activities = $activities->where('user_id', $user->id);
         } elseif ($user->is_supervisor) {

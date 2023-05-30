@@ -23,8 +23,8 @@ use App\Http\Resources\V1\Lead\LeadWithLatestActivityResource;
 use App\Http\Resources\V1\Lead\SubLeadCategoryResource;
 use App\Http\Resources\V1\Product\BaseProductBrandResource;
 use App\Models\Channel;
-use App\Models\Customer;
-use App\Models\CustomerVoucher;
+// use App\Models\Customer;
+// use App\Models\CustomerVoucher;
 use App\Models\Lead;
 use App\Models\LeadCategory;
 use App\Models\ProductBrand;
@@ -40,7 +40,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Spatie\QueryBuilder\AllowedFilter;
+// use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Vyuldashev\LaravelOpenApi\Attributes as OpenApi;
 
@@ -114,8 +114,8 @@ class LeadController extends BaseApiController
             if ($user instanceof Channel) {
                 $q->where('channel_id', $user->id);
             } elseif ($user->type->is(UserType::DIRECTOR)) {
-                $companyIds = $user->company_ids ?? $user->companies->pluck('id')->all();
-                $q->whereIn('company_id', $companyIds);
+                // $companyIds = $user->company_ids ?? $user->companies->pluck('id')->all();
+                // $q->whereIn('company_id', $companyIds);
             } elseif ($user->type->is(UserType::SUPERVISOR)) {
                 $q->whereIn('channel_id', $user->channels->pluck('id')->all());
             } else {
