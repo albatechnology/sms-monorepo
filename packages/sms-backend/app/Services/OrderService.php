@@ -359,13 +359,13 @@ class OrderService
     ): MessageBag|Payment {
         // extra validation, check that payment type has the same
         $order       = Order::findOrFail($order_id);
-        $paymentType = PaymentType::findOrFail($payment_type_id);
+        // $paymentType = PaymentType::findOrFail($payment_type_id);
 
-        if ($order->company_id != $paymentType->company_id) {
-            return new MessageBag([
-                'payment_type_id' => ['Invalid payment type for this order.']
-            ]);
-        }
+        // if ($order->company_id != $paymentType->company_id) {
+        //     return new MessageBag([
+        //         'payment_type_id' => ['Invalid payment type for this order.']
+        //     ]);
+        // }
 
         if ($order->approval_status->is(OrderApprovalStatus::WAITING_APPROVAL)) {
             return new MessageBag([
@@ -381,7 +381,8 @@ class OrderService
                 'payment_type_id' => $payment_type_id,
                 'added_by_id'     => $user->id ?? user()->id,
                 'order_id'        => $order_id,
-                'company_id'      => $order->company_id,
+                'channel_id'        => $order->channel_id,
+                // 'company_id'      => $order->company_id,
             ]
         );
 
