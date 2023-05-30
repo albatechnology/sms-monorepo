@@ -84,4 +84,15 @@ class Promo extends BaseModel implements HasMedia
     {
         return $query->where('end_time', '<=', Carbon::parse($datetime));
     }
+
+    public function scopeWhereActive($query)
+    {
+        $query = $query->where('start_time', '<', now())
+            ->where(function ($q) {
+                $q->where('end_time', '>', now())
+                    ->orWhere('end_time', null);
+            });
+
+        return $query;
+    }
 }

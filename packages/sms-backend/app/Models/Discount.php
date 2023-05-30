@@ -144,12 +144,14 @@ class Discount extends BaseModel
 
     public function scopeWhereActive($query, $code = null)
     {
+        // $query = $query->where('is_active', 1)
+        //     ->where('start_time', '<', now())
+        //     ->where(function ($q) {
+        //         $q->where('end_time', '>', now())
+        //             ->orWhere('end_time', null);
+        //     });
         $query = $query->where('is_active', 1)
-            ->where('start_time', '<', now())
-            ->where(function ($q) {
-                $q->where('end_time', '>', now())
-                    ->orWhere('end_time', null);
-            });
+            ->whereHas('promo', fn ($q) => $q->whereActive());
 
         $query = $code ? $query->where('activation_code', $code) : $query->whereNull('activation_code');
         // if ($code) $query = $query->where('name', 'like', '%' . $code . '%');

@@ -16,15 +16,16 @@ class PaymentPage extends Component
 
     public function mount()
     {
-        $this->payment_categories = PaymentCategory::tenanted()->get();
+        // $this->payment_categories = PaymentCategory::tenanted()->get();
+        $this->payment_categories = PaymentCategory::all();
         $this->payment_types      = collect();
 
         // if default payment type is set
         if ($this->payment_type) {
             $type                   = PaymentType::find($this->payment_type);
             $this->payment_category = $type->payment_category_id;
-            $this->payment_types    = PaymentType::tenanted()
-                ->where('payment_category_id', $type->payment_category_id)
+            // $this->payment_types    = PaymentType::tenanted()
+            $this->payment_types    = PaymentType::where('payment_category_id', $type->payment_category_id)
                 ->get();
         }
     }
@@ -41,7 +42,8 @@ class PaymentPage extends Component
 
     public function updatedPaymentCategory($value)
     {
-        $this->payment_types = PaymentType::tenanted()->where('payment_category_id', $value)->get();
+        // $this->payment_types = PaymentType::tenanted()->where('payment_category_id', $value)->get();
+        $this->payment_types = PaymentType::where('payment_category_id', $value)->get();
         $this->payment_type  = $this->payment_types->first()->id ?? null;
     }
 }
