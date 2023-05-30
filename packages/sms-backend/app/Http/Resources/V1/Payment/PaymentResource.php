@@ -29,7 +29,7 @@ class PaymentResource extends BaseResource
 //            ),
 
             ResourceData::make('order_id', Schema::TYPE_INTEGER, 1),
-            ResourceData::make('company_id', Schema::TYPE_INTEGER, 1),
+            // ResourceData::make('company_id', Schema::TYPE_INTEGER, 1),
 
             ResourceData::makeRelationshipCollection(
                 'proof',

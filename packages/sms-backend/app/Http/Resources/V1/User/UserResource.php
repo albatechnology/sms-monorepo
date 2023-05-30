@@ -6,7 +6,7 @@ use App\Classes\DocGenerator\BaseResource;
 use App\Classes\DocGenerator\Interfaces\ApiDataExample;
 use App\Classes\DocGenerator\ResourceData;
 use App\Enums\UserType;
-use App\Http\Resources\V1\Company\BaseCompanyResource;
+// use App\Http\Resources\V1\Company\BaseCompanyResource;
 use GoldSpecDigital\ObjectOrientedOAS\Objects\Schema;
 use Illuminate\Support\Facades\Gate;
 
@@ -56,7 +56,7 @@ class UserResource extends BaseResource
             ResourceData::makeEnum('type', UserType::class)
                 ->description("User type determine the feature should be made avaiable to them. The available enum options are hard coded."),
 
-            ResourceData::makeRelationship('company', BaseCompanyResource::class),
+            // ResourceData::makeRelationship('company', BaseCompanyResource::class),
             // ResourceData::make("company_id", Schema::TYPE_INTEGER, 1)
             //     ->description("The company that this user belongs to")
             //     ->nullable()

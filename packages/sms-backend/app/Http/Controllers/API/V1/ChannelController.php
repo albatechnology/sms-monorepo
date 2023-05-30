@@ -59,6 +59,6 @@ class ChannelController extends BaseApiController
     #[CustomOpenApi\Response(resource: ChannelResource::class, isCollection: true)]
     public function index()
     {
-        return CustomQueryBuilder::buildResource(Channel::class, ChannelResource::class, fn($query) => $query->tenanted());
+        return CustomQueryBuilder::buildResource(Channel::class, ChannelResource::class);
     }
 }

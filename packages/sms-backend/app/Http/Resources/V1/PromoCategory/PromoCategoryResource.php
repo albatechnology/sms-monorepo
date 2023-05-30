@@ -16,7 +16,7 @@ class PromoCategoryResource extends BaseResource
             ResourceData::make('name', Schema::TYPE_STRING, 'promo category test'),
             ResourceData::make('description', Schema::TYPE_STRING, 'promo category test')->nullable(),
             ResourceData::images(),
-            ResourceData::makeRelationship('company', BaseCompanyResource::class),
+            // ResourceData::makeRelationship('company', BaseCompanyResource::class),
         ];
     }
 }

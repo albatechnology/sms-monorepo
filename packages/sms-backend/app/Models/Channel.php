@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @mixin IdeHelperChannel
  */
-class Channel extends BaseModel implements Tenanted, ReportableScope
+class Channel extends BaseModel implements ReportableScope
 {
     use SoftDeletes, Auditable;
 
@@ -28,7 +28,7 @@ class Channel extends BaseModel implements Tenanted, ReportableScope
     protected $guarded = [];
 
     protected $casts = [
-        'company_id' => 'integer',
+        // 'company_id' => 'integer',
     ];
 
     /**
@@ -135,10 +135,10 @@ class Channel extends BaseModel implements Tenanted, ReportableScope
         return $this->belongsTo(ChannelCategory::class, 'channel_category_id');
     }
 
-    public function company()
-    {
-        return $this->belongsTo(Company::class, 'company_id');
-    }
+    // public function company()
+    // {
+    //     return $this->belongsTo(Company::class, 'company_id');
+    // }
 
     public function targets()
     {

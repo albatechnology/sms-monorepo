@@ -110,7 +110,7 @@ class PaymentController extends Controller
             return $table->make(true);
         }
 
-        $payment_categories = PaymentCategory::tenanted()->get();
+        $payment_categories = PaymentCategory::get();
 
         return view('admin.payments.index', compact('payment_categories'));
     }

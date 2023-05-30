@@ -46,14 +46,14 @@ class UpdateUserRequest extends FormRequest
                 'nullable',
                 'exists:companies,id'
             ],
-            'company_ids'         => [
-                'nullable',
-                'array',
-            ],
-            'channel_ids.*'         => [
-                'integer',
-                'exists:channels,id',
-            ],
+            // 'company_ids'         => [
+            //     'nullable',
+            //     'array',
+            // ],
+            // 'channel_ids.*'         => [
+            //     'integer',
+            //     'exists:channels,id',
+            // ],
             'channel_ids'           => [
                 'array',
             ],

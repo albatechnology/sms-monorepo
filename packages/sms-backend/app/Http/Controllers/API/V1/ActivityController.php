@@ -31,7 +31,7 @@ use Vyuldashev\LaravelOpenApi\Attributes as OpenApi;
 #[OpenApi\PathItem]
 class ActivityController extends BaseApiController
 {
-    const load_relation = ['lead', 'user', 'customer', 'latestComment.user', 'order', 'brands', 'activity_brand_values', 'interiorDesign'];
+    const load_relation = ['lead', 'user', 'customer', 'latestComment.user', 'order', 'brands', 'activity_brand_values'];
 
     /**
      * Get activity

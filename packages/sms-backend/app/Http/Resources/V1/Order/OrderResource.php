@@ -67,7 +67,7 @@ class OrderResource extends BaseResource
                 'approvedBy'
             ),
             ResourceData::make('channel_id', Schema::TYPE_INTEGER, 1),
-            ResourceData::make('company_id', Schema::TYPE_INTEGER, 1),
+            // ResourceData::make('company_id', Schema::TYPE_INTEGER, 1),
             ResourceData::make('interior_design_id', Schema::TYPE_INTEGER, 1)->nullable(),
             ResourceData::make('discount_id', Schema::TYPE_INTEGER, 1)->nullable(),
 

@@ -23,7 +23,7 @@ class ChannelController extends Controller
         abort_if(Gate::denies('channel_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Channel::with(['channel_category', 'company'])->select(sprintf('%s.*', (new Channel)->table));
+            $query = Channel::with(['channel_category'])->select(sprintf('%s.*', (new Channel)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -58,19 +58,19 @@ class ChannelController extends Controller
                 return $row->company ? $row->company->name : '';
             });
 
-            $table->addColumn('sms_channels', function ($row) {
-                $html = '-';
-                if (isset($row->smsChannels) && count($row->smsChannels) > 0) {
-                    $html = '<ol>';
-                    foreach ($row->smsChannels as $c) {
-                        $html .= '<li>' . $c->name . '</li>';
-                    }
-                    $html .= '</ol>';
-                }
-                return $html;
-            });
+            // $table->addColumn('sms_channels', function ($row) {
+            //     $html = '-';
+            //     if (isset($row->smsChannels) && count($row->smsChannels) > 0) {
+            //         $html = '<ol>';
+            //         foreach ($row->smsChannels as $c) {
+            //             $html .= '<li>' . $c->name . '</li>';
+            //         }
+            //         $html .= '</ol>';
+            //     }
+            //     return $html;
+            // });
 
-            $table->rawColumns(['actions', 'placeholder', 'channel_category', 'company', 'sms_channels']);
+            $table->rawColumns(['actions', 'placeholder', 'channel_category']);
 
             return $table->make(true);
         }
@@ -82,20 +82,21 @@ class ChannelController extends Controller
     {
         abort_if(Gate::denies('channel_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $channel_categories = ChannelCategory::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $channel_categories = ChannelCategory::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $smsChannels = SmsChannel::whereNull('channel_id')->pluck('name', 'id');
+        // $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $smsChannels = SmsChannel::whereNull('channel_id')->pluck('name', 'id');
 
-        return view('admin.channels.create', compact('channel_categories', 'companies', 'smsChannels'));
+        return view('admin.channels.create');
     }
 
     public function store(StoreChannelRequest $request)
     {
-        $channel = Channel::create($request->validated());
-        if (isset($request->sms_channel_ids) && count($request->sms_channel_ids) > 0) {
-            SmsChannel::whereIn('id', $request->sms_channel_ids ?? [])->update(['channel_id' => $channel->id]);
-        }
+        Channel::create($request->validated());
+        // $channel = Channel::create($request->validated());
+        // if (isset($request->sms_channel_ids) && count($request->sms_channel_ids) > 0) {
+        //     SmsChannel::whereIn('id', $request->sms_channel_ids ?? [])->update(['channel_id' => $channel->id]);
+        // }
 
         return redirect()->route('admin.channels.index');
     }
@@ -104,14 +105,14 @@ class ChannelController extends Controller
     {
         abort_if(Gate::denies('channel_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $channel_categories = ChannelCategory::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $channel_categories = ChannelCategory::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $channel->load('channel_category', 'company');
-        $smsChannels = SmsChannel::whereNull('channel_id')->orWhere('channel_id', $channel->id)->pluck('name', 'id');
+        // $channel->load('channel_category', 'company');
+        // $smsChannels = SmsChannel::whereNull('channel_id')->orWhere('channel_id', $channel->id)->pluck('name', 'id');
 
-        return view('admin.channels.edit', compact('channel_categories', 'companies', 'channel', 'smsChannels'));
+        return view('admin.channels.edit', compact('channel'));
     }
 
     public function update(UpdateChannelRequest $request, Channel $channel)
@@ -129,7 +130,7 @@ class ChannelController extends Controller
     {
         abort_if(Gate::denies('channel_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $channel->load('channel_category', 'company', 'channelCatalogues', 'channelOrders', 'channelStocks', 'channelLeads', 'channelsUsers');
+        // $channel->load('channel_category', 'company', 'channelCatalogues', 'channelOrders', 'channelStocks', 'channelLeads', 'channelsUsers');
 
         return view('admin.channels.show', compact('channel'));
     }
@@ -157,12 +158,13 @@ class ChannelController extends Controller
                 return Channel::whereIn('id', ChannelUser::where('user_id', $supervisorId)->pluck('channel_id')->all())->get(['id', 'name']);
             }
 
-            $channels = Channel::tenanted();
-            if ($request->company_id) {
-                $company_id = explode(',', $request->company_id);
-                $channels = $channels->whereIn('company_id', $company_id ?? []);
-            }
-            return $channels->get(['id', 'name']);
+            $channels = Channel::get(['id', 'name']);
+            // $channels = Channel::tenanted();
+            // if ($request->company_id) {
+            //     $company_id = explode(',', $request->company_id);
+            //     $channels = $channels->whereIn('company_id', $company_id ?? []);
+            // }
+            return $channels;
         }
     }
 }

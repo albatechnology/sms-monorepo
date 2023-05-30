@@ -56,7 +56,8 @@ class ProductController extends BaseApiController
     public function index()
     {
         $query = function ($query) {
-            return $query->with(self::load_relation)->tenanted()->whereActive();
+            // return $query->with(self::load_relation)->tenanted()->whereActive();
+            return $query->with(self::load_relation)->whereActive();
         };
 
         return CustomQueryBuilder::buildResource(Product::class, ProductResource::class, $query);
@@ -76,7 +77,7 @@ class ProductController extends BaseApiController
         return CustomQueryBuilder::buildResource(
             ProductBrand::class,
             ProductBrandResource::class,
-            fn ($q) => $q->tenanted()->where('show_in_moves', 1),
+            // fn ($q) => $q->tenanted()->where('show_in_moves', 1),
             CustomQueryBuilder::KEY_ID_NAME
         );
     }
@@ -95,7 +96,7 @@ class ProductController extends BaseApiController
         return CustomQueryBuilder::buildResource(
             ProductBrand::class,
             ProductBrandResource::class,
-            fn ($q) => $q->where('show_in_sms', 1),
+            // fn ($q) => $q->where('show_in_sms', 1),
             filter_key: CustomQueryBuilder::KEY_ID_NAME
         );
     }
@@ -144,7 +145,8 @@ class ProductController extends BaseApiController
     #[CustomOpenApi\Response(resource: ProductVersionResource::class, isCollection: true)]
     public function versions(Request $request): mixed
     {
-        $products = Product::tenanted();
+        // $products = Product::tenanted();
+        $products = Product::query();
         if ($request->query('product_brand_id')) $products = $products->where('product_brand_id', $request->query('product_brand_id'));
         if ($request->query('product_model_id')) $products = $products->where('product_model_id', $request->query('product_model_id'));
 
@@ -166,7 +168,8 @@ class ProductController extends BaseApiController
     #[CustomOpenApi\Response(resource: ProductCategoryCodeResource::class, isCollection: true)]
     public function categoryCodes(Request $request): mixed
     {
-        $products = Product::tenanted();
+        // $products = Product::tenanted();
+        $products = Product::query();
         if ($request->query('product_brand_id')) $products = $products->where('product_brand_id', $request->query('product_brand_id'));
         if ($request->query('product_model_id')) $products = $products->where('product_model_id', $request->query('product_model_id'));
         if ($request->query('product_version_id')) $products = $products->where('product_version_id', $request->query('product_version_id'));

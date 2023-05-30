@@ -81,7 +81,7 @@
                             {{ $user->supervisor->name ?? '' }}
                         </td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                         <th>
                             {{ trans('cruds.user.fields.companies') }}
                         </th>
@@ -90,7 +90,7 @@
                                 <span class="label label-info">{{ $companies->name }}</span>
                             @endforeach
                         </td>
-                    </tr>
+                    </tr> --}}
                     <tr>
                         <th>
                             {{ trans('cruds.user.fields.channels') }}

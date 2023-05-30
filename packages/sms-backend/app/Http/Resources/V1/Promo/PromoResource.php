@@ -22,7 +22,7 @@ class PromoResource extends BaseResource
 
             ResourceData::make('promo_category_id', Schema::TYPE_INTEGER, 1)->nullable(),
             ResourceData::make('lead_category_id', Schema::TYPE_INTEGER, 1)->nullable(),
-            ResourceData::makeRelationship('company', BaseCompanyResource::class),
+            // ResourceData::makeRelationship('company', BaseCompanyResource::class),
         ];
     }
 }

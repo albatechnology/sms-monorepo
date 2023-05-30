@@ -92,7 +92,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         'user_id'                   => 'integer',
         'lead_id'                   => 'integer',
         'customer_id'               => 'integer',
-        'company_id'                => 'integer',
+        // 'company_id'                => 'integer',
         'channel_id'                => 'integer',
         'activity_id'               => 'integer',
         'tax_invoice_sent'          => 'integer',
@@ -157,10 +157,10 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         parent::boot();
     }
 
-    public function company(): BelongsTo
-    {
-        return $this->belongsTo(Company::class);
-    }
+    // public function company(): BelongsTo
+    // {
+    //     return $this->belongsTo(Company::class);
+    // }
 
     // public function interiorDesign(): BelongsTo
     // {
@@ -515,10 +515,10 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         return $query->where('approval_send_to', $user->type->value)->where('approval_supervisor_type_id', $user->supervisor_type_id);
     }
 
-    public function getCompanyIdAttribute($value)
-    {
-        return (int)$value;
-    }
+    // public function getCompanyIdAttribute($value)
+    // {
+    //     return (int)$value;
+    // }
 
     public function getDiscountApprovalLimitPercentageAttribute($value)
     {

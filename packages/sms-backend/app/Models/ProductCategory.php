@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Interfaces\Tenanted;
+// use App\Interfaces\Tenanted;
 use App\Traits\CustomInteractsWithMedia;
-use App\Traits\IsCompanyTenanted;
+// use App\Traits\IsCompanyTenanted;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;

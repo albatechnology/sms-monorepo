@@ -58,7 +58,7 @@ class Activity extends BaseModel implements Tenanted, Reportable, HasMedia
         'user_id'                    => 'integer',
         'lead_id'                    => 'integer',
         'channel_id'                 => 'integer',
-        'interior_design_id'         => 'integer',
+        // 'interior_design_id'         => 'integer',
         'latest_activity_comment_id' => 'integer',
         'activity_comment_count'     => 'integer',
         'estimated_value'            => 'integer',
@@ -125,7 +125,7 @@ class Activity extends BaseModel implements Tenanted, Reportable, HasMedia
                 'customer_id'        => $order->customer_id,
                 'channel_id'         => $order->channel_id,
                 'user_id'            => $order->user_id,
-                'interior_design_id' => $order->interior_design_id ?? null,
+                // 'interior_design_id' => $order->interior_design_id ?? null,
                 'follow_up_method'   => ActivityFollowUpMethod::NEW_ORDER(),
                 'status'             => ActivityStatus::HOT(),
                 'follow_up_datetime' => now()
@@ -189,10 +189,10 @@ class Activity extends BaseModel implements Tenanted, Reportable, HasMedia
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function interiorDesign()
-    {
-        return $this->belongsTo(InteriorDesign::class, 'interior_design_id');
-    }
+    // public function interiorDesign()
+    // {
+    //     return $this->belongsTo(InteriorDesign::class, 'interior_design_id');
+    // }
 
     public function lead()
     {

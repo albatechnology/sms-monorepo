@@ -43,6 +43,7 @@ class ProductCategoryController extends BaseApiController
     #[CustomOpenApi\Response(resource: ProductCategoryResource::class, isCollection: true)]
     public function index()
     {
-        return CustomQueryBuilder::buildResource(ProductCategory::class, ProductCategoryResource::class, fn($query) => $query->tenanted());
+        // return CustomQueryBuilder::buildResource(ProductCategory::class, ProductCategoryResource::class, fn($query) => $query->tenanted());
+        return CustomQueryBuilder::buildResource(ProductCategory::class, ProductCategoryResource::class);
     }
 }

@@ -39,14 +39,14 @@ class StoreUserRequest extends FormRequest
                 'required',
                 new EnumValue(UserType::class, 0)
             ],
-            'company_id'         => [
-                'nullable',
-                'exists:companies,id'
-            ],
-            'company_ids'         => [
-                'nullable',
-                'array',
-            ],
+            // 'company_id'         => [
+            //     'nullable',
+            //     'exists:companies,id'
+            // ],
+            // 'company_ids'         => [
+            //     'nullable',
+            //     'array',
+            // ],
             'channel_ids'           => [
                 'nullable',
                 'array',

@@ -18,7 +18,8 @@ class CustomerSeeder extends Seeder
         // Customer::factory()->count(50)->create();
         $customer = Customer::create([
             'title' => 1,
-            'name' => 'Customer satu',
+            'first_name' => 'Customer satu',
+            'last_name' => 'OKE',
             'email' => 'customer@gmail.com',
             'phone' => '0987654321',
             'date_of_birth' => date('Y-m-d'),

@@ -127,7 +127,7 @@ class OrderController extends Controller
             return $table->make(true);
         }
 
-        $channels = Channel::tenanted()->get();
+        $channels = Channel::get();
 
         return view('admin.orders.index', compact('channels'));
     }
@@ -268,7 +268,7 @@ class OrderController extends Controller
     {
         abort_if(Gate::denies('order_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $channels        = Channel::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $channels        = Channel::get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         $status          = OrderStatus::getInstances();
         $order->load('user', 'customer', 'channel');
         return view('admin.orders.edit', compact('status', 'channels', 'order'));

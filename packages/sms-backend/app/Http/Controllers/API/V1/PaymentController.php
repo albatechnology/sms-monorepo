@@ -154,7 +154,8 @@ class PaymentController extends BaseApiController
     #[CustomOpenApi\Response(resource: PaymentCategoryResource::class, isCollection: true)]
     public function indexPaymentCategory()
     {
-        return CustomQueryBuilder::buildResource(PaymentCategory::class, PaymentCategoryResource::class, fn($query) => $query->tenanted());
+        // return CustomQueryBuilder::buildResource(PaymentCategory::class, PaymentCategoryResource::class, fn($query) => $query->tenanted());
+        return CustomQueryBuilder::buildResource(PaymentCategory::class, PaymentCategoryResource::class);
     }
 
     /**
@@ -195,7 +196,8 @@ class PaymentController extends BaseApiController
     #[CustomOpenApi\Response(resource: PaymentTypeResource::class, isCollection: true)]
     public function indexPaymentType()
     {
-        return CustomQueryBuilder::buildResource(PaymentType::class, PaymentTypeResource::class, fn($query) => $query->tenanted());
+        // return CustomQueryBuilder::buildResource(PaymentType::class, PaymentTypeResource::class, fn($query) => $query->tenanted());
+        return CustomQueryBuilder::buildResource(PaymentType::class, PaymentTypeResource::class);
     }
 
 

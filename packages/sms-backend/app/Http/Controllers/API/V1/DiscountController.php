@@ -7,7 +7,7 @@ use App\Classes\DocGenerator\Enums\Tags;
 use App\Http\Resources\V1\Discount\DiscountResource;
 use App\Models\Discount;
 use App\OpenApi\Customs\Attributes as CustomOpenApi;
-use App\OpenApi\Parameters\DefaultHeaderParameters;
+// use App\OpenApi\Parameters\DefaultHeaderParameters;
 use App\OpenApi\Parameters\GetDiscountsParameter;
 use App\OpenApi\Responses\Generics\NotFoundResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -33,7 +33,8 @@ class DiscountController extends BaseApiController
     #[CustomOpenApi\Response(resource: DiscountResource::class, isCollection: true)]
     public function index()
     {
-        return CustomQueryBuilder::buildResource(Discount::class, DiscountResource::class, fn ($q) => $q->tenanted()->whereActive());
+        // return CustomQueryBuilder::buildResource(Discount::class, DiscountResource::class, fn ($q) => $q->tenanted()->whereActive());
+        return CustomQueryBuilder::buildResource(Discount::class, DiscountResource::class, fn ($q) => $q->whereActive());
     }
 
     /**
@@ -50,8 +51,8 @@ class DiscountController extends BaseApiController
     #[OpenApi\Response(factory: NotFoundResponse::class, statusCode: 404)]
     public function discountGetByCode($code)
     {
-        $discounts = Discount::tenanted()
-            ->whereActive($code)
+        // $discounts = Discount::tenanted()
+        $discounts = Discount::whereActive($code)
             ->firstOrFail();
 
         return new DiscountResource($discounts);

@@ -9,7 +9,7 @@
     <div class="card-body">
         <form method="POST" action="{{ route("admin.channels.store") }}" enctype="multipart/form-data">
             @csrf
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label for="orlan_id" class="required">Orlansoft Tr ID</label>
                 <input class="form-control {{ $errors->has('orlan_id') ? 'is-invalid' : '' }}" type="text" name="orlan_id" id="orlan_id" value="{{ old('orlan_id', '') }}" required>
                 @if($errors->has('orlan_id'))
@@ -36,7 +36,7 @@
                 @if($errors->has('orlan_tr_type_sa'))
                     <span class="text-danger">{{ $errors->first('orlan_tr_type_sa') }}</span>
                 @endif
-            </div>
+            </div> --}}
             <div class="form-group">
                 <label class="required" for="name">{{ trans('cruds.channel.fields.name') }}</label>
                 <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', '') }}" required>
@@ -45,7 +45,7 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.channel.fields.name_helper') }}</span>
             </div>
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label class="required" for="channel_category_id">{{ trans('cruds.channel.fields.channel_category') }}</label>
                 <select class="form-control select2 {{ $errors->has('channel_category') ? 'is-invalid' : '' }}" name="channel_category_id" id="channel_category_id" required>
                     @foreach($channel_categories as $id => $channel_category)
@@ -56,8 +56,8 @@
                     <span class="text-danger">{{ $errors->first('channel_category') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.channel.fields.channel_category_helper') }}</span>
-            </div>
-            <div class="form-group">
+            </div> --}}
+            {{-- <div class="form-group">
                 <label class="required" for="company_id">{{ trans('cruds.channel.fields.company') }}</label>
                 <select class="form-control select2 {{ $errors->has('company') ? 'is-invalid' : '' }}" name="company_id" id="company_id" required>
                     @foreach($companies as $id => $company)
@@ -68,8 +68,8 @@
                     <span class="text-danger">{{ $errors->first('company') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.channel.fields.company_helper') }}</span>
-            </div>
-            <div class="form-group">
+            </div> --}}
+            {{-- <div class="form-group">
                 <label for="sms_channel_ids">SMS Channel</label>
                 <select class="form-control select2 {{ $errors->has('company') ? 'is-invalid' : '' }}" name="sms_channel_ids[]" id="sms_channel_ids" multiple data-placeholder="Select SMS Channel">
                     @foreach($smsChannels as $id => $name)
@@ -79,7 +79,7 @@
                 @if($errors->has('sms_channel_ids'))
                     <span class="text-danger">{{ $errors->first('sms_channel_ids') }}</span>
                 @endif
-            </div>
+            </div> --}}
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}

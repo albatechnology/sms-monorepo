@@ -9,7 +9,7 @@ use App\Enums\ActivityFollowUpMethod;
 use App\Enums\ActivityStatus;
 use App\Http\Resources\V1\Customer\CustomerResource;
 use App\Http\Resources\V1\Generic\MediaResource;
-use App\Http\Resources\V1\InteriorDesign\InteriorDesignResource;
+// use App\Http\Resources\V1\InteriorDesign\InteriorDesignResource;
 use App\Http\Resources\V1\Lead\LeadResource;
 use App\Http\Resources\V1\Order\OrderResource;
 use App\Http\Resources\V1\Product\ProductBrandResource;
@@ -34,7 +34,7 @@ class ActivityResource extends BaseResource
             ResourceData::makeRelationship('user', UserResource::class),
             ResourceData::makeRelationship('customer', CustomerResource::class),
             ResourceData::makeRelationship('latest_comment', ActivityCommentResource::class, 'latestComment'),
-            ResourceData::makeRelationship('interior_design', InteriorDesignResource::class, 'interiorDesign'),
+            // ResourceData::makeRelationship('interior_design', InteriorDesignResource::class, 'interiorDesign'),
             ResourceData::make('activity_comment_count', Schema::TYPE_INTEGER, 1),
             ResourceData::make('estimated_value', Schema::TYPE_INTEGER, 1)->nullable(),
             ResourceData::make('reminder_datetime', Schema::TYPE_STRING, ApiDataExample::TIMESTAMP)->nullable(),

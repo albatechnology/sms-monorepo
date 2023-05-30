@@ -29,7 +29,7 @@
                             {{ $channel->name }}
                         </td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                         <th>
                             {{ trans('cruds.channel.fields.channel_category') }}
                         </th>
@@ -58,7 +58,7 @@
                                 -
                             @endif
                         </td>
-                    </tr>
+                    </tr> --}}
                 </tbody>
             </table>
             <div class="form-group">
@@ -69,8 +69,7 @@
         </div>
     </div>
 </div>
-
-<div class="card">
+{{-- <div class="card">
     <div class="card-header">
         {{ trans('global.relatedData') }}
     </div>
@@ -126,6 +125,5 @@
             @includeIf('admin.channels.relationships.channelsUsers', ['users' => $channel->channelsUsers])
         </div>
     </div>
-</div>
-
+</div> --}}
 @endsection

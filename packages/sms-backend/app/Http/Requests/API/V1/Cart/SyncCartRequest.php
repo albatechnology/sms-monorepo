@@ -37,7 +37,8 @@ class SyncCartRequest extends BaseApiRequest
             'items.*.id'       => [
                 'required',
                 Rule::exists('products', 'id')->where(function ($query) {
-                    return $query->tenanted();
+                    // return $query->tenanted();
+                    return $query->query();
                 }),
             ],
             'items.*.quantity' => 'required|integer|min:1',
@@ -45,7 +46,8 @@ class SyncCartRequest extends BaseApiRequest
             'discount_id'     => [
                 'nullable', 'integer',
                 Rule::exists('discounts', 'id')->where(function ($query) {
-                    return $query->whereActive()->tenanted();
+                    // return $query->whereActive()->tenanted();
+                    return $query->whereActive();
                 }),
             ],
             'customer_id' => ['nullable', 'exists:customers,id']

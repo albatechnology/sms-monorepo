@@ -142,8 +142,8 @@ class UsersController extends Controller
 
         $supervisors = User::tenanted()->whereIsSupervisor()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        return view('admin.users.create', compact('roles', 'supervisor_types', 'supervisors', 'companies'));
+        // $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        return view('admin.users.create', compact('roles', 'supervisor_types', 'supervisors'));
     }
 
     public function store(StoreUserRequest $request)
@@ -195,11 +195,11 @@ class UsersController extends Controller
 
         $supervisors = User::tenanted()->whereIsSupervisor()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $companies = Company::tenanted()->get()->pluck('name', 'id');
+        // $companies = Company::tenanted()->get()->pluck('name', 'id');
 
-        $user->load('roles', 'supervisor_type', 'supervisor', 'companies', 'channels');
+        $user->load('roles', 'supervisor_type', 'supervisor', 'channels');
         $user_channels = $user->channels->pluck('id')->all();
-        return view('admin.users.edit', compact('roles', 'supervisor_types', 'supervisors', 'companies', 'user_channels', 'user'));
+        return view('admin.users.edit', compact('roles', 'supervisor_types', 'supervisors', 'user_channels', 'user'));
     }
 
     public function update(UpdateUserRequest $request, User $user)
@@ -208,20 +208,20 @@ class UsersController extends Controller
         // dd($user);
         $user->roles()->sync($request->input('role', []));
 
-        $user->productBrands()->sync($request->input('product_brand_ids', []));
+        // $user->productBrands()->sync($request->input('product_brand_ids', []));
 
         // $user->userCompanies()->delete();
-        if (isset($request->company_ids) && count($request->company_ids) > 0) {
-            $user->update(['company_id' => $request->company_ids[0]]);
-            $user->companies()->sync($request->input('company_ids', []));
-            // foreach ($request->company_ids as $cid) {
-            //     UserCompany::create(['user_id' => $user->id, 'company_id' => $cid]);
-            // }
-        } else {
-            $user->update(['company_ids' => [$user->company_id]]);
-            $user->companies()->sync([$user->company_id]);
-            // UserCompany::create(['user_id' => $user->id, 'company_id' => $user->company_id]);
-        }
+        // if (isset($request->company_ids) && count($request->company_ids) > 0) {
+        //     $user->update(['company_id' => $request->company_ids[0]]);
+        //     $user->companies()->sync($request->input('company_ids', []));
+        //     // foreach ($request->company_ids as $cid) {
+        //     //     UserCompany::create(['user_id' => $user->id, 'company_id' => $cid]);
+        //     // }
+        // } else {
+        //     $user->update(['company_ids' => [$user->company_id]]);
+        //     $user->companies()->sync([$user->company_id]);
+        //     // UserCompany::create(['user_id' => $user->id, 'company_id' => $user->company_id]);
+        // }
 
         $userId = $user->id;
         PermissionUser::where('user_id', $userId)->delete();
@@ -253,7 +253,7 @@ class UsersController extends Controller
     {
         abort_if(Gate::denies('user_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $user->load('roles', 'supervisor_type', 'supervisor', 'companies', 'channels', 'userActivities', 'userActivityComments', 'userOrders', 'approvedByPayments', 'fulfilledByShipments', 'fulfilledByInvoices', 'supervisorUsers', 'requestedByStockTransfers', 'approvedByStockTransfers', 'userUserAlerts');
+        $user->load('roles', 'supervisor_type', 'supervisor', 'channels', 'userActivities', 'userActivityComments', 'userOrders', 'approvedByPayments', 'fulfilledByShipments', 'fulfilledByInvoices', 'supervisorUsers', 'requestedByStockTransfers', 'approvedByStockTransfers', 'userUserAlerts');
 
         return view('admin.users.show', compact('user'));
     }
@@ -278,11 +278,11 @@ class UsersController extends Controller
     {
         if ($request->ajax()) {
             $users = User::select('id', 'name');
-            if ($companyId = $request->company_id) {
-                $users->where(function ($q) use ($companyId) {
-                    $q->where('company_id', $companyId)->orWhereHas('companies', fn ($q) => $q->where('channel_id', $companyId));
-                });
-            }
+            // if ($companyId = $request->company_id) {
+            //     $users->where(function ($q) use ($companyId) {
+            //         $q->where('company_id', $companyId)->orWhereHas('companies', fn ($q) => $q->where('channel_id', $companyId));
+            //     });
+            // }
             if ($channelId = $request->channel_id) {
                 $users->whereHas('channels', fn ($q) => $q->where('channel_id', $channelId));
             }
@@ -314,7 +314,8 @@ class UsersController extends Controller
     public function getChannels($companyId)
     {
         $channel_ids = isset($_POST['channel_ids']) && count($_POST['channel_ids']) > 0 ? $_POST['channel_ids'] : [];
-        $channels = Channel::tenanted()->whereCompanyId($companyId)->pluck('name', 'id')->all();
+        $channels = Channel::pluck('name', 'id')->all();
+        // $channels = Channel::tenanted()->whereCompanyId($companyId)->pluck('name', 'id')->all();
         $html = '<option value="">- Channels is empty -</option>';
         if ($channels) {
             $html = '';

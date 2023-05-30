@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Traits\Auditable;
 use App\Traits\CustomInteractsWithMedia;
-use App\Traits\IsCompanyTenanted;
+// use App\Traits\IsCompanyTenanted;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
@@ -17,7 +17,7 @@ use Str;
  */
 class Product extends BaseModel implements HasMedia
 {
-    use SoftDeletes, CustomInteractsWithMedia, Auditable, IsCompanyTenanted;
+    use SoftDeletes, CustomInteractsWithMedia, Auditable;
 
     public $table = 'products';
 
@@ -32,7 +32,7 @@ class Product extends BaseModel implements HasMedia
     ];
 
     protected $fillable = [
-        'company_id',
+        // 'company_id',
         'product_brand_id',
         'product_category_id',
         'name',
@@ -51,7 +51,7 @@ class Product extends BaseModel implements HasMedia
 
     protected $casts = [
         'price'                    => 'integer',
-        'company_id'               => 'integer',
+        // 'company_id'               => 'integer',
         'product_brand_id'         => 'integer',
         // 'product_model_id'         => 'integer',
         // 'product_version_id'       => 'integer',
@@ -86,7 +86,8 @@ class Product extends BaseModel implements HasMedia
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
-            ->generateSlugsFrom(['company_id', 'name'])
+            // ->generateSlugsFrom(['company_id', 'name'])
+            ->generateSlugsFrom(['name'])
             ->saveSlugsTo('code');
     }
 
@@ -200,7 +201,7 @@ class Product extends BaseModel implements HasMedia
             $data['updated_at'],
             $data['deleted_at'],
             $data['is_active'],
-            $data['company_id'],
+            // $data['company_id'],
             $data['photo'],
             $data['media'],
             $data["product_brand_id"],

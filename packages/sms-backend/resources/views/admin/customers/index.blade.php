@@ -30,7 +30,8 @@
                     <th>
                         {{ trans('cruds.customer.fields.title') }}
                     </th>
-                    <th>Name</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
                     <th>
                         {{ trans('cruds.customer.fields.email') }}
                     </th>
@@ -56,6 +57,9 @@
                                 <option value="{{ $key }}">{{ $item }}</option>
                             @endforeach
                         </select>
+                    </td>
+                    <td>
+                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td>
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
@@ -126,7 +130,8 @@
                     {data: 'placeholder', name: 'placeholder'},
                     {data: 'id', name: 'id'},
                     {data: 'title', name: 'title'},
-                    {data: 'name', name: 'name'},
+                    {data: 'first_name', name: 'first_name'},
+                    {data: 'last_name', name: 'last_name'},
                     {data: 'email', name: 'email'},
                     {data: 'phone', name: 'phone'},
                     {data: 'description', name: 'description'},
