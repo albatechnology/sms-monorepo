@@ -33,7 +33,8 @@ class OrlanOrderController extends BaseApiController
             $grossAmt = $detail->unit_price * $detail->quantity;
             $discAmt = $detail->total_discount;
             $netAmt = $grossAmt - $discAmt;
-            $taxable = $netAmt / 1.11;
+            // $taxable = $netAmt / 1.11;
+            $taxable = $netAmt;
             $taxAmt = $netAmt - $taxable;
 
             $dataOrderDetaiil = [
@@ -214,7 +215,8 @@ class OrlanOrderController extends BaseApiController
                 $grossAmt = $totalPayment;
                 $discAmt = 0;
                 $netAmt = $grossAmt - $discAmt;
-                $taxable = $netAmt / 1.11;
+                // $taxable = $netAmt / 1.11;
+                $taxable = $netAmt;
                 $taxAmt = $netAmt - $taxable;
 
                 // insert into table RPTransHdr

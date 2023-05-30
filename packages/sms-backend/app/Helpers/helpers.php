@@ -75,7 +75,7 @@ if (!function_exists('filterPrice')) {
 if (!function_exists('potongPPN')) {
     function potongPPN($value): float
     {
-        $value = $value / 1.11;
+        // $value = $value / 1.11;
         return floatval($value);
     }
 }
