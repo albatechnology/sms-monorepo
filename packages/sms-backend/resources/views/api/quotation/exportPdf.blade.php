@@ -174,7 +174,6 @@
             justify-content: space-between;
             margin-top: 50px;
         }
-
     </style>
 </head>
 
@@ -189,12 +188,12 @@
                     <tr>
                         <td style="text-align: center; border: 0; padding: 0;">
                             <div class="" style="font-weight: bold; font-size: 26px;">
-                                @if($params['type'] == 'quotation')
-                                    {{ucwords('Quotation')}}
+                                @if ($params['type'] == 'quotation')
+                                    {{ ucwords('Quotation') }}
                                 @elseif($params['type'] == 'invoice')
-                                    {{ucwords('Invoice')}}
+                                    {{ ucwords('Invoice') }}
                                 @else
-                                    {{ucwords('Sales Confirmation')}}
+                                    {{ ucwords('Sales Confirmation') }}
                                 @endif
                             </div>
                         </td>
@@ -203,20 +202,23 @@
                         <td style="text-align: top; border: 0; padding: 0;">
                             <table>
                                 <tr>
-                                    <td style="text-align: left; border: 0; padding: 0; font-weight: bold;" width="80">
+                                    <td style="text-align: left; border: 0; padding: 0; font-weight: bold;"
+                                        width="80">
                                         Date</td>
                                     <td style="text-align: left; border: 0; padding: 0;">:
                                         {{ \Carbon\Carbon::parse($params['order']->created_at)->toDayDateTimeString() }}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="text-align: left; border: 0; padding: 0; font-weight: bold;" width="80">
+                                    <td style="text-align: left; border: 0; padding: 0; font-weight: bold;"
+                                        width="80">
                                         No.</td>
                                     <td style="text-align: left; border: 0; padding: 0;">:
                                         {{ $params['order']->invoice_number }}</td>
                                 </tr>
                                 <tr>
-                                    <td style="text-align: left; border: 0; padding: 0; font-weight: bold;" width="80">
+                                    <td style="text-align: left; border: 0; padding: 0; font-weight: bold;"
+                                        width="80">
                                         Associate</td>
                                     <td style="text-align: left; border: 0; padding: 0;">: {{ $params['user']->name }}
                                     </td>
@@ -241,7 +243,7 @@
     <div>
         <div class="metadata-title">Shipping To:</div>
         <div>
-            {{ \App\Enums\PersonTitle::fromValue($params['order']->customer->title)->description .' ' .$params['order']->customer->getFullNameAttribute() }}
+            {{ \App\Enums\PersonTitle::fromValue($params['order']->customer->title)->description . ' ' . $params['order']->customer->getFullNameAttribute() }}
         </div>
         @if ($params['order']->shipping_address?->address_line_1)
             <div>{{ $params['order']->shipping_address->address_line_1 }}</div>
@@ -291,32 +293,13 @@
                 <td>{{ rupiah($item->unit_price) }}</td>
                 <td>
                     @php
-                        $discountPercentage = ($item->total_discount/($item->unit_price * $item->quantity))*100;
-                        echo $discountPercentage > 100 ? '100%' : $discountPercentage.'%';
+                        $discountPercentage = ($item->total_discount / ($item->unit_price * $item->quantity)) * 100;
+                        echo $discountPercentage > 100 ? '100%' : $discountPercentage . '%';
                     @endphp
                 </td>
                 <td>{{ rupiah($item->total_price) }}</td>
             </tr>
         @endforeach
-        @if ($params['order']->cartDemand)
-            @foreach ($params['order']->cartDemand->items as $item)
-                <tr>
-                    <td>
-                        @php
-                            $photo = $item['image'] ?? asset('images/no-image.jpg');
-                        @endphp
-                        <img src="{{ $photo }}" alt="productImage"
-                            style="width: 126px; height: auto; display: block; margin-left: auto; margin-right: auto;" />
-                    </td>
-                    <td style="text-align: left;">{{ $item['name'] }}</td>
-                    <td>{{ isset($item['is_ready']) && $item['is_ready'] != null ? ($item['is_ready'] == 1 ? 'ready' : 'indent') : 'indent' }}</td>
-                    <td>{{ $item['quantity'] }}</td>
-                    <td>{{ rupiah($item['price']) }}</td>
-                    <td>{{ rupiah($item['total_discount'] ?? 0) }}</td>
-                    <td>{{ rupiah($item['price'] * $item['quantity']) }}</td>
-                </tr>
-            @endforeach
-        @endif
         <tr>
             <td colspan="6" class="info-row-left" style="border-top: 1px solid #313132;">Packing Fee</td>
             <td class="info-row-right" style="border-top: 1px solid #313132;">
@@ -364,23 +347,23 @@
             </tr>
         @endforeach
     </table>
-    @if(!is_null($params['order']->note) && $params['order']->note != '')
-    <table style="width: 100%; border: 0; margin-top: 12px; margin-bottom: 24px;">
-        <tr>
-            <td style="text-align: left; padding: 0; width: 50%; vertical-align: top;">
-                <div style="font-weight: bold">Note:</div>
-                <p>{{ $params['order']->note }}</p>
-            </td>
-        </tr>
-    </table>
+    @if (!is_null($params['order']->note) && $params['order']->note != '')
+        <table style="width: 100%; border: 0; margin-top: 12px; margin-bottom: 24px;">
+            <tr>
+                <td style="text-align: left; padding: 0; width: 50%; vertical-align: top;">
+                    <div style="font-weight: bold">Note:</div>
+                    <p>{{ $params['order']->note }}</p>
+                </td>
+            </tr>
+        </table>
     @endif
-    @if($params['type'] == 'quotation')
-    <table class="table items-table">
-        <tr>
-            <th>Jumlah DP 50%</th>
-            <th>{{ rupiah($params['order']->total_price/2) }}</th>
-        </tr>
-    </table>
+    @if ($params['type'] == 'quotation')
+        <table class="table items-table">
+            <tr>
+                <th>Jumlah DP 50%</th>
+                <th>{{ rupiah($params['order']->total_price / 2) }}</th>
+            </tr>
+        </table>
     @endif
     @if ($params['order']->orderPayments && count($params['order']->orderPayments) > 0)
         <table class="table items-table">
@@ -398,12 +381,17 @@
                     <td>{{ rupiah($payment->amount) }}</td>
                 </tr>
             @endforeach
-            @if ($params['order']->payment_status->in([\App\Enums\OrderPaymentStatus::NONE,\App\Enums\OrderPaymentStatus::PARTIAL,\App\Enums\OrderPaymentStatus::DOWN_PAYMENT]))
-            <tr>
-                <td>Balance Due</td>
-                <td></td>
-                <td>{{ rupiah($params['order']->total_price - $params['order']->amount_paid) }}</td>
-            </tr>
+            @if (
+                $params['order']->payment_status->in([
+                    \App\Enums\OrderPaymentStatus::NONE,
+                    \App\Enums\OrderPaymentStatus::PARTIAL,
+                    \App\Enums\OrderPaymentStatus::DOWN_PAYMENT,
+                ]))
+                <tr>
+                    <td>Balance Due</td>
+                    <td></td>
+                    <td>{{ rupiah($params['order']->total_price - $params['order']->amount_paid) }}</td>
+                </tr>
             @endif
         </table>
     @endif
@@ -458,7 +446,8 @@
             </table>
         </div>
 
-        <div style="
+        <div
+            style="
               color: white;
               background-color: #313132;
               font-size: 18px;

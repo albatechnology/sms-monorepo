@@ -9,7 +9,6 @@ use App\Http\Requests\StoreDepositRequest;
 use App\Http\Requests\UpdateDepositRequest;
 use App\Models\CustomerDeposit;
 use App\Models\Order;
-use App\Models\DepositType;
 use App\Models\PaymentCategory;
 use App\Models\PaymentType;
 use App\Models\User;
