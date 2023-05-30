@@ -78,7 +78,7 @@ class ProductController extends BaseApiController
             ProductBrand::class,
             ProductBrandResource::class,
             // fn ($q) => $q->tenanted()->where('show_in_moves', 1),
-            CustomQueryBuilder::KEY_ID_NAME
+            filter_key: CustomQueryBuilder::KEY_ID_NAME
         );
     }
 
