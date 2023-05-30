@@ -109,7 +109,8 @@ class OrderController extends BaseApiController
     #[CustomOpenApi\Response(resource: OrderResource::class, statusCode: 200)]
     public function previewUpdate(UpdateOrderRequest $request, Order $order): OrderResource
     {
-        if ($order->shipment_status->isNot(\App\Enums\OrderShipmentStatus::NONE) || $order->payment_status->isNot(\App\Enums\OrderPaymentStatus::NONE)) {
+        // if ($order->shipment_status->isNot(\App\Enums\OrderShipmentStatus::NONE) || $order->payment_status->isNot(\App\Enums\OrderPaymentStatus::NONE)) {
+        if ($order->payment_status->isNot(\App\Enums\OrderPaymentStatus::NONE)) {
             return $this->show($order->refresh()->loadMissing(self::load_relation));
         }
 
@@ -119,7 +120,7 @@ class OrderController extends BaseApiController
                 [
                     UpdateOrderLines::class,
                     UpdateApplyDiscount::class,
-                    UpdateApplyVouchers::class,
+                    // UpdateApplyVouchers::class,
                     // CalculateCartDemand::class,
                     UpdateAdditionalDiscount::class,
                     AddAdditionalFees::class,
