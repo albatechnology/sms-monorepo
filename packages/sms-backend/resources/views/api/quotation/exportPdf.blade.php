@@ -438,7 +438,7 @@
                                 No order cancellation after the quotation is confirmed and payment
                                 is received
                             </li>
-                            <li>
+                            {{-- <li>
                                 Please make your payment only to the following account:
                                 <ul>
                                     <li>Bank: {{ $params['order']->company->companyAccount->bank_name ?? '-' }}</li>
@@ -447,7 +447,7 @@
                                     <li>Account Name:
                                         {{ $params['order']->company->companyAccount->account_name ?? '-' }}</li>
                                 </ul>
-                            </li>
+                            </li> --}}
                             <li>
                                 If you need further assistance, please do not hesitate to contact
                                 your sales representative
@@ -468,8 +468,8 @@
               padding-bottom: 12px;
               margin-top: 12px;
             ">
-            THANK YOU FOR YOUR ORDER AT <br />
-            {{ strtoupper($params['order']->company->companyAccount->name ?? 'our company') }}
+            THANK YOU FOR YOUR ORDER AT <br /> PT. Alba Digital Technology
+            {{-- {{ strtoupper($params['order']->company->companyAccount->name ?? 'our company') }} --}}
         </div>
     </footer>
 </body>

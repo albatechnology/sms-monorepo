@@ -10,6 +10,7 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('channel_id')->constrained(); // unused
             $table->bigInteger('amount');
             $table->string('reference')->nullable()->index();
             $table->unsignedTinyInteger('status')->index();
@@ -17,7 +18,6 @@ class CreatePaymentsTable extends Migration
             $table->foreignId('approved_by_id')->nullable()->constrained('users');
             $table->foreignId('added_by_id')->constrained('users');
             $table->foreignId('order_id')->constrained();
-            $table->foreignId('channel_id')->constrained(); // unused
             // $table->foreignId('company_id')->constrained(); // unused
             $table->timestamps();
             $table->softDeletes();

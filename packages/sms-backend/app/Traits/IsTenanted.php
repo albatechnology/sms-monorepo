@@ -153,4 +153,9 @@ trait IsTenanted
     {
         return $this->belongsTo(Channel::class);
     }
+
+    public function channel()
+    {
+        return $this->belongsTo(Channel::class);
+    }
 }
