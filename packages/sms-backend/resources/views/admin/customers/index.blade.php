@@ -27,6 +27,7 @@
                     <th>
                         {{ trans('cruds.customer.fields.id') }}
                     </th>
+                    <th>Subscriber</th>
                     <th>
                         {{ trans('cruds.customer.fields.title') }}
                     </th>
@@ -49,6 +50,9 @@
                     <td></td>
                     <td>
                         <input class="search" type="text" strict="true" placeholder="{{ trans('global.search') }}">
+                    </td>
+                    <td>
+                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td>
                         <select class="search" strict="true">
@@ -129,6 +133,7 @@
                 columns: [
                     {data: 'placeholder', name: 'placeholder'},
                     {data: 'id', name: 'id'},
+                    {data: 'subscriber', name: 'subscribtionUser.name'},
                     {data: 'title', name: 'title'},
                     {data: 'first_name', name: 'first_name'},
                     {data: 'last_name', name: 'last_name'},

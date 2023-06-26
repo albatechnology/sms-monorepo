@@ -28,9 +28,7 @@
                         <th>
                             {{ trans('cruds.paymentCategory.fields.name') }}
                         </th>
-                        <th>
-                            {{ trans('cruds.paymentCategory.fields.company') }}
-                        </th>
+                        <th>Subscriber</th>
                         <th>
                             {{ trans('cruds.paymentCategory.fields.image') }}
                         </th>
@@ -52,12 +50,11 @@
                             {{ $paymentCategory->name ?? '' }}
                         </td>
                         <td>
-                            {{ $paymentCategory->company->name ?? '' }}
+                            {{ $paymentCategory->subscribtionUser?->name ?? '' }}
                         </td>
                         <td>
                             @forelse($paymentCategory->photo as $media)
-                                <a href="{{$media->getUrl()}}" target="_blank"><img src="{{$media->getUrl('thumb')}}"
-                                                                                    width="50px" height="50px"></a>
+                                <a href="{{$media->getUrl()}}" target="_blank"><img src="{{$media->getUrl('thumb')}}" width="50px" height="50px"></a>
                             @empty
                             @endforelse
                         </td>
@@ -142,7 +139,7 @@
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
   });
-  
+
 })
 
 </script>

@@ -28,7 +28,7 @@ class ProductBrandController extends Controller
         abort_if(Gate::denies('product_brand_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = ProductBrand::with(['brandCategory'])->select(sprintf('%s.*', (new ProductBrand())->table));
+            $query = ProductBrand::tenanted()->with(['brandCategory'])->select(sprintf('%s.*', (new ProductBrand())->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -95,10 +95,9 @@ class ProductBrandController extends Controller
         abort_if(Gate::denies('product_brand_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         // $companies = Company::tenanted()->get()->pluck('name', 'id');
-        $brandCategories = BrandCategory::get();
-        $currencies = Currency::all();
+        $brandCategories = BrandCategory::tenanted()->get();
 
-        return view('admin.productBrands.create', compact('brandCategories', 'currencies'));
+        return view('admin.productBrands.create', compact('brandCategories'));
     }
 
     public function store(StoreProductBrandRequest $request)
@@ -124,10 +123,9 @@ class ProductBrandController extends Controller
     {
         abort_if(Gate::denies('product_brand_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $brandCategories = BrandCategory::get();
-        $currencies = Currency::all();
+        $brandCategories = BrandCategory::tenanted()->get();
 
-        return view('admin.productBrands.edit', compact('productBrand', 'brandCategories', 'currencies'));
+        return view('admin.productBrands.edit', compact('productBrand', 'brandCategories'));
     }
 
     public function update(UpdateProductBrandRequest $request, ProductBrand $productBrand)
@@ -197,7 +195,7 @@ class ProductBrandController extends Controller
 
     public function getProductBrand($brandCategoryId)
     {
-        $data = ProductBrand::whereHas('brandCategories', fn ($q) => $q->where('brand_category_id', $brandCategoryId))->pluck('name', 'id');
+        $data = ProductBrand::tenanted()->whereHas('brandCategories', fn ($q) => $q->where('brand_category_id', $brandCategoryId))->pluck('name', 'id');
 
         return response()->json($data);
     }
@@ -226,7 +224,7 @@ class ProductBrandController extends Controller
     public function ajaxGetProductBrands(Request $request)
     {
         if ($request->ajax()) {
-            $productBrands = ProductBrand::query();
+            $productBrands = ProductBrand::tenanted();
             // if ($request->company_id) {
             //     $company_id = explode(',', $request->company_id);
             //     $productBrands = $productBrands->whereIn('company_id', $company_id ?? []);

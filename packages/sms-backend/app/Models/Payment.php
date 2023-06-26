@@ -44,7 +44,7 @@ class Payment extends BaseModel implements HasMedia, Tenanted, Reportable
     ];
 
     protected $fillable = [
-        'orlan_tr_no',
+        'subscribtion_user_id',
         'amount',
         'payment_type_id',
         'reference',

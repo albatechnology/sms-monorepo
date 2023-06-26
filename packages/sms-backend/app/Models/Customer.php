@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\PersonTitle;
 use App\Traits\Auditable;
+use App\Traits\IsSubscribedTenanted;
+use App\Traits\SaveToSubscriber;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -12,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Customer extends BaseModel
 {
-    use SoftDeletes, Auditable;
+    use SoftDeletes, Auditable, SaveToSubscriber, IsSubscribedTenanted;
 
     const TITLE_SELECT = [
         'Mr.'  => 'Mr.',
@@ -30,6 +32,7 @@ class Customer extends BaseModel
     ];
 
     protected $fillable = [
+        'subscribtion_user_id',
         'title',
         // 'name',
         'first_name',

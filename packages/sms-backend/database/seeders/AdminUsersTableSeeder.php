@@ -2,25 +2,66 @@
 
 namespace Database\Seeders;
 
-use App\Models\Channel;
-use App\Models\PersonalAccessToken;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class AdminUsersTableSeeder extends Seeder
 {
     public function run()
     {
-        // Admin
-        $admin = User::create(
-            [
-                'name'           => 'Admin',
-                'email'          => 'admin@gmail.com',
-                'password'       => bcrypt('12345678'),
-                'remember_token' => null,
-            ],
-        );
+        // super Admin
+        $superAdminRole = Role::create([
+            'name' => 'super-admin',
+            'guard_name' => 'web',
+            'subscribtion_user_id' => 1
+        ]);
+
+        $superAdmin = User::create([
+            'subscribtion_user_id' => 1,
+            'name' => 'Super Admin',
+            'email' => 'superadmin@gmail.com',
+            'password' => bcrypt('12345678'),
+        ]);
+
+        DB::table('model_has_roles')->insert([
+            'role_id' => $superAdminRole->id,
+            'model_type' => 'user',
+            'model_id' => $superAdmin->id,
+            'subscribtion_user_id' => 1
+        ]);
+
+        // $superAdmin->assignRole($superAdminRole);
+
+        $adminRole = Role::create([
+            'name' => 'admin',
+            'guard_name' => 'web',
+        ]);
+        $adminRole->syncPermissions(Permission::all());
+
+        $admin = User::create([
+            'subscribtion_user_id' => 1,
+            'name' => 'Admin ALBA',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('12345678'),
+        ]);
+
+        DB::table('model_has_roles')->insert([
+            'role_id' => $adminRole->id,
+            'model_type' => 'user',
+            'model_id' => $admin->id,
+            'subscribtion_user_id' => 1
+        ]);
+        // $admin->assignRole($adminRole);
+
+        // DB::table('model_has_roles')->insert([
+        //     'role_id' => $superAdminRole->id,
+        //     'model_type' => get_class($superAdmin),
+        //     'model_id' => $superAdmin->id,
+        //     'subscribtion_user_id' => 1
+        // ]);
 
         // $admin->roles()->save(Role::whereAdmin()->first());
 

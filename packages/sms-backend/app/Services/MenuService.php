@@ -12,9 +12,9 @@ class MenuService
 
         return [
             self::menuCrm(),
+            self::menuCorporate(),
             self::menuProduct(),
             self::menuMarketing(),
-            self::menuCorporate(),
             // self::menuWarehouse(),
             self::menuReport(),
             self::menuManagement(),

@@ -23,7 +23,7 @@ class CustomerController extends Controller
         abort_if(Gate::denies('customer_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Customer::query()->select(sprintf('%s.*', (new Customer)->table));
+            $query = Customer::tenanted()->with('subscribtionUser')->select(sprintf('%s.*', (new Customer)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -46,6 +46,9 @@ class CustomerController extends Controller
 
             $table->editColumn('id', function ($row) {
                 return $row->id ? $row->id : "";
+            });
+            $table->addColumn('subscriber', function ($row) {
+                return $row->subscribtionUser?->name ?? '';
             });
             $table->editColumn('title', function ($row) {
                 return $row->title?->key ?? '';

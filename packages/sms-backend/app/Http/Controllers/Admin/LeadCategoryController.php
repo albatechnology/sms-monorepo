@@ -19,7 +19,7 @@ class LeadCategoryController extends Controller
     {
         abort_if(Gate::denies('lead_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $leadCategories = LeadCategory::get();
+        $leadCategories = LeadCategory::tenanted()->with('subscribtionUser')->get();
 
         return view('admin.leadCategories.index', compact('leadCategories'));
     }

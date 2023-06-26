@@ -7,9 +7,7 @@ use App\Http\Requests\MassDestroyChannelRequest;
 use App\Http\Requests\StoreChannelRequest;
 use App\Http\Requests\UpdateChannelRequest;
 use App\Models\Channel;
-use App\Models\ChannelCategory;
 use App\Models\ChannelUser;
-use App\Models\Company;
 use App\Models\SmsChannel;
 use Gate;
 use Illuminate\Http\Request;
@@ -23,7 +21,7 @@ class ChannelController extends Controller
         abort_if(Gate::denies('channel_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Channel::with(['channel_category'])->select(sprintf('%s.*', (new Channel)->table));
+            $query = Channel::tenanted()->select(sprintf('%s.*', (new Channel)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -50,13 +48,10 @@ class ChannelController extends Controller
             $table->editColumn('name', function ($row) {
                 return $row->name ? $row->name : "";
             });
-            $table->addColumn('channel_category_name', function ($row) {
-                return $row->channel_category ? $row->channel_category->name : '';
-            });
 
-            $table->addColumn('company_name', function ($row) {
-                return $row->company ? $row->company->name : '';
-            });
+            // $table->addColumn('company_name', function ($row) {
+            //     return $row->company ? $row->company->name : '';
+            // });
 
             // $table->addColumn('sms_channels', function ($row) {
             //     $html = '-';
@@ -70,7 +65,7 @@ class ChannelController extends Controller
             //     return $html;
             // });
 
-            $table->rawColumns(['actions', 'placeholder', 'channel_category']);
+            $table->rawColumns(['actions', 'placeholder']);
 
             return $table->make(true);
         }
@@ -93,10 +88,6 @@ class ChannelController extends Controller
     public function store(StoreChannelRequest $request)
     {
         Channel::create($request->validated());
-        // $channel = Channel::create($request->validated());
-        // if (isset($request->sms_channel_ids) && count($request->sms_channel_ids) > 0) {
-        //     SmsChannel::whereIn('id', $request->sms_channel_ids ?? [])->update(['channel_id' => $channel->id]);
-        // }
 
         return redirect()->route('admin.channels.index');
     }
@@ -118,10 +109,6 @@ class ChannelController extends Controller
     public function update(UpdateChannelRequest $request, Channel $channel)
     {
         $channel->update($request->validated());
-        if (isset($request->sms_channel_ids) && count($request->sms_channel_ids) > 0) {
-            $channel->smsChannels()->update(['channel_id' => null]);
-            SmsChannel::whereIn('id', $request->sms_channel_ids ?? [])->update(['channel_id' => $channel->id]);
-        }
 
         return redirect()->route('admin.channels.index');
     }

@@ -1,4 +1,4 @@
-<div class="form-group">
+{{-- <div class="form-group">
     <label class="required" for="company_id">{{ trans('cruds.user.fields.company') }}</label>
     <select class="form-control select2 {{ $errors->has('company_id') ? 'is-invalid' : '' }}" name="company_id"
         id="company_id">
@@ -13,7 +13,7 @@
         <span class="text-danger">{{ $errors->first('company_id') }}</span>
     @endif
     <span class="help-block">{{ trans('cruds.user.fields.company_helper') }}</span>
-</div>
+</div> --}}
 <div class="form-group">
     <label for="supervisor_id">{{ trans('cruds.user.fields.supervisor') }}</label>
     <select class="form-control select2 {{ $errors->has('supervisor_id') ? 'is-invalid' : '' }}" name="supervisor_id"
@@ -65,19 +65,15 @@
     var selectedProductBrands = {{ $selectedProductBrands ? json_encode($selectedProductBrands) : json_encode([]) }};
     var selectedChannels = {{ $selectedChannels ? json_encode($selectedChannels) : json_encode([]) }};
     var selectedSupervisor = '{{ $user?->supervisor_id }}';
-    var selectedCompanyId = '{{ $user?->company_id }}';
+    // var selectedCompanyId = '{{ $user?->company_id }}';
 
-    console.log('selectedProductBrands', selectedProductBrands)
-    console.log('selectedSupervisor', selectedSupervisor)
-    console.log('selectedCompanyId', selectedCompanyId)
-    console.log('selectedChannels', selectedChannels)
     $('.select2').select2();
 
-    function getSupervisors(companyId) {
+    function getSupervisors() {
         var options = '';
         $('#supervisor_id').attr('disabled', true).html(options).val('').change();
-        if (companyId) {
-            $.get("{{ url('admin/users/get-users') }}?type=3&supervisor_type_id=1&company_id=" + companyId,
+        // if (companyId) {
+            $.get("{{ url('admin/users/get-users') }}?type=3&supervisor_type_id=1",
                 function(
                     res) {
                     res.forEach(data => {
@@ -87,18 +83,18 @@
                     });
                     $('#supervisor_id').attr('disabled', false).html(options).change();
                 })
-        } else {
-            $('#supervisor_id').attr('disabled', true).html(options).val('').change();
-        }
+        // } else {
+        //     $('#supervisor_id').attr('disabled', true).html(options).val('').change();
+        // }
 
 
     }
 
-    function getProductBrands(companyId) {
+    function getProductBrands() {
         var options = '';
         $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
-        if (companyId) {
-            $.get('{{ url('admin/product-brands/get-product-brands') }}?company_id=' + companyId,
+        // if (companyId) {
+            $.get('{{ url('admin/product-brands/get-product-brands') }}',
                 function(
                     res) {
                     res.forEach(data => {
@@ -108,19 +104,19 @@
                     });
                     $('#product_brand_ids').attr('disabled', false).html(options).change();
                 })
-        } else {
-            $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
-        }
+        // } else {
+        //     $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
+        // }
     }
 
-    getSupervisors(parseInt(selectedCompanyId))
-    getProductBrands(parseInt(selectedCompanyId))
-    $('#company_id').on('change', function() {
-        getSupervisors($(this).val());
-        getProductBrands($(this).val());
-    });
+    getSupervisors();
+    getProductBrands();
+    // $('#company_id').on('change', function() {
+    //     getSupervisors($(this).val());
+    //     getProductBrands($(this).val());
+    // });
 
-    function getChannles(supervisorId) {
+    function getChannels(supervisorId) {
         var options = '';
         $('#channel_ids').attr('disabled', true).html(options).val('').change();
         if (supervisorId) {
@@ -138,8 +134,8 @@
         }
     }
 
-    getChannles(selectedSupervisor);
+    getChannels(selectedSupervisor);
     $('#supervisor_id').on('change', function() {
-        getChannles($(this).val());
+        getChannels($(this).val());
     });
 </script>

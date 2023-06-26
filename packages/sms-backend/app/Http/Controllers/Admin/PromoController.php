@@ -24,7 +24,7 @@ class PromoController extends Controller
         abort_if(Gate::denies('promo_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Promo::select(sprintf('%s.*', (new Promo)->table));
+            $query = Promo::tenanted()->select(sprintf('%s.*', (new Promo)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');

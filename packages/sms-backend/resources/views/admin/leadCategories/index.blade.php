@@ -25,6 +25,7 @@
                         <th>
                             {{ trans('cruds.leadCategory.fields.id') }}
                         </th>
+                        <th>Subscriber</th>
                         <th>
                             {{ trans('cruds.leadCategory.fields.name') }}
                         </th>
@@ -44,6 +45,9 @@
                         </td>
                         <td>
                             {{ $leadCategory->id ?? '' }}
+                        </td>
+                        <td>
+                            {{ $leadCategory->subscribtionUser?->name ?? '' }}
                         </td>
                         <td>
                             {{ $leadCategory->name ?? '' }}

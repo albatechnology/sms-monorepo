@@ -17,9 +17,14 @@ trait IsTenanted
     {
         $hasActiveChannel = tenancy()->getActiveTenant();
         // $hasActiveCompany = tenancy()->getActiveCompany();
-        $user             = tenancy()->getUser();
 
         if ($hasActiveChannel) return $query->tenantedActiveChannel($hasActiveChannel);
+
+        $user = tenancy()->getUser();
+
+        if ($user->is_super_admin) return $query;
+
+        return $query->tenantedUserChannels();
 
         // // if (!$hasActiveCompany && !$user->is_admin) throw new Exception('Non admin must have an active company!');
 

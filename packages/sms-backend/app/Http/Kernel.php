@@ -37,15 +37,16 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\AuthGates::class,
+            // \App\Http\Middleware\AuthGates::class,
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\TeamsPermission::class
         ],
 
         'api' => [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\AuthGates::class,
+            // \App\Http\Middleware\AuthGates::class,
         ],
     ];
 
@@ -68,7 +69,7 @@ class Kernel extends HttpKernel
         'verified'         => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'api_version'      => \App\Http\Middleware\APIVersion::class,
         'default_tenant'   => \App\Http\Middleware\HasDefaultTenant::class,
-        'is_admin'         => \App\Http\Middleware\IsAdmin::class,
+        // 'is_admin'         => \App\Http\Middleware\IsAdmin::class,
         'impersonate'      => \App\Http\Middleware\Impersonate::class,
     ];
 }

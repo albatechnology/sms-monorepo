@@ -32,6 +32,7 @@ class Company extends BaseModel implements Tenanted, HasMedia, ReportableScope
     ];
 
     protected $fillable = [
+        'subscribtion_user_id',
         'name',
         'company_account_id',
         'options',

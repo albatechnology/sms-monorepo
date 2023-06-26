@@ -2,46 +2,72 @@
 
 namespace App\Models;
 
-use App\Traits\Auditable;
-use DateTimeInterface;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+// use App\Interfaces\TenantedInterface;
+use Spatie\Permission\Models\Role as ModelsRole;
 
-/**
- * @mixin IdeHelperRole
- */
-class Role extends Model
+class Role extends ModelsRole
 {
-    use SoftDeletes, Auditable, HasFactory;
-
     public $table = 'roles';
+    protected $guarded = [];
 
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
-    protected $fillable = [
-        'title',
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
-    public function permissions()
+    protected static function booted()
     {
-        return $this->belongsToMany(Permission::class);
+        static::retrieved(function ($model) {
+        });
     }
 
-    public function scopeWhereAdmin($query)
+    public function scopeTenanted($query)
     {
-        return $query->where('title', 'Admin');
+        $hasActiveTenant = tenancy()->getActiveTenant();
+        if ($hasActiveTenant) $query->where('subscribtion_user_id', $hasActiveTenant->subscribtionUser->id);
+
+        // $hasActiveCompany = tenancy()->getActiveCompany();
+        // if ($hasActiveCompany) $query->where('subscribtion_user_id', $hasActiveCompany->id);
+
+        $user = user();
+        if ($user->is_super_admin) return $query;
+
+        return $query->wherePublicRole()->orWhere('subscribtion_user_id', $user->subscribtion_user_id);
+
+        // return $query->wherePublicRole()->whereIn('subscribtion_user_id', tenancy()->getMyAllCompanies()?->pluck('id') ?? []);
     }
 
-    protected function serializeDate(DateTimeInterface $date)
+    public function scopeFindTenanted($query, int $id)
     {
-        return $date->format('Y-m-d H:i:s');
+        return $query->tenanted()->where('id', $id)->firstOrFail();
     }
+
+    public function scopeWherePublicRole($query)
+    {
+        return $query->where('subscribtion_user_id', '!=', 1)->orWhereNull('subscribtion_user_id');
+    }
+
+    // public function scopeTenanted($query)
+    // {
+    //     $hasActiveTenant = tenancy()->getActiveTenant();
+    //     if ($hasActiveTenant) $query->where('company_id', $hasActiveTenant->company->id);
+
+    //     // $hasActiveCompany = tenancy()->getActiveCompany();
+    //     // if ($hasActiveCompany) $query->where('company_id', $hasActiveCompany->id);
+
+    //     $user = user();
+    //     if ($user->is_super_admin) return $query;
+
+    //     // return $query->wherePublicRole()->whereIn('company_id', tenancy()->getMyAllCompanies()?->pluck('id') ?? []);
+    // }
+
+    // public function scopeFindTenanted($query, int $id)
+    // {
+    //     return $query->tenanted()->where('id', $id)->firstOrFail();
+    // }
+
+    // // public function company()
+    // // {
+    // //     return $this->belongsTo(Company::class, 'company_id');
+    // // }
+
+    // public function scopeWherePublicRole($query)
+    // {
+    //     return $query->where('company_id', '!=', 1);
+    // }
 }

@@ -10,6 +10,7 @@ class CreatePromosTable extends Migration
     {
         Schema::create('promos', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('subscribtion_user_id')->constrained('subscribtion_users');
             // $table->foreignId('company_id')->constrained(); // unused
             $table->string('name');
             $table->longText('description')->nullable();

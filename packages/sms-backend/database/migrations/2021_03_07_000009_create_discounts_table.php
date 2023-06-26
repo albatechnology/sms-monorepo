@@ -10,6 +10,7 @@ class CreateDiscountsTable extends Migration
     {
         Schema::create('discounts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('subscribtion_user_id')->constrained('subscribtion_users');
             $table->foreignId('promo_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('name')->index();
             $table->text('description')->nullable();

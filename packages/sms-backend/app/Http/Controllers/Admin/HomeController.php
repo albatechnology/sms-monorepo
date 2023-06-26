@@ -25,22 +25,23 @@ class HomeController
 {
     public function index()
     {
-        $orderCount = Order::query()
+        // throw new SubscribtionException();
+        $orderCount = Order::tenanted()
             ->tenanted()
             ->where('created_at', '>', now()->subWeek())
             ->count();
 
-        $customerCount = Customer::query()
+        $customerCount = Customer::tenanted()
             ->where('created_at', '>', now()->subWeek())
             ->count();
 
-        $leadCount = Lead::query()
+        $leadCount = Lead::tenanted()
             ->tenanted()
             ->whereIn('type', [LeadType::LEADS, LeadType::PROSPECT])
             ->where('created_at', '>', now()->subWeek())
             ->count();
 
-        $paymentSum = Payment::query()
+        $paymentSum = Payment::tenanted()
             ->tenanted()
             ->where('status', PaymentStatus::APPROVED)
             ->where('created_at', '>', now()->subWeek())

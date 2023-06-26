@@ -15,6 +15,7 @@ class CreateBrandCategoriesTable extends Migration
     {
         Schema::create('brand_categories', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('subscribtion_user_id')->constrained('subscribtion_users');
             $table->string('name');
             $table->string('code')->nullable();
             $table->string('slug')->nullable();

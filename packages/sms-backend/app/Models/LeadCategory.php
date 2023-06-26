@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\IsSubscribedTenanted;
+use App\Traits\SaveToSubscriber;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class LeadCategory extends BaseModel
 {
-    use SoftDeletes;
+    use SoftDeletes, SaveToSubscriber, IsSubscribedTenanted;
 
     public $table = 'lead_categories';
 

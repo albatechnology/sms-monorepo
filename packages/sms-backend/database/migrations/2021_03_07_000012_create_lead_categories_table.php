@@ -17,6 +17,7 @@ class CreateLeadCategoriesTable extends Migration
 
         Schema::create('lead_categories', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('subscribtion_user_id')->constrained('subscribtion_users');
             $table->string('name');
             $table->text('description')->nullable();
             $table->softDeletes();

@@ -22,7 +22,7 @@ class DiscountController extends Controller
         abort_if(Gate::denies('discount_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Discount::with('promo')->select(sprintf('%s.*', (new Discount)->table));
+            $query = Discount::tenanted()->with('promo')->select(sprintf('%s.*', (new Discount)->table));
             $table = DataTables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -79,7 +79,7 @@ class DiscountController extends Controller
     public function create()
     {
         abort_if(Gate::denies('discount_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $promos = Promo::pluck('name', 'id')->prepend('- Select Promo -', null);
+        $promos = Promo::tenanted()->pluck('name', 'id')->prepend('- Select Promo -', null);
         return view('admin.discounts.create', compact('promos'));
     }
 
@@ -99,10 +99,10 @@ class DiscountController extends Controller
 
         $selectedProducts = [];
         if (isset($discount->product_unit_ids) && !empty($discount->product_unit_ids)) {
-            $selectedProducts = Product::whereActive()->whereIn('id', $discount->product_unit_ids)->pluck('name', 'id')->all();
+            $selectedProducts = Product::tenanted()->whereActive()->whereIn('id', $discount->product_unit_ids)->pluck('name', 'id')->all();
         }
 
-        $promos = Promo::pluck('name', 'id')->prepend('- Select Promo -', null);
+        $promos = Promo::tenanted()->pluck('name', 'id')->prepend('- Select Promo -', null);
         return view('admin.discounts.edit', compact('discount', 'selectedProducts', 'promos'));
     }
 
@@ -144,7 +144,7 @@ class DiscountController extends Controller
 
     public function getDiscounts($company_id = null)
     {
-        $discounts = Discount::select('id', 'name', 'description');
+        $discounts = Discount::tenanted()->select('id', 'name', 'description');
         // if($company_id != null && $company_id > 0) $discounts->where('company_id', $company_id);
         $discounts = $discounts->get();
 

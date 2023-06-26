@@ -9,6 +9,7 @@ use App\Interfaces\Tenanted;
 use App\Traits\Auditable;
 use App\Traits\CustomCastEnums;
 use App\Traits\IsTenanted;
+use App\Traits\SaveToSubscriber;
 use BenSampo\Enum\Traits\CastsEnums;
 use Carbon\Carbon;
 use DateTimeInterface;
@@ -27,13 +28,15 @@ use Illuminate\Support\Str;
 use Kalnoy\Nestedset\NodeTrait;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\NewAccessToken;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @mixin IdeHelperUser
  */
 class User extends Authenticatable implements Tenanted, ReportableScope
 {
-    use HasApiTokens, SoftDeletes, Notifiable, Auditable, HasFactory, NodeTrait, IsTenanted, CastsEnums, CustomCastEnums;
+    use HasRoles;
+    use HasApiTokens, SoftDeletes, Notifiable, Auditable, HasFactory, NodeTrait, IsTenanted, CastsEnums, CustomCastEnums, SaveToSubscriber;
 
     public $table = 'users';
 
@@ -50,6 +53,7 @@ class User extends Authenticatable implements Tenanted, ReportableScope
     ];
 
     protected $fillable = [
+        'subscribtion_user_id',
         'name',
         'email',
         'email_verified_at',
@@ -247,18 +251,21 @@ class User extends Authenticatable implements Tenanted, ReportableScope
     {
         $hasActiveChannel = tenancy()->getActiveTenant();
         // $hasActiveCompany = tenancy()->getActiveCompany();
-        $user = tenancy()->getUser();
-        $isAdmin = $user->is_admin;
-
-        if (!$hasActiveChannel && $isAdmin) {
-            return $query;
-        }
 
         if ($hasActiveChannel) {
             return $query->whereHas('channels', function ($query) {
                 $query->where('id', tenancy()->getActiveTenant()->id);
             });
         }
+
+        $user = tenancy()->getUser();
+        $isSuperAdmin = $user->is_super_admin;
+
+        if ($isSuperAdmin) {
+            return $query;
+        }
+
+        return $query->where('subscribtion_user_id', $user->subscribtion_user_id);
 
         // if ($hasActiveCompany) {
         //     if ($isAdmin) {
@@ -274,15 +281,16 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         //         });
         //     }
         // } else {
-            if ($isAdmin) {
-                // lets admin see all
-                return $query;
-            } else {
-                // lets user see all resource available to the user's channel
-                return $query->whereHas('channels', function ($query) {
-                    $query->whereIn('id', tenancy()->getTenants()->pluck('id'));
-                });
-            }
+        // $isAdmin = $user->is_admin;
+        // if ($isAdmin) {
+        //     // lets admin see all
+        //     return $query;
+        // } else {
+        //     // lets user see all resource available to the user's channel
+        //     return $query->whereHas('channels', function ($query) {
+        //         $query->whereIn('id', tenancy()->getTenants()->pluck('id'));
+        //     });
+        // }
         // }
     }
 
@@ -306,29 +314,37 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         return $this->type->is(UserType::SUPERVISOR);
     }
 
+    public function getIsSuperAdminAttribute(): bool
+    {
+        if ($this->is_director) return true;
+        // return $this->roles()->where('id', 1)->exists();
+        return $this->hasRole('super-admin');
+    }
+
     public function getIsAdminAttribute(): bool
     {
         if ($this->is_director) return true;
-        return $this->roles()->where('id', 1)->exists();
+        // return $this->roles()->where('id', 1)->exists();
+        return $this->hasRole('admin');
     }
 
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(Role::class);
-    }
+    // public function roles(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Role::class);
+    // }
 
-    public function hasRole(string $role)
-    {
-        if (in_array($role, $this->roles->pluck('title')->toArray())) {
-            return true;
-        }
-        return false;
-    }
+    // public function hasRole(string $role)
+    // {
+    //     if (in_array($role, $this->roles->pluck('title')->toArray())) {
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
-    public function permissions()
-    {
-        return $this->hasMany(PermissionUser::class);
-    }
+    // public function permissions()
+    // {
+    //     return $this->hasMany(PermissionUser::class);
+    // }
 
     public function userCompanies()
     {
@@ -699,6 +715,11 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         }
 
         return ProductBrand::pluck('id')?->all() ?? [];
+    }
+
+    public function subscribtionUser()
+    {
+        return $this->belongsTo(SubscribtionUser::class);
     }
 
     // public function getActivityTargetAttribute()

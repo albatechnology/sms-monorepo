@@ -19,7 +19,7 @@ return [
         'fields'         => [
             'id'                => 'ID',
             'id_helper'         => ' ',
-            'title'             => 'Title',
+            'title'             => 'Nama',
             'title_helper'      => ' ',
             'created_at'        => 'Dibuat Pada',
             'created_at_helper' => ' ',
@@ -35,7 +35,7 @@ return [
         'fields'         => [
             'id'                 => 'ID',
             'id_helper'          => ' ',
-            'title'              => 'Title',
+            'title'              => 'Nama',
             'title_helper'       => ' ',
             'permissions'        => 'Permissions',
             'permissions_helper' => ' ',

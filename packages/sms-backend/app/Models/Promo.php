@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Traits\Auditable;
 use App\Traits\CustomInteractsWithMedia;
+use App\Traits\IsSubscribedTenanted;
+use App\Traits\SaveToSubscriber;
 // use App\Traits\IsCompanyTenanted;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,7 +16,7 @@ use Spatie\MediaLibrary\HasMedia;
  */
 class Promo extends BaseModel implements HasMedia
 {
-    use SoftDeletes, CustomInteractsWithMedia, Auditable;
+    use SoftDeletes, CustomInteractsWithMedia, Auditable, SaveToSubscriber, IsSubscribedTenanted;
 
     public $table = 'promos';
 
@@ -31,6 +33,7 @@ class Promo extends BaseModel implements HasMedia
     ];
 
     protected $fillable = [
+        'subscribtion_user_id',
         'promo_category_id',
         'name',
         'description',
@@ -66,7 +69,7 @@ class Promo extends BaseModel implements HasMedia
 
     public function discount()
     {
-        return $this->hasOne(Discount::class);
+        return $this->hasMany(Discount::class);
     }
 
     public function scopeTargetDatetime($query, $datetime)

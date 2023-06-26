@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Traits\Auditable;
+use App\Traits\IsSubscribedTenanted;
+use App\Traits\SaveToSubscriber;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class BrandCategory extends BaseModel
 {
-    use SoftDeletes, Auditable;
+    use SoftDeletes, Auditable, SaveToSubscriber, IsSubscribedTenanted;
 
     public $table = 'brand_categories';
 
@@ -22,6 +24,7 @@ class BrandCategory extends BaseModel
     ];
 
     protected $fillable = [
+        'subscribtion_user_id',
         'name',
         'code',
         'slug',

@@ -25,6 +25,7 @@
                             <th>
                                 {{ trans('cruds.subLeadCategory.fields.id') }}
                             </th>
+                            <th>Subscriber</th>
                             <th>
                                 {{ trans('cruds.subLeadCategory.fields.name') }}
                             </th>
@@ -47,6 +48,9 @@
                                 </td>
                                 <td>
                                     {{ $subLeadCategory->id ?? '' }}
+                                </td>
+                                <td>
+                                    {{ $subLeadCategory->leadCategory->subscribtionUser?->name ?? '' }}
                                 </td>
                                 <td>
                                     {{ $subLeadCategory->name ?? '' }}
@@ -104,13 +108,13 @@
                 var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
                 return $(entry).data('entry-id')
                 });
-            
+
                 if (ids.length === 0) {
                 alert('{{ trans('global.datatables.zero_selected') }}')
-            
+
                 return
                 }
-            
+
                 if (confirm('{{ trans('global.areYouSure') }}')) {
                 $.ajax({
                 headers: {'x-csrf-token': _token},

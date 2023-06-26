@@ -155,6 +155,7 @@
                         <th>
                             {{ trans('cruds.lead.fields.id') }}
                         </th>
+                        <th>Subscriber</th>
                         <th>
                             {{ trans('cruds.lead.fields.sales') }}
                         </th>
@@ -190,6 +191,9 @@
                         <td>
                             <input class="search" type="text" strict="true"
                                 placeholder="{{ trans('global.search') }}">
+                        </td>
+                        <td>
+                            <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
                         <td>
                             <select class="search">
@@ -306,6 +310,10 @@
                     {
                         data: 'id',
                         name: 'id'
+                    },
+                    {
+                        data: 'subscriber',
+                        name: 'channel.subscribtionUser.name'
                     },
                     {
                         data: 'sales',

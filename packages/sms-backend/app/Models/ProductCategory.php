@@ -4,7 +4,9 @@ namespace App\Models;
 
 // use App\Interfaces\Tenanted;
 use App\Traits\CustomInteractsWithMedia;
+use App\Traits\SaveToSubscriber;
 // use App\Traits\IsCompanyTenanted;
+use App\Traits\IsSubscribedTenanted;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -14,7 +16,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class ProductCategory extends BaseModel implements HasMedia
 {
-    use SoftDeletes, CustomInteractsWithMedia;
+    use IsSubscribedTenanted, SoftDeletes, CustomInteractsWithMedia, SaveToSubscriber;
 
     public $table = 'product_categories';
 
@@ -29,6 +31,7 @@ class ProductCategory extends BaseModel implements HasMedia
     ];
 
     protected $fillable = [
+        'subscribtion_user_id',
         'name',
         'description',
         // 'company_id',

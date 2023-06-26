@@ -11,6 +11,7 @@ class CreateCompaniesTable extends Migration
         // unused
         // Schema::create('companies', function (Blueprint $table) {
         //     $table->bigIncrements('id');
+        // $table->foreignId('subscribtion_package_id')->constrained();
         //     $table->string('name');
         //     // $table->foreignId('company_account_id')->nullable();
         //     $table->json('options')->nullable();

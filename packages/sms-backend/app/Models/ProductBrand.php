@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Traits\Auditable;
 use App\Traits\CustomInteractsWithMedia;
+use App\Traits\IsSubscribedTenanted;
 // use App\Traits\IsCompanyTenanted;
-use App\Traits\ProductListable;
+// use App\Traits\ProductListable;
+use App\Traits\SaveToSubscriber;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 
@@ -14,7 +16,7 @@ use Spatie\MediaLibrary\HasMedia;
  */
 class ProductBrand extends BaseModel implements HasMedia
 {
-    use CustomInteractsWithMedia, ProductListable, Auditable, SoftDeletes;
+    use CustomInteractsWithMedia, Auditable, SoftDeletes, SaveToSubscriber, IsSubscribedTenanted;
 
     public $table = 'product_brands';
 
@@ -29,6 +31,7 @@ class ProductBrand extends BaseModel implements HasMedia
     ];
 
     protected $fillable = [
+        'subscribtion_user_id',
         'name',
         // 'company_id',
         'hpp_calculation',

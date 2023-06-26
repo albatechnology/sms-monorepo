@@ -180,7 +180,7 @@ return [
         App\Providers\CustomOpenApiServiceProvider::class,
 
         Barryvdh\DomPDF\ServiceProvider::class,
-        Milon\Barcode\BarcodeServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
     ],
 
     /*

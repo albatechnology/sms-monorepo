@@ -16,10 +16,12 @@ class PaymentSeeder extends Seeder
     public function run()
     {
         $paymentCategory = PaymentCategory::create([
+            'subscribtion_user_id' => 2,
             'name' => 'Transfer'
         ]);
 
         PaymentType::create([
+            'subscribtion_user_id' => 2,
             'payment_category_id' => $paymentCategory->id,
             'name' => 'BCA Prioritas',
         ]);

@@ -1,4 +1,4 @@
-<div class="form-group">
+{{-- <div class="form-group">
     <label class="required" for="company_ids">{{ trans('cruds.user.fields.company') }}</label>
     <select class="form-control select2 {{ $errors->has('company_ids') ? 'is-invalid' : '' }}" name="company_ids[]"
         id="company_ids" multiple>
@@ -13,7 +13,7 @@
         <span class="text-danger">{{ $errors->first('company_ids') }}</span>
     @endif
     <span class="help-block">{{ trans('cruds.user.fields.company_helper') }}</span>
-</div>
+</div> --}}
 <div class="form-group">
     <label class="required" for="channel_ids">{{ trans('cruds.user.fields.channels') }}</label>
     {{-- <div style="padding-bottom: 4px">
@@ -22,12 +22,12 @@
             style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
     </div> --}}
     <select class="form-control select2 {{ $errors->has('channel_ids') ? 'is-invalid' : '' }}" name="channel_ids[]"
-        id="channel_ids" multiple {{ $user ? '' : 'disabled' }} data-placeholder="Select channels">
-        @if ($selectedChannels)
-            @foreach ($selectedChannels as $id => $name)
-                <option value="{{ $id }}" selected>{{ $name }}</option>
+        id="channel_ids" multiple data-placeholder="Select channels">
+        {{-- @if ($selectedChannels) --}}
+            @foreach ($channels as $id => $name)
+                <option value="{{ $id }}" @if(in_array($id, $selectedChannels ?? [])) @endif>{{ $name }}</option>
             @endforeach
-        @endif
+        {{-- @endif --}}
     </select>
     @if ($errors->has('channel_ids'))
         <span class="text-danger">{{ $errors->first('channel_ids') }}</span>
@@ -37,21 +37,21 @@
 <script>
     $('.select2').select2();
 
-    $('body').on('change', '#company_id, #company_ids', function() {
-        $('#channels').attr('disabled', true).html('');
+    // $('body').on('change', '#company_id, #company_ids', function() {
+    //     $('#channels').attr('disabled', true).html('');
 
-        $('#channel_ids').attr('disabled', true).html(options).val('').change();
-        var options = '';
-        if ($(this).val().length > 0) {
-            $.get("{{ url('admin/channels/get-channels') }}?company_id=" + $(this).val(), function(
-                res) {
-                res.forEach(data => {
-                    options += '<option value="' + data.id + '">' + data.name + '</option>';
-                });
-                $('#channel_ids').attr('disabled', false).html(options).val('').change();
-            })
-        } else {
-            $('#channel_ids').attr('disabled', true).html(options).val('').change();
-        }
-    });
+    //     $('#channel_ids').attr('disabled', true).html(options).val('').change();
+    //     var options = '';
+    //     if ($(this).val().length > 0) {
+    //         $.get("{{ url('admin/channels/get-channels') }}?company_id=" + $(this).val(), function(
+    //             res) {
+    //             res.forEach(data => {
+    //                 options += '<option value="' + data.id + '">' + data.name + '</option>';
+    //             });
+    //             $('#channel_ids').attr('disabled', false).html(options).val('').change();
+    //         })
+    //     } else {
+    //         $('#channel_ids').attr('disabled', true).html(options).val('').change();
+    //     }
+    // });
 </script>

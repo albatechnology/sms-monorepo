@@ -3,11 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Channel;
-use App\Models\ChannelCategory;
-use App\Models\Company;
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class ChannelSeeder extends Seeder
 {
@@ -24,6 +20,7 @@ class ChannelSeeder extends Seeder
 
         Channel::create([
             // 'company_id' => $company->id,
+            'subscribtion_user_id' => 2,
             'name' => 'Channel 1'
         ]);
     }

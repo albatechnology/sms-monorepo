@@ -7,6 +7,8 @@ use App\Enums\DiscountScope;
 use App\Enums\DiscountType;
 // use App\Interfaces\Tenanted;
 use App\Traits\Auditable;
+use App\Traits\IsSubscribedTenanted;
+use App\Traits\SaveToSubscriber;
 // use App\Traits\HasProductList;
 // use App\Traits\IsCompanyTenanted;
 use Carbon\Carbon;
@@ -18,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Discount extends BaseModel
 {
-    use SoftDeletes, Auditable;
+    use SoftDeletes, Auditable, SaveToSubscriber, IsSubscribedTenanted;
 
     public $table = 'discounts';
 

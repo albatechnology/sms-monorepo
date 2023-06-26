@@ -23,9 +23,9 @@ class ProductCategoryController extends Controller
     {
         abort_if(Gate::denies('product_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $productCategories = ProductCategory::with(['media'])->get();
+        $productCategories = ProductCategory::tenanted()->with(['media'])->get();
 
-        $product_categories = ProductCategory::get();
+        $product_categories = ProductCategory::tenanted()->get();
 
         // $companies = Company::get();
 
@@ -106,7 +106,7 @@ class ProductCategoryController extends Controller
 
     public function massDestroy(MassDestroyProductCategoryRequest $request)
     {
-        ProductCategory::whereIn('id', request('ids'))->delete();
+        ProductCategory::tenanted()->whereIn('id', request('ids'))->delete();
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
@@ -126,7 +126,7 @@ class ProductCategoryController extends Controller
     public function ajaxGetProductCategories(Request $request)
     {
         if ($request->ajax()) {
-            $productCategories = ProductCategory::query();
+            $productCategories = ProductCategory::tenanted()->query();
             // if ($request->company_id) {
             //     $company_id = explode(',', $request->company_id);
             //     $productCategories = $productCategories->whereIn('company_id', $company_id ?? []);

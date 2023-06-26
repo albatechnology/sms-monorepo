@@ -22,6 +22,7 @@
                             <th>
                                 {{ trans('cruds.paymentType.fields.id') }}
                             </th>
+                            <th>Subscriber</th>
                             <th>
                                 {{ trans('cruds.paymentType.fields.name') }}
                             </th>
@@ -46,6 +47,9 @@
                             <td>
                                 <input class="search" type="text" strict="true"
                                     placeholder="{{ trans('global.search') }}">
+                            </td>
+                            <td>
+                                <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                             </td>
                             <td>
                                 <input class="search" type="text" placeholder="{{ trans('global.search') }}">
@@ -79,6 +83,9 @@
                                 </td>
                                 <td>
                                     {{ $paymentType->id ?? '' }}
+                                </td>
+                                <td>
+                                    {{ $paymentType->subscribtionUser?->name ?? '' }}
                                 </td>
                                 <td>
                                     {{ $paymentType->name ?? '' }}

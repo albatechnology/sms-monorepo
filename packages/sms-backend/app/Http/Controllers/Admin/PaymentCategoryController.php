@@ -7,7 +7,7 @@ use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyPaymentCategoryRequest;
 use App\Http\Requests\StorePaymentCategoryRequest;
 use App\Http\Requests\UpdatePaymentCategoryRequest;
-use App\Models\Company;
+// use App\Models\Company;
 use App\Models\PaymentCategory;
 use Gate;
 use Illuminate\Http\Request;
@@ -22,8 +22,8 @@ class PaymentCategoryController extends Controller
     {
         abort_if(Gate::denies('payment_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $paymentCategories = PaymentCategory::all();
-
+        $paymentCategories = PaymentCategory::tenanted()->get();
+        // dd($paymentCategories);
         return view('admin.paymentCategories.index', compact('paymentCategories'));
     }
 

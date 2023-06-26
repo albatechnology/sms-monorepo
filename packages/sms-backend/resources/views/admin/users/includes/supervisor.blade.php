@@ -1,4 +1,4 @@
-<div class="form-group">
+{{-- <div class="form-group">
     <label class="required" for="company_id">{{ trans('cruds.user.fields.company') }}</label>
     <select class="form-control select2 {{ $errors->has('company_id') ? 'is-invalid' : '' }}" name="company_id"
         id="company_id">
@@ -13,7 +13,7 @@
         <span class="text-danger">{{ $errors->first('company_id') }}</span>
     @endif
     <span class="help-block">{{ trans('cruds.user.fields.company_helper') }}</span>
-</div>
+</div> --}}
 <div class="form-group">
     <label class="required" for="supervisor_type_id">{{ trans('cruds.user.fields.supervisor_type') }}</label>
     <select class="form-control select2 {{ $errors->has('supervisor_type') ? 'is-invalid' : '' }}"
@@ -77,8 +77,7 @@
         var options = '';
         $('#supervisor_id').attr('disabled', true).html(options).val('').change();
         if (supervisorTypeId.length > 0) {
-            $.get('{{ url('admin/users/get-users') }}?is_create_user=1&supervisor_type_id=' + supervisorTypeId +
-                '&company_id=' + $('#company_id').val(),
+            $.get('{{ url('admin/users/get-users') }}?is_create_user=1&supervisor_type_id=' + supervisorTypeId,
                 function(res) {
                     res.forEach(data => {
                         var selected = defaultSupervisorId == data.id ? 'selected' : '';
@@ -92,7 +91,7 @@
         }
 
         if (supervisorTypeId == maxSupervisorTypeId) {
-            $.get("{{ url('admin/channels/get-channels') }}?company_id=" + $('#company_id').val(), function(
+            $.get("{{ url('admin/channels/get-channels') }}", function(
                 res) {
                 res.forEach(data => {
                     options += '<option value="' + data.id + '">' + data.name +

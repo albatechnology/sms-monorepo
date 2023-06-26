@@ -8,7 +8,7 @@ use App\Http\Requests\MassDestroyUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Channel;
-use App\Models\Company;
+// use App\Models\Company;
 use App\Models\Role;
 use App\Models\SupervisorType;
 use App\Models\User;
@@ -29,8 +29,8 @@ class UsersController extends Controller
         abort_if(Gate::denies('user_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = User::tenanted()->with(['roles', 'supervisor_type', 'companies', 'channels'])
-                ->leftJoin('users AS spv', 'spv.id', '=', 'users.supervisor_id')
+            $query = User::tenanted()->with(['roles', 'supervisor_type', 'channels'])
+                // ->leftJoin('users AS spv', 'spv.id', '=', 'users.supervisor_id')
                 ->select(sprintf('%s.*', (new User)->table));
 
             if (!empty($request->input('columns.9.search.value'))) {
@@ -78,7 +78,7 @@ class UsersController extends Controller
                 $labels = [];
 
                 foreach ($row->roles as $role) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $role->title);
+                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $role->name);
                 }
 
                 return implode(' ', $labels);
@@ -94,15 +94,15 @@ class UsersController extends Controller
                 return $row->supervisor ? $row->supervisor->name : '';
             });
 
-            $table->editColumn('companies', function ($row) {
-                $labels = [];
+            // $table->editColumn('companies', function ($row) {
+            //     $labels = [];
 
-                foreach ($row->companies as $company) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $company->name);
-                }
+            //     foreach ($row->companies as $company) {
+            //         $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $company->name);
+            //     }
 
-                return implode(', ', $labels);
-            });
+            //     return implode(', ', $labels);
+            // });
             $table->editColumn('channels', function ($row) {
                 $labels = [];
 
@@ -118,25 +118,25 @@ class UsersController extends Controller
             $table->filterColumn('supervisor.name', function ($query) {
             });
 
-            $table->rawColumns(['actions', 'placeholder', 'roles', 'supervisor_type', 'supervisor', 'companies', 'channels']);
+            $table->rawColumns(['actions', 'placeholder', 'roles', 'supervisor_type', 'supervisor', 'channels']);
 
             return $table->make(true);
         }
 
-        $roles            = Role::get();
+        $roles            = Role::tenanted()->get();
         $supervisor_types = SupervisorType::get();
-        $users            = User::get();
-        $companies        = Company::get();
-        $channels         = Channel::get();
+        $users            = User::tenanted()->get();
+        // $companies        = Company::get();
+        $channels         = Channel::tenanted()->get();
 
-        return view('admin.users.index', compact('roles', 'supervisor_types', 'users', 'companies', 'channels'));
+        return view('admin.users.index', compact('roles', 'supervisor_types', 'users', 'channels'));
     }
 
     public function create()
     {
         abort_if(Gate::denies('user_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $roles = Role::all()->pluck('title', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $roles = Role::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $supervisor_types = SupervisorType::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -149,17 +149,17 @@ class UsersController extends Controller
     public function store(StoreUserRequest $request)
     {
         $user = User::create($request->validated());
-        if (isset($request->company_ids) && count($request->company_ids) > 0) {
-            $user->update(['company_id' => $request->company_ids[0]]);
-            $user->companies()->sync($request->input('company_ids', []));
-            // foreach ($request->company_ids as $cid) {
-            //     UserCompany::create(['user_id' => $user->id, 'company_id' => $cid]);
-            // }
-        } else {
-            $user->update(['company_ids' => [$user->company_id]]);
-            $user->companies()->sync([$user->company_id]);
-            // UserCompany::create(['user_id' => $user->id, 'company_id' => $user->company_id]);
-        }
+        // if (isset($request->company_ids) && count($request->company_ids) > 0) {
+        //     $user->update(['company_id' => $request->company_ids[0]]);
+        //     $user->companies()->sync($request->input('company_ids', []));
+        //     // foreach ($request->company_ids as $cid) {
+        //     //     UserCompany::create(['user_id' => $user->id, 'company_id' => $cid]);
+        //     // }
+        // } else {
+        //     $user->update(['company_ids' => [$user->company_id]]);
+        //     $user->companies()->sync([$user->company_id]);
+        //     // UserCompany::create(['user_id' => $user->id, 'company_id' => $user->company_id]);
+        // }
 
         $user->roles()->sync($request->input('role', []));
 
@@ -188,8 +188,7 @@ class UsersController extends Controller
     public function edit(User $user)
     {
         abort_if(Gate::denies('user_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        if ($user->type->in([UserType::SALES_SMS, UserType::SUPERVISOR_SMS])) return redirect()->route('admin.users.editSms', $user->id);
-        $roles = Role::all()->pluck('title', 'id');
+        $roles = Role::tenanted()->pluck('name', 'id');
 
         $supervisor_types = SupervisorType::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -277,7 +276,7 @@ class UsersController extends Controller
     public function ajaxGetUsers(Request $request)
     {
         if ($request->ajax()) {
-            $users = User::select('id', 'name');
+            $users = User::tenanted()->select('id', 'name');
             // if ($companyId = $request->company_id) {
             //     $users->where(function ($q) use ($companyId) {
             //         $q->where('company_id', $companyId)->orWhereHas('companies', fn ($q) => $q->where('channel_id', $companyId));
@@ -311,10 +310,10 @@ class UsersController extends Controller
         }
     }
 
-    public function getChannels($companyId)
+    public function getChannels()
     {
         $channel_ids = isset($_POST['channel_ids']) && count($_POST['channel_ids']) > 0 ? $_POST['channel_ids'] : [];
-        $channels = Channel::pluck('name', 'id')->all();
+        $channels = Channel::tenanted()->pluck('name', 'id')->all();
         // $channels = Channel::tenanted()->whereCompanyId($companyId)->pluck('name', 'id')->all();
         $html = '<option value="">- Channels is empty -</option>';
         if ($channels) {
@@ -337,19 +336,20 @@ class UsersController extends Controller
     {
         $user = $userId ? User::findOrFail($userId) : null;
         $selectedChannels = $user?->channels?->pluck('name', 'id')->all() ?? null;
+        $channels = user()->channels?->pluck('name', 'id')->all() ?? null;
 
-        $companies = Company::tenanted()->get()->pluck('name', 'id');
+        // $companies = Company::tenanted()->get()->pluck('name', 'id');
 
-        return view('admin.users.includes.default', ['companies' => $companies, 'user' => $user, 'selectedChannels' => $selectedChannels]);
+        return view('admin.users.includes.default', ['user' => $user, 'channels' => $channels, 'selectedChannels' => $selectedChannels]);
     }
 
     public function includeFormDirector($userId = null)
     {
         $user = $userId ? User::findOrFail($userId) : null;
-        $selectedCompanies = $user?->companies?->pluck('id')->all() ?? null;
-        $companies = Company::tenanted()->get()->pluck('name', 'id');
+        // $selectedCompanies = $user?->companies?->pluck('id')->all() ?? null;
+        // $companies = Company::tenanted()->get()->pluck('name', 'id');
 
-        return view('admin.users.includes.director', ['companies' => $companies, 'user' => $user, 'selectedCompanies' => $selectedCompanies]);
+        return view('admin.users.includes.director', ['user' => $user]);
     }
 
     public function includeFormSupervisor($userId = null)
@@ -357,20 +357,20 @@ class UsersController extends Controller
         $user = $userId ? User::findOrFail($userId) : null;
         $selectedChannels = $user?->channels?->pluck('id')->all() ?? null;
 
-        $companies = Company::tenanted()->get()->pluck('name', 'id');
+        // $companies = Company::tenanted()->get()->pluck('name', 'id');
         $supervisor_types = SupervisorType::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         $maxSupervisorTypeId = DB::table('supervisor_types')->whereNull('deleted_at')->max('id');
 
-        return view('admin.users.includes.supervisor', ['companies' => $companies, 'user' => $user, 'supervisor_types' => $supervisor_types, 'maxSupervisorTypeId' => $maxSupervisorTypeId, 'selectedChannels' => $selectedChannels]);
+        return view('admin.users.includes.supervisor', ['user' => $user, 'supervisor_types' => $supervisor_types, 'maxSupervisorTypeId' => $maxSupervisorTypeId, 'selectedChannels' => $selectedChannels]);
     }
 
     public function includeFormSales($userId = null)
     {
         $user = $userId ? User::findOrFail($userId) : null;
-        $companies = Company::tenanted()->get()->pluck('name', 'id');
+        // $companies = Company::tenanted()->get()->pluck('name', 'id');
         $selectedProductBrands = $user?->productBrands?->pluck('id')->all() ?? null;
         $selectedChannels = $user?->channels?->pluck('id')->all() ?? null;
 
-        return view('admin.users.includes.sales', ['companies' => $companies, 'user' => $user, 'selectedProductBrands' => $selectedProductBrands, 'selectedChannels' => $selectedChannels]);
+        return view('admin.users.includes.sales', ['user' => $user, 'selectedProductBrands' => $selectedProductBrands, 'selectedChannels' => $selectedChannels]);
     }
 }

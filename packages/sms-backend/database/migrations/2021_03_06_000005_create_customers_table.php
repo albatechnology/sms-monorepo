@@ -10,6 +10,7 @@ class CreateCustomersTable extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('subscribtion_user_id')->constrained('subscribtion_users');
             $table->tinyInteger('title')->nullable();
             $table->string('first_name')->index();
             $table->string('last_name')->nullable()->index();

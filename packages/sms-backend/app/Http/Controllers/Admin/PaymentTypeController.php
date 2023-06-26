@@ -23,9 +23,9 @@ class PaymentTypeController extends Controller
     {
         abort_if(Gate::denies('payment_type_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $paymentTypes = PaymentType::with(['payment_category'])->get();
+        $paymentTypes = PaymentType::tenanted()->with(['payment_category'])->get();
 
-        $payment_categories = PaymentCategory::get();
+        $payment_categories = PaymentCategory::tenanted()->get();
 
         // $companies = Company::get();
 
@@ -36,7 +36,7 @@ class PaymentTypeController extends Controller
     {
         abort_if(Gate::denies('payment_type_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $paymentCategories = PaymentCategory::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $paymentCategories = PaymentCategory::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         return view('admin.paymentTypes.create', compact('paymentCategories'));
     }
 
@@ -59,7 +59,7 @@ class PaymentTypeController extends Controller
     {
         abort_if(Gate::denies('payment_type_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $paymentCategories = PaymentCategory::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $paymentCategories = PaymentCategory::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $paymentType->load('payment_category');
 

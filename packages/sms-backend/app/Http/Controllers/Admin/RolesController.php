@@ -10,7 +10,6 @@ use App\Http\Requests\UpdateRoleRequest;
 use App\Models\Permission;
 use App\Models\Role;
 use Gate;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class RolesController extends Controller
@@ -21,7 +20,7 @@ class RolesController extends Controller
     {
         abort_if(Gate::denies('role_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $roles = Role::with(['permissions'])->get();
+        $roles = Role::tenanted()->with(['permissions'])->get();
 
         return view('admin.roles.index', compact('roles'));
     }
@@ -30,7 +29,7 @@ class RolesController extends Controller
     {
         abort_if(Gate::denies('role_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $permissions = Permission::all()->pluck('title', 'id');
+        $permissions = Permission::all()->pluck('name', 'id');
 
         return view('admin.roles.create', compact('permissions'));
     }
@@ -47,7 +46,7 @@ class RolesController extends Controller
     {
         abort_if(Gate::denies('role_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $permissions = Permission::all()->pluck('title', 'id');
+        $permissions = Permission::all()->pluck('name', 'id');
 
         $role->load('permissions');
 

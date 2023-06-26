@@ -18,21 +18,25 @@ class ProductSeeder extends Seeder
     public function run()
     {
         $brandCategory = BrandCategory::create([
+            'subscribtion_user_id' => 2,
             'name' => 'Brand Category 1',
             'code' => 'BC1',
             'slug' => 'brand-category-1',
         ]);
 
         $productBrand = ProductBrand::create([
+            'subscribtion_user_id' => 2,
             'brand_category_id' => $brandCategory->id,
             'name' => 'Product Brand 1'
         ]);
 
         $productCategory = ProductCategory::create([
+            'subscribtion_user_id' => 2,
             'name' => 'Product Category 1'
         ]);
 
         Product::create([
+            'subscribtion_user_id' => 2,
             'product_category_id' => $productCategory->id,
             'product_brand_id' => $productBrand->id,
             'brand_category_id' => $brandCategory->id,

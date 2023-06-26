@@ -10,6 +10,7 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('subscribtion_user_id')->constrained('subscribtion_users');
             $table->foreignId('channel_id')->constrained(); // unused
             $table->bigInteger('amount');
             $table->string('reference')->nullable()->index();

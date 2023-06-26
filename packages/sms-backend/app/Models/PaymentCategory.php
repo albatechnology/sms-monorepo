@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use App\Interfaces\Tenanted;
 use App\Traits\CustomInteractsWithMedia;
+use App\Traits\IsSubscribedTenanted;
+use App\Traits\SaveToSubscriber;
 // use App\Traits\IsCompanyTenanted;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,7 +16,7 @@ use Spatie\MediaLibrary\HasMedia;
  */
 class PaymentCategory extends BaseModel implements HasMedia
 {
-    use SoftDeletes, CustomInteractsWithMedia;
+    use SoftDeletes, CustomInteractsWithMedia, SaveToSubscriber, IsSubscribedTenanted;
 
     public $table = 'payment_categories';
 
@@ -29,6 +31,7 @@ class PaymentCategory extends BaseModel implements HasMedia
     ];
 
     protected $fillable = [
+        'subscribtion_user_id',
         'name',
         // 'company_id',
         'created_at',

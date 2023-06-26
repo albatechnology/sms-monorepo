@@ -10,6 +10,7 @@ class CreatePaymentTypesTable extends Migration
     {
         Schema::create('payment_types', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('subscribtion_user_id')->constrained('subscribtion_users');
             $table->string('name');
             $table->boolean('require_approval')->default(0)->nullable();
             $table->foreignId('payment_category_id')->constrained();

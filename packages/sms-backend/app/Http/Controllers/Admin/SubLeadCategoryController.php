@@ -24,7 +24,7 @@ class SubLeadCategoryController extends Controller
     public function create()
     {
         abort_if(Gate::denies('sub_lead_category_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $leadCategories = LeadCategory::all()->pluck('name', 'id');
+        $leadCategories = LeadCategory::tenanted()->pluck('name', 'id');
         return view('admin.subLeadCategories.create', ['leadCategories' => $leadCategories]);
     }
 
@@ -44,7 +44,7 @@ class SubLeadCategoryController extends Controller
     {
         abort_if(Gate::denies('sub_lead_category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $leadCategories = LeadCategory::all()->pluck('name', 'id');
+        $leadCategories = LeadCategory::tenanted()->pluck('name', 'id');
         return view('admin.subLeadCategories.edit', compact('subLeadCategory', 'leadCategories'));
     }
 

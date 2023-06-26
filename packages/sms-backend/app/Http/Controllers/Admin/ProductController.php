@@ -9,14 +9,12 @@ use App\Http\Requests\MassDestroyProductRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Jobs\GenerateProductBarcode;
-use App\Models\Company;
 use App\Models\Product;
 use App\Models\ProductBrand;
 use App\Models\ProductModel;
 use App\Models\ProductVersion;
 use App\Models\ProductCategoryCode;
 use App\Models\ProductCategory;
-use App\Models\ProductTag;
 use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -31,7 +29,7 @@ class ProductController extends Controller
         abort_if(Gate::denies('product_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Product::query()
+            $query = Product::tenanted()
                 ->with(['productCategory', 'brand'])
                 ->select(sprintf('%s.*', (new Product)->table));
             $table = Datatables::of($query);
@@ -101,10 +99,8 @@ class ProductController extends Controller
             return $table->make(true);
         }
 
-        // $productCategories = ProductCategory::tenanted()->get();
-        $productCategories = ProductCategory::get();
-        // $productBrands       = ProductBrand::tenanted()->get();
-        $productBrands       = ProductBrand::get();
+        $productCategories = ProductCategory::tenanted()->get();
+        $productBrands = ProductBrand::tenanted()->get();
         // $companies          = Company::tenanted()->get();
 
         return view('admin.products.index', compact('productCategories', 'productBrands'));
@@ -114,10 +110,8 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        // $productBrands = ProductBrand::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $productBrands = ProductBrand::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        // $categories = ProductCategory::tenanted()->pluck('name', 'id');
-        $categories = ProductCategory::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $productBrands = ProductBrand::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $categories = ProductCategory::tenanted()->pluck('name', 'id');
 
         // $companies = Company::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -143,11 +137,9 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        // $productBrands = ProductBrand::where('company_id', $product->company_id)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $productBrands = ProductBrand::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $productBrands = ProductBrand::where('subscribtion_user_id', $product->subscribtion_user_id)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        // $categories = ProductCategory::where('company_id', $product->company_id)->pluck('name', 'id');
-        $categories = ProductCategory::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $categories = ProductCategory::where('subscribtion_user_id', $product->subscribtion_user_id)->pluck('name', 'id');
 
         // $companies = Company::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -216,7 +208,7 @@ class ProductController extends Controller
 
     public function getProductSuggestion(Request $request)
     {
-        $products = Product::where('name', 'like', '%' . $request->name . '%');
+        $products = Product::tenanted()->where('name', 'like', '%' . $request->name . '%');
         // if ($request->has('company_id') && $request->company_id != '') {
         //     $products->where('company_id', $request->company_id);
         // }
@@ -224,43 +216,43 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-    public function getModels(Request $request)
-    {
-        $data = ProductModel::where('name', 'LIKE', "%" . $request->q . "%")->orWhere('description', 'LIKE', "%" . $request->q . "%")->get();
+    // public function getModels(Request $request)
+    // {
+    //     $data = ProductModel::where('name', 'LIKE', "%" . $request->q . "%")->orWhere('description', 'LIKE', "%" . $request->q . "%")->get();
 
-        return response()->json($data);
-    }
+    //     return response()->json($data);
+    // }
 
-    public function getVersions(Request $request)
-    {
-        $data = ProductVersion::where('name', 'LIKE', "%" . $request->q . "%")->get();
+    // public function getVersions(Request $request)
+    // {
+    //     $data = ProductVersion::where('name', 'LIKE', "%" . $request->q . "%")->get();
 
-        return response()->json($data);
-    }
+    //     return response()->json($data);
+    // }
 
-    public function getCategoryCodes(Request $request)
-    {
-        $data = ProductCategoryCode::where('name', 'LIKE', "%" . $request->q . "%")->get();
+    // public function getCategoryCodes(Request $request)
+    // {
+    //     $data = ProductCategoryCode::where('name', 'LIKE', "%" . $request->q . "%")->get();
 
-        return response()->json($data);
-    }
+    //     return response()->json($data);
+    // }
 
-    public function generateBarcode(Request $request, $id = null)
-    {
-        if ($request->post()) {
-            $fileName = 'product-barcode-' . date('dmyhis');
-            $export = \App\Models\Export::create([
-                'user_id' => auth()->id(),
-                'title' => $fileName,
-                'file_name' => $fileName . '.pdf',
-            ]);
+    // public function generateBarcode(Request $request, $id = null)
+    // {
+    //     if ($request->post()) {
+    //         $fileName = 'product-barcode-' . date('dmyhis');
+    //         $export = \App\Models\Export::create([
+    //             'user_id' => auth()->id(),
+    //             'title' => $fileName,
+    //             'file_name' => $fileName . '.pdf',
+    //         ]);
 
-            GenerateProductBarcode::dispatch($export, $request->except('_token'));
-            return redirect()->back()->with('message', 'Generating product barcodes. Download in File Export menu');
-        }
+    //         GenerateProductBarcode::dispatch($export, $request->except('_token'));
+    //         return redirect()->back()->with('message', 'Generating product barcodes. Download in File Export menu');
+    //     }
 
-        $products = \Illuminate\Support\Facades\DB::table('products')->select('id', 'name')->where('id', $id)->get();
+    //     $products = \Illuminate\Support\Facades\DB::table('products')->select('id', 'name')->where('id', $id)->get();
 
-        return \PDF::loadView('admin.products.generateBarcode', ['products' => $products])->download();
-    }
+    //     return \PDF::loadView('admin.products.generateBarcode', ['products' => $products])->download();
+    // }
 }

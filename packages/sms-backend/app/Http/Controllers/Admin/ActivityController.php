@@ -25,7 +25,7 @@ class ActivityController extends Controller
         abort_if(Gate::denies('activity_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Activity::with(['user', 'lead'])
+            $query = Activity::tenanted()->with(['user', 'lead'])
                 ->select(sprintf('%s.*', (new Activity)->table));
             $table = Datatables::of($query);
 
@@ -81,7 +81,7 @@ class ActivityController extends Controller
     {
         abort_if(Gate::denies('activity_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $users = User::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $users = User::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $leads = Lead::tenanted()->get()->pluck('label', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -99,11 +99,11 @@ class ActivityController extends Controller
     {
         abort_if(Gate::denies('activity_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $users = User::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $users = User::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $leads = Lead::all()->pluck('label', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $leads = Lead::tenanted()->pluck('label', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $customers = Customer::all()->pluck('full_name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $customers = Customer::tenanted()->pluck('full_name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $activity->load('user', 'lead');
 

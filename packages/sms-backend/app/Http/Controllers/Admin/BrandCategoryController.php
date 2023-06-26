@@ -8,7 +8,6 @@ use App\Http\Requests\StoreBrandCategoryRequest;
 use App\Http\Requests\UpdateBrandCategoryRequest;
 use App\Models\BrandCategory;
 use Gate;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class BrandCategoryController extends Controller
@@ -17,7 +16,7 @@ class BrandCategoryController extends Controller
     {
         abort_if(Gate::denies('brand_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $brandCategories = BrandCategory::all();
+        $brandCategories = BrandCategory::tenanted()->get();
 
         return view('admin.brandCategories.index', compact('brandCategories'));
     }

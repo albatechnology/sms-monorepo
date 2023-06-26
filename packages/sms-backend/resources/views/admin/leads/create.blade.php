@@ -8,7 +8,7 @@
             <form method="POST" action="{{ route('admin.leads.store') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="type" value="3">
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="required" for="company_id">{{ trans('cruds.user.fields.company') }}</label>
                     <select class="form-control select2 {{ $errors->has('company_id') ? 'is-invalid' : '' }}"
                         name="company_id" id="company_id" required>
@@ -22,11 +22,15 @@
                         <span class="text-danger">{{ $errors->first('company_id') }}</span>
                     @endif
                     <span class="help-block">{{ trans('cruds.user.fields.company_helper') }}</span>
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label for="channel_id">{{ trans('cruds.user.fields.channels') }}</label>
-                    <select class="form-control select2 {{ $errors->has('channel_id') ? 'is-invalid' : '' }}"
-                        name="channel_id" id="channel_id" disabled data-placeholder="Select channel" data-allow-clear="true">
+                    <select class="form-control select2 {{ $errors->has('channel_id') ? 'is-invalid' : '' }}" name="channel_id" id="channel_id" data-placeholder="Select channel" data-allow-clear="true">
+                        @foreach ($channels as $id => $name)
+                        <option value="{{ $id }}" {{ old('channel_id') == $id ? 'selected' : '' }}>
+                            {{ $name }}
+                        </option>
+                    @endforeach
                     </select>
                     @if ($errors->has('channel_id'))
                         <span class="text-danger">{{ $errors->first('channel_id') }}</span>
@@ -35,8 +39,12 @@
                 </div>
                 <div class="form-group">
                     <label>Product Brand</label>
-                    <select name="product_brand_ids[]" id="product_brand_ids"
-                        class="form-control select2 @error('product_brand_ids') is-invalid @enderror" multiple disabled data-placeholder="Select Product Brands">
+                    <select name="product_brand_ids[]" id="product_brand_ids" class="form-control select2 @error('product_brand_ids') is-invalid @enderror" multiple data-placeholder="Select Product Brands">
+                        @foreach ($productBrands as $id => $name)
+                        <option value="{{ $id }}">
+                            {{ $name }}
+                        </option>
+                    @endforeach
                     </select>
                     @error('product_brand_ids')
                         <span class="error invalid-feedback">{{ $message }}</span>
@@ -316,45 +324,45 @@
 @endsection
 @push('js')
     <script>
-        function getChannles(companyId) {
-            var options = '';
-            $('#channel_id').attr('disabled', true).html(options).val('').change();
-            if (companyId) {
-                $.get("{{ url('admin/channels/get-channels') }}?company_id=" + companyId, function(
-                    res) {
-                    res.forEach(data => {
-                        options += '<option value="' + data.id + '">' + data.name +
-                            '</option>';
-                    });
-                    $('#channel_id').attr('disabled', false).html(options).change();
-                })
-            } else {
-                $('#channel_id').attr('disabled', true).html(options).val('').change();
-            }
-        }
+        // function getchannels(companyId) {
+        //     var options = '';
+        //     $('#channel_id').attr('disabled', true).html(options).val('').change();
+        //     if (companyId) {
+        //         $.get("{{ url('admin/channels/get-channels') }}?company_id=" + companyId, function(
+        //             res) {
+        //             res.forEach(data => {
+        //                 options += '<option value="' + data.id + '">' + data.name +
+        //                     '</option>';
+        //             });
+        //             $('#channel_id').attr('disabled', false).html(options).change();
+        //         })
+        //     } else {
+        //         $('#channel_id').attr('disabled', true).html(options).val('').change();
+        //     }
+        // }
 
-        function getProductBrands(companyId) {
-            var options = '';
-            $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
-            if (companyId) {
-                $.get('{{ url('admin/product-brands/get-product-brands') }}?company_id=' + companyId,
-                    function(
-                        res) {
-                        res.forEach(data => {
-                            options += '<option value="' + data.id + '">' + data.name +
-                                '</option>';
-                        });
-                        $('#product_brand_ids').attr('disabled', false).html(options).change();
-                    })
-            } else {
-                $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
-            }
-        }
+        // function getProductBrands(companyId) {
+        //     var options = '';
+        //     $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
+        //     if (companyId) {
+        //         $.get('{{ url('admin/product-brands/get-product-brands') }}?company_id=' + companyId,
+        //             function(
+        //                 res) {
+        //                 res.forEach(data => {
+        //                     options += '<option value="' + data.id + '">' + data.name +
+        //                         '</option>';
+        //                 });
+        //                 $('#product_brand_ids').attr('disabled', false).html(options).change();
+        //             })
+        //     } else {
+        //         $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
+        //     }
+        // }
 
         $(document).ready(function() {
             $('#company_id').on('change', function() {
-                getChannles($(this).val());
-                getProductBrands($(this).val());
+                // getchannels($(this).val());
+                // getProductBrands($(this).val());
             });
 
             $('#customer_id').select2({

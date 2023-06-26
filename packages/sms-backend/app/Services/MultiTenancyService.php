@@ -116,8 +116,13 @@ class MultiTenancyService
         // no user, return null, or perhaps even exception?
         if (!$user) return null;
 
-        if ($user->is_admin || $user->is_director) {
+        if ($user->is_super_admin) {
             return Channel::get();
+        }
+
+        if ($user->is_admin || $user->is_director) {
+            // return Channel::get();
+            return Channel::where('subscribtion_user_id', $user->subscribtion_user_id)->get();
         }
 
         return $user->channels;

@@ -52,6 +52,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
     ];
 
     protected $fillable = [
+        'subscribtion_user_id',
         'raw_source',
         'note',
         'channel_id',

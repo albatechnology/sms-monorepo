@@ -19,6 +19,7 @@ class LeadSeeder extends Seeder
     public function run()
     {
         $leadCategory = LeadCategory::create([
+            'subscribtion_user_id' => 2,
             'name' => 'Lead Category 1',
             'description' => 'description Lead Category 1',
         ]);

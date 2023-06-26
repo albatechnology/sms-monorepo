@@ -4,18 +4,40 @@ namespace Database\Seeders;
 
 use App\Enums\UserType;
 use App\Models\Channel;
-use App\Models\Company;
-use App\Models\PersonalAccessToken;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class UsersTableSeeder extends Seeder
 {
     public function run()
     {
+        $channel = Channel::create([
+            // 'company_id' => $company->id,
+            'subscribtion_user_id' => 2,
+            'name' => 'Channel Starter 1'
+        ]);
+
+        $admin = User::create([
+            'subscribtion_user_id' => 2,
+            'name' => 'Admin Starter',
+            'email' => 'adminstarter@gmail.com',
+            'password' => bcrypt('12345678'),
+            'type' => UserType::DEFAULT,
+        ]);
+        $admin->channels()->sync([$channel->id]);
+        // $admin->assignRole($adminRole);
+        DB::table('model_has_roles')->insert([
+            'role_id' => 2,
+            'model_type' => 'user',
+            'model_id' => $admin->id,
+            'subscribtion_user_id' => 2
+        ]);
+
         // Director
         $director = User::create(
             [
+                'subscribtion_user_id' => 2,
                 'name'           => 'Director',
                 'email'          => 'director@gmail.com',
                 'password'       => bcrypt('12345678'),
@@ -24,9 +46,11 @@ class UsersTableSeeder extends Seeder
                 'channel_id'     => 1
             ],
         );
+        $director->channels()->sync([$channel->id]);
 
         $bum = User::create(
             [
+                'subscribtion_user_id' => 2,
                 'name'           => 'BUM',
                 'email'          => 'bum@gmail.com',
                 'password'       => bcrypt('12345678'),
@@ -37,9 +61,11 @@ class UsersTableSeeder extends Seeder
                 'supervisor_type_id' => 2
             ],
         );
+        $bum->channels()->sync([$channel->id]);
 
         $storeLeader = User::create(
             [
+                'subscribtion_user_id' => 2,
                 'name'           => 'Store Leader',
                 'email'          => 'storeleader@gmail.com',
                 'password'       => bcrypt('12345678'),
@@ -50,9 +76,11 @@ class UsersTableSeeder extends Seeder
                 'supervisor_type_id' => 1
             ],
         );
+        $storeLeader->channels()->sync([$channel->id]);
 
         $sales = User::create(
             [
+                'subscribtion_user_id' => 2,
                 'name'           => 'Sales',
                 'email'          => 'sales@gmail.com',
                 'password'       => bcrypt('12345678'),
@@ -62,35 +90,28 @@ class UsersTableSeeder extends Seeder
                 'supervisor_id' => $storeLeader->id
             ],
         );
+        $sales->channels()->sync([$channel->id]);
 
-        // // Supervisor
-        // $supervisor = User::factory()->supervisor()->create(
-        //     [
-        //         'name'           => 'Supervisor',
-        //         'email'          => 'supervisor@gmail.com',
-        //         'password'       => bcrypt('12345678'),
-        //         'remember_token' => null,
-        //         'channel_id'     => 1
-        //     ],
-        // );
+        $channel = Channel::create([
+            // 'company_id' => $company->id,
+            'subscribtion_user_id' => 3,
+            'name' => 'Channel basic 1'
+        ]);
 
-        // // Sales
-        // $sales = User::supervisedBy($supervisor)->create(
-        //     [
-        //         'name'           => 'Sales',
-        //         'email'          => 'sales@gmail.com',
-        //         'password'       => bcrypt('12345678'),
-        //         'remember_token' => null,
-        //         'type'           => UserType::SALES,
-        //         'channel_id'     => 1
-        //     ],
-        // );
-
-        // Assign all channels to all users
-        $channels = Channel::all();
-        User::all()->each(function (User $user) use ($channels) {
-            $user->channels()->sync($channels->pluck('id'));
-        });
+        $admin = User::create([
+            'subscribtion_user_id' => 3,
+            'name' => 'Admin basic',
+            'email' => 'adminbasic@gmail.com',
+            'password' => bcrypt('12345678'),
+            'type' => UserType::DEFAULT,
+        ]);
+        $admin->channels()->sync([$channel->id]);
+        DB::table('model_has_roles')->insert([
+            'role_id' => 2,
+            'model_type' => 'user',
+            'model_id' => $admin->id,
+            'subscribtion_user_id' => 3
+        ]);
 
         // Assign predefined API token
         // $data = [

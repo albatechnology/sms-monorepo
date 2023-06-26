@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
@@ -11,14 +10,16 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            SubscribtionPackageSeeder::class,
+            PermissionSeeder::class,
             AdminUsersTableSeeder::class,
             SupervisorTypeSeeder::class,
-            ChannelSeeder::class,
+            // ChannelSeeder::class,
             UsersTableSeeder::class,
-            PermissionsTableSeeder::class,
-            RolesTableSeeder::class,
-            PermissionRoleTableSeeder::class,
-            RoleUserTableSeeder::class,
+            // PermissionsTableSeeder::class,
+            // RolesTableSeeder::class,
+            // PermissionRoleTableSeeder::class,
+            // RoleUserTableSeeder::class,
 
             ProductSeeder::class,
             LeadSeeder::class,
@@ -62,18 +63,10 @@ class DatabaseSeeder extends Seeder
         //                 RoleUserTableSeeder::class,
         //                 CustomerSeeder::class,
 
-        //                 // product unit detail
-        // //                CoveringSeeder::class,
-        // //                ColourSeeder::class,
-
         //                 ProductTagSeeder::class,
         //                 ProductCategorySeeder::class,
         //                 ProductSeeder::class,
         //                 LeadSeeder::class,
-        //                 AddressSeeder::class,
-        //                 ActivitySeeder::class,
-        //                 ActivityCommentSeeder::class,
-        //                 QaSeeder::class,
         //                 ProductListSeeder::class,
         //                 DiscountSeeder::class,
 

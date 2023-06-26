@@ -10,7 +10,7 @@ use App\Http\Requests\UpdateLeadRequest;
 use App\Imports\NewLeadsImport;
 use App\Models\Address;
 use App\Models\Channel;
-use App\Models\Company;
+// use App\Models\Company;
 use App\Models\Customer;
 use App\Models\Lead;
 use App\Models\LeadCategory;
@@ -33,7 +33,7 @@ class LeadsController extends Controller
         abort_if(Gate::denies('lead_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Lead::tenanted()->with(['sales', 'customer', 'channel'])->select(sprintf('%s.*', (new Lead)->table));
+            $query = Lead::tenanted()->with(['sales', 'customer', 'channel.subscribtionUser'])->select(sprintf('%s.*', (new Lead)->table));
             // if (isset($request->company_id) && $request->company_id != '') {
             //     $query = $query->whereCompanyId($request->company_id);
             // }
@@ -75,6 +75,9 @@ class LeadsController extends Controller
                 ));
             });
 
+            $table->addColumn('subscriber', function ($row) {
+                return $row->channel?->subscribtionUser?->name ?? '-';
+            });
             $table->addColumn('sales', function ($row) {
                 return $row->user ? $row->user->name . ' - ' . $row->user->type->description : '';
             });
@@ -110,13 +113,13 @@ class LeadsController extends Controller
             return $table->make(true);
         }
 
-        $customers = Customer::get();
-        $channels  = Channel::get();
-        $sales = User::where('type', UserType::SALES)->get();
+        $customers = Customer::tenanted()->get();
+        $channels  = Channel::tenanted()->get();
+        $sales = User::tenanted()->where('type', UserType::SALES)->get();
         // $companies = Company::tenanted()->pluck('name', 'id');
-        $supervisors = User::where('type', UserType::SUPERVISOR)->where('supervisor_type_id', 2)->pluck('name', 'id');
-        $leadCategories = LeadCategory::pluck('name', 'id');
-        $productBrands = ProductBrand::pluck('name', 'id');
+        $supervisors = User::tenanted()->where('type', UserType::SUPERVISOR)->where('supervisor_type_id', 2)->pluck('name', 'id');
+        $leadCategories = LeadCategory::tenanted()->pluck('name', 'id');
+        $productBrands = ProductBrand::tenanted()->pluck('name', 'id');
         return view('admin.leads.index', compact('customers', 'channels', 'sales', 'supervisors', 'leadCategories', 'productBrands'));
     }
 
@@ -125,10 +128,12 @@ class LeadsController extends Controller
         abort_if(Gate::denies('lead_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         // $userReferrals = User::where('type', UserType::SALES_REFERRAL)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $leadCategories = LeadCategory::all()->pluck('name', 'id');
+        $leadCategories = LeadCategory::tenanted()->pluck('name', 'id');
+        $channels = Channel::tenanted()->pluck('name', 'id');
+        $productBrands = ProductBrand::tenanted()->pluck('name', 'id');
         // $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.leads.create', compact('leadCategories'));
+        return view('admin.leads.create', compact('leadCategories','channels','productBrands'));
     }
 
     public function store(Request $request)
@@ -160,7 +165,7 @@ class LeadsController extends Controller
         ]);
 
         $productBrandIds = $request->product_brand_ids ?? null;
-        $productBrands = ProductBrand::where(function ($q) use ($productBrandIds) {
+        $productBrands = ProductBrand::tenanted()->where(function ($q) use ($productBrandIds) {
             if ($productBrandIds) $q->whereIn('id', $productBrandIds);
         })->pluck('name', 'id');
 
@@ -238,10 +243,10 @@ class LeadsController extends Controller
     {
         abort_if(Gate::denies('lead_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $userReferrals = User::where('type', UserType::SALES_REFERRAL)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $users = User::where('type', UserType::SALES)->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $userReferrals = User::tenanted()->where('type', UserType::SALES_REFERRAL)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $users = User::tenanted()->where('type', UserType::SALES)->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $channels = Channel::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $channels = Channel::tenanted()->all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $lead->load('customer', 'channel');
 

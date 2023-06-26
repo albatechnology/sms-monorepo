@@ -4,9 +4,8 @@ namespace App\Models;
 
 use App\Enums\CacheTags;
 use App\Interfaces\ReportableScope;
-use App\Interfaces\Tenanted;
-use App\Services\CoreService;
 use App\Traits\Auditable;
+use App\Traits\SaveToSubscriber;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -15,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Channel extends BaseModel implements ReportableScope
 {
-    use SoftDeletes, Auditable;
+    use SoftDeletes, Auditable, SaveToSubscriber;
 
     public $table = 'channels';
 
@@ -48,7 +47,6 @@ class Channel extends BaseModel implements ReportableScope
 
         self::deleted(function (self $model) {
             cache_service()->forget([CacheTags::CHANNEL]);
-            SmsChannel::where('channel_id', $model->id)->update(['channel_id' => null]);
         });
 
         parent::boot();
@@ -73,6 +71,11 @@ class Channel extends BaseModel implements ReportableScope
     public function scopeFindTenanted($query, int $id)
     {
         return $query->tenanted()->where('id', $id)->firstOrFail();
+    }
+
+    public function subscribtionUser()
+    {
+        return $this->belongsTo(SubscribtionUser::class);
     }
 
     public function channelCatalogues()
@@ -108,11 +111,6 @@ class Channel extends BaseModel implements ReportableScope
     public function activityBrandValues()
     {
         return $this->hasMany(ActivityBrandValue::class, User::class);
-    }
-
-    public function smsChannels()
-    {
-        return $this->hasMany(SmsChannel::class, 'channel_id', 'id');
     }
 
     public function channelsUsers()

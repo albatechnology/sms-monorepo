@@ -106,7 +106,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Route::post('users/create-sms', [UsersController::class, 'storeSms'])->name('users.storeSms');
     // Route::get('users/{id}/edit-sms', [UsersController::class, 'editSms'])->name('users.editSms');
     // Route::put('users/{id}/update-sms', [UsersController::class, 'updateSms'])->name('users.updateSms');
-    Route::post('users/get-channels/{companyId}', [UsersController::class, 'getChannels']);
+    Route::post('users/get-channels', [UsersController::class, 'getChannels']);
     Route::delete('users/destroy', [UsersController::class, 'massDestroy'])->name('users.massDestroy');
     Route::post('users/parse-csv-import', [UsersController::class, 'parseCsvImport'])->name('users.parseCsvImport');
     Route::post('users/process-csv-import', [UsersController::class, 'processCsvImport'])->name('users.processCsvImport');
