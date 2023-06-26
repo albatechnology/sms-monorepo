@@ -26,6 +26,7 @@ trait SaveToSubscriber
     protected static function subscribtionValidation($model)
     {
         $user = auth()->user();
+        if (!$user) return;
         if ($user->is_super_admin) return;
 
         if ($model instanceof User) {
