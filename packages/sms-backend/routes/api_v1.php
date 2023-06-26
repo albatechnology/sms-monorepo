@@ -225,3 +225,5 @@ Route::prefix('auth')->group(function () {
     Route::post('/token', [AuthController::class, 'token'])->name('auth.token');
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
 });
+
+Route::post('subscribe', [\App\Http\Controllers\Api\V1\SubscribtionController::class, 'subscribe']);

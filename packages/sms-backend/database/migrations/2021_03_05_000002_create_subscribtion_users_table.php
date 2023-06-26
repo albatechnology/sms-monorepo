@@ -21,6 +21,7 @@ class CreateSubscribtionUsersTable extends Migration
             $table->string('phone')->nullable();
             $table->date('expiration_date')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
