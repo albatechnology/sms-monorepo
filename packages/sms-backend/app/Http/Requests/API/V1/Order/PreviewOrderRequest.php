@@ -23,8 +23,6 @@ class PreviewOrderRequest extends BaseApiRequest
                 Schema::object()->properties(
                     Schema::integer('id')->example(1)->description('The product unit id to add to cart'),
                     Schema::integer('quantity')->example(1),
-                    // Schema::boolean('is_ready')->example(1),
-                    // Schema::string('location_id')
                 ),
             ),
             // Schema::array('voucher_ids')->example(['GratisOngkir', 'Clearance', 'CuciGudang']),
@@ -62,7 +60,6 @@ class PreviewOrderRequest extends BaseApiRequest
 
         return [
             'items'            => 'nullable|array',
-            // 'items.*.location_id' => 'nullable|exists:locations,orlan_id',
             'items.*.is_ready' => 'nullable|boolean',
             'items.*.id'       => [
                 Rule::requiredIf(!empty(request()->input('items'))),

@@ -70,9 +70,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         'quotation_valid_until_datetime',
         'created_at',
         'approval_note',
-        'is_created_orlan',
         'is_direct_purchase',
-        'orlan_tr_no',
         'expected_shipping_datetime',
         'total_discount',
     ];
@@ -113,7 +111,6 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         'shipment_status'           => OrderShipmentStatus::class,
         'approval_send_to'          => \App\Enums\UserType::class,
         'approval_supervisor_type_id' => 'integer',
-        'is_created_orlan' => 'boolean',
         'is_direct_purchase' => 'boolean',
     ];
 

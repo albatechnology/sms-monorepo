@@ -202,8 +202,6 @@ return [
     'is_updated'                           => 'diperbarui',
     'label_field'                          => 'Label kolom',
     'last_name'                            => 'Nama Belakang',
-    'location'                             => 'Lokasi',
-    'locations'                            => 'Lokasi',
     'main_currency'                        => 'Mata Uang Utama',
     'message'                              => 'Pesan',
     'messages'                             => 'Pesan',

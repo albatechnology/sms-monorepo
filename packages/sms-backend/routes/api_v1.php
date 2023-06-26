@@ -28,12 +28,9 @@ use App\Http\Controllers\API\V1\StockController;
 use App\Http\Controllers\API\V1\TargetController;
 use App\Http\Controllers\API\V1\UserController;
 use App\Http\Controllers\API\V1\DashboardController;
-use App\Http\Controllers\API\V1\LocationController;
 use App\Http\Controllers\API\V1\NewReportController;
 use App\Http\Controllers\API\V1\OrderDetailController;
-use App\Http\Controllers\API\V1\OrlanOrderController;
 use App\Http\Controllers\API\V1\PromoCategoryController;
-use App\Http\Controllers\API\V1\SmsChannelController;
 use App\Http\Controllers\API\V1\VoucherController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -53,7 +50,6 @@ use Illuminate\Support\Facades\Route;
 /** Push Notification */
 Route::put('/notifications/{code}/unsubscribe', [PushNotificationController::class, 'unsubscribe'])->name('push-notification.unsubscribe');
 
-Route::resource('sms-channels', SmsChannelController::class)->only(['index', 'show']);
 // Route::get('/orders/export-quotation', [OrderController::class, 'exportQuotation'])->name('orders.export-quotation');
 Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
     /** Users */
@@ -73,7 +69,6 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
     Route::resource('companies', CompanyController::class)->only(['index', 'show']);
     Route::get('channels/default', [ChannelController::class, 'default'])->name('channels.default');
     Route::resource('channels', ChannelController::class)->only(['index', 'show']);
-    Route::resource('locations', LocationController::class)->only(['index', 'show']);
 
     /** Companies and Channel*/
     Route::get('interior-designs/reports/{interior_design}/leads', [InteriorDesignController::class, 'reportLeads']);
@@ -131,12 +126,6 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
     Route::get('new-reports/invoice', [NewReportController::class, 'invoice'])->name('newReports.invoice');
 
     /** Tenanted data */
-    Route::get('/leads/sms', [LeadController::class, 'leadSms'])->name('leads.leadSms');
-    Route::get('/leads/sms/{id}', [LeadController::class, 'showLeadSms'])->name('leads.showLeadSms');
-    Route::get('/leads/deals/{id}', [LeadController::class, 'dealsSms'])->name('leads.dealsSms');
-    Route::post('/leads/add', [LeadController::class, 'storeSms'])->name('leads.storeSms');
-    Route::get('sms-brands', [ProductController::class, 'smsBrands'])->name('smsBrands');
-    Route::put('/leads/update/{id}', [LeadController::class, 'UpdateSms'])->name('leads.UpdateSms');
     Route::middleware(['default_tenant'])->group(function () {
         Route::get('/leads/list', [LeadController::class, 'list'])->name('leads.list');
         Route::get('/leads/unhandled', [LeadController::class, 'unhandledIndex'])->name('leads.unhandled');
@@ -235,23 +224,4 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
 Route::prefix('auth')->group(function () {
     Route::post('/token', [AuthController::class, 'token'])->name('auth.token');
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
-});
-
-Route::get('orlan-orders/salesInvoice/{trNo?}', [OrlanOrderController::class, 'getSalesInvoice']);
-Route::get('orlan-orders/salesInvoiceDetail/{trNo?}', [OrlanOrderController::class, 'getSalesInvoiceDetail']);
-Route::post('orlan-orders/salesInvoice/{trNo}/{payment_id}/{total_payment}', [OrlanOrderController::class, 'storeSalesInvoice']);
-Route::post('orlan-orders/unapproveSalesInvoice/{trNo}', [OrlanOrderController::class, 'unapproveSalesInvoice']);
-Route::delete('orlan-orders/salesInvoice/{trNo}', [OrlanOrderController::class, 'deleteSalesInvoice']);
-Route::delete('orlan-orders/salesInvoiceDetail/{orderNo}', [OrlanOrderController::class, 'deleteSalesInvoiceDetail']);
-Route::post('orlan-orders/{id}', [OrlanOrderController::class, 'store']);
-
-Route::get('/orlan/customers', function () {
-    $table = DB::connection('orlansoft')->table('ArCustomer')->selectRaw('TOP 10 *')->where('email', '!=', '')->orderByDesc('LatestUpdate')->get();
-
-    return response()->json($table);
-});
-Route::get('items', function () {
-    $apiUrl = env('ORLANSOFT_API_URL') . '/orlansoft-api/data-access/salesorder/getSalesOrder?trNo=122SS220800001';
-    $response = Http::withBasicAuth(env('ORLANSOFT_API_USERNAME'), env('ORLANSOFT_API_PASSWORD'))->get($apiUrl);
-    return $response;
 });

@@ -4,7 +4,6 @@
         <div style="margin-bottom: 10px;" class="row">
             <div class="col-lg-12">
                 <a class="btn btn-success" href="{{ route('admin.users.create') }}">{{ trans('global.add') }} {{ trans('cruds.user.title_singular') }}</a>
-                {{-- <a class="btn btn-success" href="{{ route('admin.users.createSms') }}">Add SMS User</a> --}}
                 <button class="btn btn-warning" data-toggle="modal" data-target="#csvImportModal">
                     {{ trans('global.app_csvImport') }}
                 </button>
@@ -18,7 +17,6 @@
             <select name="user_app" id="user_app" class="float-right">
                 <option value="">- All User App -</option>
                 <option value="moves">- Moves -</option>
-                <option value="sms">- SMS -</option>
             </select>
         </div> --}}
         <div class="card-body">

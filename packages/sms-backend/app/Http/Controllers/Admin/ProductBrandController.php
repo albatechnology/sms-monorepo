@@ -203,18 +203,17 @@ class ProductBrandController extends Controller
     public function ajaxActivationData(Request $request)
     {
         if ($request->ajax()) {
-            $var = $request->column == 'show_in_moves' ? 'Moves' : 'SMS';
             if (\Illuminate\Support\Facades\DB::table('product_brands')->where('id', $request->id)->update([$request->column => $request->val])) {
                 if ($request->val == 1) {
                     $success = true;
-                    $message = 'Active in ' . $var;
+                    $message = 'Active';
                 } else {
                     $success = false;
-                    $message = 'Inactive in ' . $var;
+                    $message = 'Inactive';
                 }
             } else {
                 $success = false;
-                $message = 'Inactive in ' . $var;
+                $message = 'Inactive';
             }
             return ['success' => $success, 'message' => $message];
         }

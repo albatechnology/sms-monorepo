@@ -34,7 +34,7 @@ class DiscountController extends BaseApiController
     public function index()
     {
         // return CustomQueryBuilder::buildResource(Discount::class, DiscountResource::class, fn ($q) => $q->tenanted()->whereActive());
-        return CustomQueryBuilder::buildResource(Discount::class, DiscountResource::class, fn ($q) => $q->whereActive());
+        return CustomQueryBuilder::buildResource(Discount::class, DiscountResource::class, fn ($q) => $q->tenanted()->whereActive());
     }
 
     /**
@@ -52,7 +52,7 @@ class DiscountController extends BaseApiController
     public function discountGetByCode($code)
     {
         // $discounts = Discount::tenanted()
-        $discounts = Discount::whereActive($code)
+        $discounts = Discount::tenanted()->whereActive($code)
             ->firstOrFail();
 
         return new DiscountResource($discounts);

@@ -205,8 +205,6 @@ return [
     'is_updated'                           => 'is updated',
     'label_field'                          => 'Label field',
     'last_name'                            => 'Last name',
-    'location'                             => 'Location',
-    'locations'                            => 'Locations',
     'main_currency'                        => 'Main currency',
     'message'                              => 'Message',
     'messages'                             => 'Messages',

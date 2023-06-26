@@ -90,18 +90,6 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
         ],
-
-        'orlansoft' => [
-            'driver' => 'odbc',
-            'odbc_driver' => 'SQL Anywhere 17',
-            // 'odbc_driver' => 'Snowflake path Driver',
-            // 'server' => 'host.example.com'
-            'host' => env('ORLANSOFT_DB_HOST', '127.0.0.1'),
-            'username' => env('ORLANSOFT_DB_USERNAME', 'forge'),
-            'password' => env('ORLANSOFT_DB_PASSWORD', ''),
-            'database' => env('ORLANSOFT_DB_DATABASE', 'forge'),
-            'schema' => 'PUBLIC', // majority odbc's is default
-        ]
     ],
 
     /*

@@ -28,7 +28,6 @@
                     <th width="10">
                         #
                     </th>
-                    <th width="10">Orlansoft ID</th>
                     <th>
                         {{ trans('cruds.interiorDesign.fields.name') }}
                     </th>
@@ -88,9 +87,6 @@
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
                     <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
-                    <td>
                     </td>
                 </tr>
                 </thead>
@@ -114,7 +110,6 @@
                 columns: [
                     {data: 'placeholder', name: 'placeholder'},
                     {data: 'id', name: 'id'},
-                    {data: 'orlan_id', name: 'orlan_id'},
                     {data: 'name', name: 'name'},
                     {data: 'bum', name: 'bum'},
                     {data: 'sales', name: 'sales'},

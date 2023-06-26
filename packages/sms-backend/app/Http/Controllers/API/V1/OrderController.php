@@ -273,7 +273,7 @@ class OrderController extends BaseApiController
     {
         $query = function ($query) {
             $user = auth()->user();
-            $q = $query->with(self::load_relation)
+            $q = $query->tenanted()->with(self::load_relation)
                 ->where('status', OrderStatus::QUOTATION)
                 // ->where('company_id', auth()->user()->company_id)
                 ->requiredApproval()

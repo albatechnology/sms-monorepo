@@ -23,8 +23,6 @@ class CreateOrderRequest extends BaseApiRequest
                 Schema::object()->properties(
                     Schema::integer('id')->example(1)->description('The product id to add to cart'),
                     Schema::integer('quantity')->example(1),
-                    // Schema::boolean('is_ready')->example(1),
-                    // Schema::string('location_id')
                 ),
             ),
             // Schema::array('voucher_ids')->example(['GratisOngkir', 'Clearance', 'CuciGudang']),
@@ -62,8 +60,6 @@ class CreateOrderRequest extends BaseApiRequest
 
         return [
             'items'            => 'nullable|array',
-            // 'items.*.location_id' => 'nullable|exists:locations,orlan_id',
-            // 'items.*.is_ready' => 'nullable|boolean',
             'items.*.id'       => [
                 Rule::requiredIf(!empty(request()->input('items'))),
                 function ($attribute, $value, $fail) {
@@ -143,7 +139,6 @@ class CreateOrderRequest extends BaseApiRequest
     public function messages()
     {
         return [
-            // 'items.*.location_id.required' => 'Location is required',
             'shipping_address_id.required' => 'Shipping address is required',
             'billing_address_id.required' => 'Billing address is required',
             'expected_shipping_datetime.required' => 'Expected delivery date is required',

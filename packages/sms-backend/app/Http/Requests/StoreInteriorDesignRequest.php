@@ -25,7 +25,6 @@ class StoreInteriorDesignRequest extends FormRequest
     public function rules()
     {
         return [
-            'orlan_id' => 'required|string',
             'bum_id'                => [
                 'integer',
                 'nullable',

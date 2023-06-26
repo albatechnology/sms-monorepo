@@ -11,13 +11,6 @@
             @method('PUT')
             @csrf
             <div class="form-group">
-                <label for="orlan_id" class="required">Orlansoft ID</label>
-                <input class="form-control {{ $errors->has('orlan_id') ? 'is-invalid' : '' }}" type="text" name="orlan_id" id="orlan_id" value="{{ $interiorDesign->orlan_id }}" required>
-                @if($errors->has('orlan_id'))
-                    <span class="text-danger">{{ $errors->first('orlan_id') }}</span>
-                @endif
-            </div>
-            <div class="form-group">
                 <label class="required" for="name">{{ trans('cruds.interiorDesign.fields.name') }}</label>
                 <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', $interiorDesign->name) }}" required>
                 @if($errors->has('name'))

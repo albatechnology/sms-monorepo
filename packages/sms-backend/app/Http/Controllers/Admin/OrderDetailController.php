@@ -93,9 +93,8 @@ class OrderDetailController extends Controller
         $status = OrderDetailStatus::getInstances();
         $orderDetail->load('order');
 
-        $locations = \App\Models\Location::pluck('name','orlan_id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.orderDetails.edit', compact('status', 'orderDetail','locations'));
+        return view('admin.orderDetails.edit', compact('status', 'orderDetail'));
     }
 
     public function update(UpdateOrderDetailRequest $request, OrderDetail $orderDetail)

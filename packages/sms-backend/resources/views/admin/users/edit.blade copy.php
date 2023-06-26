@@ -10,13 +10,6 @@
                 @method('PUT')
                 @csrf
                 <div class="form-group">
-                    <label for="orlan_user_id">Orlansoft ID</label>
-                    <input class="form-control {{ $errors->has('orlan_user_id') ? 'is-invalid' : '' }}" type="text" name="orlan_user_id" id="orlan_user_id" value="{{ $user->orlan_user_id }}">
-                    @if($errors->has('orlan_user_id'))
-                        <span class="text-danger">{{ $errors->first('orlan_user_id') }}</span>
-                    @endif
-                </div>
-                <div class="form-group">
                     <label class="required" for="name">{{ trans('cruds.user.fields.name') }}</label>
                     <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name"
                         id="name" value="{{ old('name', $user->name) }}" required>

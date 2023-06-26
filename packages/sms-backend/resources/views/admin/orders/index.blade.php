@@ -24,7 +24,6 @@
                         <th width="30">
                             {{ trans('cruds.order.fields.id') }}
                         </th>
-                        {{-- <th>Orlan TrNo</th> --}}
                         <th>
                             {{ trans('cruds.order.fields.invoice_number') }}
                         </th>
@@ -49,7 +48,6 @@
                         <th>
                             {{ trans('cruds.order.fields.channel') }}
                         </th>
-                        {{-- <th>Interior Design</th> --}}
                         <th>
                             {{ trans('cruds.order.fields.status') }}
                         </th>
@@ -76,9 +74,6 @@
                             <input class="search w-100" type="text" strict="true"
                                 placeholder="{{ trans('global.search') }}">
                         </td>
-                        {{-- <td>
-                            <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td> --}}
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
@@ -103,9 +98,6 @@
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
-                        {{-- <td>
-                            <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                        </td> --}}
                         <x-filter-enum base-enum="{{ \App\Enums\OrderStatus::class }}"></x-filter-enum>
                         <x-filter-enum base-enum="{{ \App\Enums\OrderPaymentStatus::class }}"></x-filter-enum>
                         <x-filter-enum base-enum="{{ \App\Enums\OrderShipmentStatus::class }}"></x-filter-enum>
@@ -176,7 +168,6 @@
                         data: 'id',
                         name: 'id'
                     },
-                    // {data: 'orlan_tr_no', name: 'orlan_tr_no'},
                     {
                         data: 'invoice_number',
                         name: 'invoice_number'
@@ -209,10 +200,6 @@
                         data: 'channel_name',
                         name: 'channel.name'
                     },
-                    // {
-                    //     data: 'interior_design_id',
-                    //     name: 'interiorDesign.name'
-                    // },
                     {
                         data: 'status',
                         name: 'status'

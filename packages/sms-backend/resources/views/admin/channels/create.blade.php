@@ -9,34 +9,6 @@
     <div class="card-body">
         <form method="POST" action="{{ route("admin.channels.store") }}" enctype="multipart/form-data">
             @csrf
-            {{-- <div class="form-group">
-                <label for="orlan_id" class="required">Orlansoft Tr ID</label>
-                <input class="form-control {{ $errors->has('orlan_id') ? 'is-invalid' : '' }}" type="text" name="orlan_id" id="orlan_id" value="{{ old('orlan_id', '') }}" required>
-                @if($errors->has('orlan_id'))
-                    <span class="text-danger">{{ $errors->first('orlan_id') }}</span>
-                @endif
-            </div>
-            <div class="form-group">
-                <label for="orlan_tr_type" class="required">Orlansoft Tr Type</label>
-                <input class="form-control {{ $errors->has('orlan_tr_type') ? 'is-invalid' : '' }}" type="text" name="orlan_tr_type" id="orlan_tr_type" value="{{ old('orlan_tr_type', '') }}" required>
-                @if($errors->has('orlan_tr_type'))
-                    <span class="text-danger">{{ $errors->first('orlan_tr_type') }}</span>
-                @endif
-            </div>
-            <div class="form-group">
-                <label for="orlan_tr_type_as" class="required">Orlansoft Tr Type AS</label>
-                <input class="form-control {{ $errors->has('orlan_tr_type_as') ? 'is-invalid' : '' }}" type="text" name="orlan_tr_type_as" id="orlan_tr_type_as" value="{{ old('orlan_tr_type_as', '') }}" required>
-                @if($errors->has('orlan_tr_type_as'))
-                    <span class="text-danger">{{ $errors->first('orlan_tr_type_as') }}</span>
-                @endif
-            </div>
-            <div class="form-group">
-                <label for="orlan_tr_type_sa" class="required">Orlansoft Tr Type SA</label>
-                <input class="form-control {{ $errors->has('orlan_tr_type_sa') ? 'is-invalid' : '' }}" type="text" name="orlan_tr_type_sa" id="orlan_tr_type_sa" value="{{ old('orlan_tr_type_sa', '') }}" required>
-                @if($errors->has('orlan_tr_type_sa'))
-                    <span class="text-danger">{{ $errors->first('orlan_tr_type_sa') }}</span>
-                @endif
-            </div> --}}
             <div class="form-group">
                 <label class="required" for="name">{{ trans('cruds.channel.fields.name') }}</label>
                 <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', '') }}" required>
@@ -68,17 +40,6 @@
                     <span class="text-danger">{{ $errors->first('company') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.channel.fields.company_helper') }}</span>
-            </div> --}}
-            {{-- <div class="form-group">
-                <label for="sms_channel_ids">SMS Channel</label>
-                <select class="form-control select2 {{ $errors->has('company') ? 'is-invalid' : '' }}" name="sms_channel_ids[]" id="sms_channel_ids" multiple data-placeholder="Select SMS Channel">
-                    @foreach($smsChannels as $id => $name)
-                        <option value="{{ $id }}" {{ old('sms_channel_ids') && in_array($id, old('sms_channel_ids')) ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('sms_channel_ids'))
-                    <span class="text-danger">{{ $errors->first('sms_channel_ids') }}</span>
-                @endif
             </div> --}}
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">

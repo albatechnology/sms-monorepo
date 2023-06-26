@@ -68,12 +68,13 @@ class ActivityController extends BaseApiController
             // we want to override the tenanted scope to ignore the active channel
 
             $user = tenancy()->getUser();
+            $query->tenanted()->with(self::load_relation);
 
             if ($user->is_sales || $user->is_supervisor) {
                 $query = $query->whereIn('user_id', User::descendantsAndSelf($user->id)->pluck('id'));
             }
 
-            return $query->with(self::load_relation);
+            return $query;
         };
 
         return CustomQueryBuilder::buildResource(Activity::class, ActivityResource::class, $query);
@@ -256,7 +257,7 @@ class ActivityController extends BaseApiController
             $endDate = Carbon::createFromFormat('Y-m-d', $request->end_at)->endOfDay();
         }
 
-        $activities = Activity::whereNull('activities.order_id')->doesntHave('child')->whereBetween('activities.created_at', [$startDate, $endDate]);
+        $activities = Activity::tenanted()->whereNull('activities.order_id')->doesntHave('child')->whereBetween('activities.created_at', [$startDate, $endDate]);
         // if ($request->has('company_id') && $request->company_id != '') $activities = $activities->whereHas('channel', fn ($q) => $q->where('company_id', $request->company_id));
         if ($request->has('channel_id') && $request->channel_id != '') $activities = $activities->where('activities.channel_id', $request->channel_id);
 

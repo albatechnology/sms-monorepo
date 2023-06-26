@@ -13,7 +13,6 @@ use BenSampo\Enum\Enum;
  * @method static static Cart()
  * @method static static Company()
  * @method static static Channel()
- * @method static static SmsChannel()
  * @method static static Discount()
  * @method static static Dummy()
  * @method static static Lead()
@@ -29,7 +28,6 @@ use BenSampo\Enum\Enum;
  * @method static static QaTopic()
  * @method static static QaMessage()
  * @method static static User()
- * @method static static Location()
  * @method static static Voucher()
  */
 final class Tags extends Enum
@@ -44,7 +42,6 @@ final class Tags extends Enum
     public const Cart             = 'Cart';
     public const CartDemand       = 'CartDemand';
     public const Channel          = 'Channel';
-    public const SmsChannel       = 'SmsChannel';
     public const Company          = 'Company';
     public const InteriorDesign   = 'InteriorDesign';
     public const Customer         = 'Customer';
@@ -68,7 +65,6 @@ final class Tags extends Enum
     public const Stock            = 'Stock';
     public const Target           = 'Target';
     public const User             = 'User';
-    public const Location         = 'Location';
     public const Voucher         = 'Voucher';
 
     public static function getDescription($value): string
@@ -81,7 +77,6 @@ final class Tags extends Enum
             self::Auth => 'Application auth',
             self::Company => 'Application company',
             self::Channel => 'Application channel',
-            self::SmsChannel => 'Application SMS channel',
             self::Product => 'Application product',
             self::Address => 'Customer address',
             self::Voucher => 'Application Voucher',

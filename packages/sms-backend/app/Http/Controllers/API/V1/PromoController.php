@@ -50,8 +50,8 @@ class PromoController extends BaseApiController
             PromoResource::class,
             function ($query) {
 
-                // $query = $query->with(self::load_relation)->tenanted();
-                $query = $query->with(self::load_relation);
+                $query = $query->with(self::load_relation)->tenanted();
+                // $query = $query->with(self::load_relation);
 
                 $filter = request()->get('filter');
 

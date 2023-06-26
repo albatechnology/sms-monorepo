@@ -8,7 +8,6 @@ use App\Http\Requests\StoreChannelRequest;
 use App\Http\Requests\UpdateChannelRequest;
 use App\Models\Channel;
 use App\Models\ChannelUser;
-use App\Models\SmsChannel;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -53,18 +52,6 @@ class ChannelController extends Controller
             //     return $row->company ? $row->company->name : '';
             // });
 
-            // $table->addColumn('sms_channels', function ($row) {
-            //     $html = '-';
-            //     if (isset($row->smsChannels) && count($row->smsChannels) > 0) {
-            //         $html = '<ol>';
-            //         foreach ($row->smsChannels as $c) {
-            //             $html .= '<li>' . $c->name . '</li>';
-            //         }
-            //         $html .= '</ol>';
-            //     }
-            //     return $html;
-            // });
-
             $table->rawColumns(['actions', 'placeholder']);
 
             return $table->make(true);
@@ -80,7 +67,6 @@ class ChannelController extends Controller
         // $channel_categories = ChannelCategory::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         // $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        // $smsChannels = SmsChannel::whereNull('channel_id')->pluck('name', 'id');
 
         return view('admin.channels.create');
     }
@@ -101,7 +87,6 @@ class ChannelController extends Controller
         // $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         // $channel->load('channel_category', 'company');
-        // $smsChannels = SmsChannel::whereNull('channel_id')->orWhere('channel_id', $channel->id)->pluck('name', 'id');
 
         return view('admin.channels.edit', compact('channel'));
     }

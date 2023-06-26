@@ -52,7 +52,6 @@ use App\Http\Controllers\Admin\StockTransferController;
 use App\Http\Controllers\Admin\InteriorDesignController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\NewTargetController;
-use App\Http\Controllers\Admin\SmsChannelController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use Illuminate\Support\Facades\Route;
 
@@ -102,10 +101,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
         Route::get('sales/{id?}', [UsersController::class, 'includeFormSales']);
     });
     Route::get('users/get-users', 'UsersController@ajaxGetUsers');
-    // Route::get('users/create-sms', [UsersController::class, 'createSms'])->name('users.createSms');
-    // Route::post('users/create-sms', [UsersController::class, 'storeSms'])->name('users.storeSms');
-    // Route::get('users/{id}/edit-sms', [UsersController::class, 'editSms'])->name('users.editSms');
-    // Route::put('users/{id}/update-sms', [UsersController::class, 'updateSms'])->name('users.updateSms');
     Route::post('users/get-channels', [UsersController::class, 'getChannels']);
     Route::delete('users/destroy', [UsersController::class, 'massDestroy'])->name('users.massDestroy');
     Route::post('users/parse-csv-import', [UsersController::class, 'parseCsvImport'])->name('users.parseCsvImport');
@@ -181,9 +176,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('channels/get-channels', 'ChannelController@ajaxGetChannels');
     Route::delete('channels/destroy', [ChannelController::class, 'massDestroy'])->name('channels.massDestroy');
     Route::resource('channels', 'ChannelController');
-
-    Route::delete('sms-channels/destroy', [SmsChannelController::class, 'massDestroy'])->name('sms-channels.massDestroy');
-    Route::resource('sms-channels', 'SmsChannelController');
 
     Route::delete('locations/destroy', [LocationController::class, 'massDestroy'])->name('locations.massDestroy');
     Route::resource('locations', 'LocationController');
@@ -326,7 +318,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('activity-comments', 'ActivityCommentController');
 
     // Orders
-    Route::post('orders/create-so-orlan/{order}', [OrderController::class, 'createSoOrlan'])->name('orders.createSoOrlan');
     Route::delete('orders/destroy', [OrderController::class, 'massDestroy'])->name('orders.massDestroy');
     Route::get('orders/getproduct', [OrderController::class, 'getproduct'])->name('orders.getproduct');
     Route::get('orders/get/product-brand', [OrderController::class, 'getProductBrand'])->name('orders.get.product-brand');
@@ -354,7 +345,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('order-details', 'OrderDetailController', ['except' => ['create', 'store']]);
 
     // Payments
-    Route::post('payments/create-si-orlan/{payment}', [PaymentController::class, 'createSiOrlan'])->name('payments.createSiOrlan');
     Route::delete('payments/destroy', [PaymentController::class, 'massDestroy'])->name('payments.massDestroy');
     Route::post('payments/media', [PaymentController::class, 'storeMedia'])->name('payments.storeMedia');
     Route::resource('payments', 'PaymentController');

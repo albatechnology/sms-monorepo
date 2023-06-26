@@ -554,24 +554,4 @@ class OrderController extends Controller
     public function ajax_upload_payment(Request $request, $id)
     {
     }
-
-    public function createSoOrlan(Order $order)
-    {
-        $check = OrderService::validateCreateManualSO($order);
-        if ($check['status'] === false) return redirect()->back()->with('message', $check['message']);
-
-        try {
-            $salesOrder = \Illuminate\Support\Facades\Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/' . $order->id);
-            $salesOrderResult = $salesOrder?->json();
-            if (isset($salesOrderResult) && !is_null($salesOrderResult)) {
-                $message = $salesOrderResult['message'] ?? '';
-            } else {
-                $order->refresh();
-                $message = 'Sales Order with TrNo #' . $order->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Order failed to created. Please check in Orlansoft';
-            }
-        } catch (\Throwable $th) {
-            $message = $th->getMessage();
-        }
-        return redirect()->back()->with('message', $message);
-    }
 }

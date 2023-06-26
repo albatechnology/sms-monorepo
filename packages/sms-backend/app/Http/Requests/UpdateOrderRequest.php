@@ -17,7 +17,6 @@ class UpdateOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'orlan_tr_no' => 'nullable',
             'deal_at' => ['nullable', 'date_format:Y-m-d H:i:s'],
             'note'       => [],
             'channel_id' => ['required', 'integer'],

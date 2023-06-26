@@ -129,7 +129,7 @@ class UserController extends BaseApiController
     #[CustomOpenApi\Response(resource: UserResource::class, isCollection: true)]
     public function index()
     {
-        $query = fn ($q) => $q->with(self::load_relation);
+        $query = fn ($q) => $q->tenanted()->with(self::load_relation);
         return CustomQueryBuilder::buildResource(User::class, UserResource::class, $query);
     }
 
@@ -162,7 +162,7 @@ class UserController extends BaseApiController
     {
         $filter = function ($query) {
 
-            $query->with(self::load_relation);
+            $query->tenanted()->with(self::load_relation);
 
             // full access
             if (user()->is_admin || user()->is_director) {
@@ -217,7 +217,7 @@ class UserController extends BaseApiController
         $channelIds = $user->is_sales ? [$user->channel_id] : $user->channels->pluck('id');
 
         $query = function ($q) use ($channelIds) {
-            return $q->whereIn('id', $channelIds);
+            return $q->tenanted()->whereIn('id', $channelIds);
         };
         return CustomQueryBuilder::buildResource(Channel::class, ChannelResource::class, $query);
     }
@@ -244,6 +244,7 @@ class UserController extends BaseApiController
 
         $data = QueryBuilder::for(ProductBrand::class)
             ->selectRaw('id,name')
+            ->tenanted()
             ->where('company_id', $companyId)
             ->whereIn('id', $productBrandIds)
             ->allowedFilters([

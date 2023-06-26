@@ -36,7 +36,6 @@
                     <th>
                         {{ trans('cruds.orderDetail.fields.status') }}
                     </th>
-                    <th>Location</th>
                     <th>&nbsp;</th>
                 </tr>
                 <tr>
@@ -61,9 +60,6 @@
                     <td>
                     </td>
                     <x-filter-enum base-enum="{{ \App\Enums\OrderDetailStatus::class }}"></x-filter-enum>
-                    <td>
-                        <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
                     <td></td>
                 </tr>
             </thead>
@@ -95,7 +91,6 @@
           {data: 'total_price', name: 'total_price'},
           {data: 'indent', name: 'indent'},
           {data: 'status', name: 'status'},
-          {data: 'location_id', name: 'location_id'},
           {data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,

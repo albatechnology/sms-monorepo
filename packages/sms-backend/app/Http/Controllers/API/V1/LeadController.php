@@ -13,12 +13,9 @@ use App\Exceptions\SalesOnlyActionException;
 use App\Exceptions\UnauthorisedTenantAccessException;
 use App\Http\Requests\API\V1\Lead\AssignLeadRequest;
 use App\Http\Requests\API\V1\Lead\CreateLeadRequest;
-use App\Http\Requests\API\V1\Lead\CreateLeadSmsRequest;
 use App\Http\Requests\API\V1\Lead\UpdateLeadRequest;
-use App\Http\Requests\API\V1\Lead\UpdateLeadSmsRequest;
 use App\Http\Resources\V1\Lead\LeadCategoryResource;
 use App\Http\Resources\V1\Lead\LeadResource;
-use App\Http\Resources\V1\Lead\LeadSmsResource;
 use App\Http\Resources\V1\Lead\LeadWithLatestActivityResource;
 use App\Http\Resources\V1\Lead\SubLeadCategoryResource;
 use App\Http\Resources\V1\Product\BaseProductBrandResource;
@@ -63,7 +60,8 @@ class LeadController extends BaseApiController
     #[CustomOpenApi\Response(resource: LeadResource::class, isCollection: true)]
     public function index()
     {
-        $query = fn ($q) => $q->customTenanted()->handled()->with(self::load_relation);
+        // $query = fn ($q) => $q->customTenanted()->handled()->with(self::load_relation);
+        $query = fn ($q) => $q->tenanted()->handled()->with(self::load_relation);
         return CustomQueryBuilder::buildResource(Lead::class, LeadResource::class, $query);
     }
 
@@ -96,7 +94,7 @@ class LeadController extends BaseApiController
                 'COLD' => ActivityStatus::COLD,
                 default => ActivityStatus::HOT,
             };
-            $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', $activityStatus)->whereCreatedAtRange($startDate, $endDate));
+            $q->tenanted()->whereHas('leadActivities', fn ($q2) => $q2->where('status', $activityStatus)->whereCreatedAtRange($startDate, $endDate));
 
             $userType = request()->user_type ?? null;
             $id = request()->id ?? null;
@@ -298,6 +296,8 @@ class LeadController extends BaseApiController
         $user = user();
 
         $query = function ($q) use ($user) {
+            $q->tenanted();
+
             if ($user->type->is(UserType::SALES)) {
                 // 1. same channel
                 // 2. sales have one of product_brand_id
@@ -444,226 +444,6 @@ class LeadController extends BaseApiController
 
         $query = fn ($q) => $q->whereIn('id', $leadIds ?? [])->with(self::load_relation);
         return CustomQueryBuilder::buildResource(Lead::class, LeadResource::class, $query);
-    }
-
-    /**
-     * Show all sms user's lead.
-     *
-     * The leads displayed depends on the type of the authenticated user:
-     * 1. Sales will see all leads that is directly under him
-     * 2. Supervisor will see all of his supervised sales' leads
-     * 3. Director will see all leads in his active/default channel
-     * Will not return unhandled leads.
-     */
-    #[CustomOpenApi\Operation(id: 'leadSms', tags: [Tags::Lead, Tags::V1])]
-    #[CustomOpenApi\Parameters(model: Lead::class)]
-    #[CustomOpenApi\Response(resource: LeadSmsResource::class, isCollection: true)]
-    public function leadSms()
-    {
-        $user = auth()->user();
-        $load_relations = ['userSms', 'customer', 'productBrand', 'smsChannel'];
-        if ($user->type->is(UserType::SALES_SMS)) {
-            $query = fn ($q) => $q->where('user_sms_id', $user->id)->with($load_relations);
-        } else {
-            $query = fn ($q) => $q->whereHas('userSms', fn ($q) => $q->where('supervisor_id', $user->id))->with($load_relations);
-        }
-        return CustomQueryBuilder::buildResource(Lead::class, LeadSmsResource::class, $query);
-    }
-
-    /**
-     * Get lead sms
-     *
-     * Returns lead sms by id
-     *
-     * @param int $leadId
-     * @return  LeadWithLatestActivityResource
-     */
-    #[CustomOpenApi\Operation(id: 'showleadSms', tags: [Tags::Lead, Tags::V1])]
-    #[OpenApi\Parameters(factory: DefaultHeaderParameters::class)]
-    #[CustomOpenApi\Response(resource: LeadSmsResource::class, statusCode: 200)]
-    public function showLeadSms(int $leadId)
-    {
-        $user = auth()->user();
-        if ($user->type->is(UserType::SALES_SMS)) {
-            $lead = Lead::where('id', $leadId)->where('user_sms_id', $user->id)->first();
-        } else {
-            $lead = Lead::where('id', $leadId)->whereHas('userSms', fn ($q) => $q->where('supervisor_id', $user->id))->first();
-        }
-        if (!$lead) return response()->json(['message' => 'Data not found'], 404);
-        return new LeadSmsResource($lead->loadMissing(['userSms', 'customer', 'productBrand', 'smsChannel']));
-    }
-
-    /**
-     * Get order deals
-     *
-     * Returns order deals by lead id
-     *
-     * @param int $leadId
-     * @return JsonResponse
-     */
-    #[CustomOpenApi\Operation(id: 'dealsleadSms', tags: [Tags::Lead, Tags::V1])]
-    #[OpenApi\Parameters(factory: DefaultHeaderParameters::class)]
-    #[OpenApi\Response(factory: GenericSuccessMessageResponse::class)]
-    public function dealsSms(int $leadId)
-    {
-        $user = auth()->user();
-        if ($user->type->is(UserType::SALES_SMS)) {
-            $order = \App\Models\Order::with('lead')->where('lead_id', $leadId)->where('payment_status', \App\Enums\OrderPaymentStatus::SETTLEMENT)->whereHas('lead', fn ($q) => $q->where('user_sms_id', $user->id))->selectRaw('created_at,total_price,lead_id')->first();
-        } else {
-            $order = \App\Models\Order::with('lead')->where('lead_id', $leadId)->where('payment_status', \App\Enums\OrderPaymentStatus::SETTLEMENT)->whereHas('lead', fn ($q) => $q->whereHas('userSms', fn ($q) => $q->where('supervisor_id', $user->id)))->selectRaw('created_at,total_price,lead_id')->first();
-        }
-
-        if (!$order) return response()->json(['message' => 'Data not found'], 404);
-        return response()->json([
-            'sales' => $order->lead?->userSms?->name ?? '-',
-            'channel' => $order->lead?->userSms?->smsChannel?->name ?? '-',
-            'created_at' => date('d M Y', strtotime($order->created_at)),
-            'total_price' => rupiah($order->total_price),
-        ]);
-    }
-
-    /**
-     * Create new Lead SMS
-     *
-     * Create a new Lead SMS. Currently only sales are allowed to perform
-     * this action. This is because lead must be related to a sales.
-     *
-     * @param CreateLeadSmsRequest $request
-     * @return LeadSmsResource
-     * @throws SalesOnlyActionException
-     * @throws Exception
-     */
-    #[CustomOpenApi\Operation(id: 'leadStoreSms', tags: [Tags::Lead, Tags::V1])]
-    #[OpenApi\Parameters(factory: DefaultHeaderParameters::class)]
-    #[CustomOpenApi\RequestBody(request: CreateLeadSmsRequest::class)]
-    #[CustomOpenApi\Response(resource: LeadSmsResource::class, statusCode: 201)]
-    #[CustomOpenApi\ErrorResponse(exception: SalesOnlyActionException::class)]
-    public function storeSms(CreateLeadSmsRequest $request)
-    {
-        $user = auth()->user();
-        if ($user->type->is(UserType::SUPERVISOR_SMS)) return response()->json(['success' => false, 'message' => 'Only sales can create lead']);
-
-        $customer = \App\Models\Customer::where('email', $request->email)->where('phone', $request->phone)->first();
-
-        if (!$customer) {
-            if (\App\Models\Customer::where('email', $request->email)->first()) return response()->json(['success' => false, 'message' => 'Email is already used by other customer'], 422);
-            if (\App\Models\Customer::where('phone', $request->phone)->first()) return response()->json(['success' => false, 'message' => 'Phone number is already used by other customer'], 422);
-        }
-
-        $is_new_customer = 0;
-
-        $channel_id = $user->smsChannel?->channel_id;
-        if (!$channel_id) {
-            return response()->json(['success' => false, 'message' => 'Channel not found'], 422);
-        }
-
-        $movesStoreLeader = User::where('type', UserType::SUPERVISOR)->where('supervisor_type_id', 1)->where('channel_id', $channel_id)->first();
-        if (!$channel_id) {
-            return response()->json(['success' => false, 'message' => 'Moves store leader not found'], 422);
-        }
-
-        $bum = $movesStoreLeader->supervisor;
-        if (!$bum) {
-            return response()->json(['success' => false, 'message' => 'Moves BUM not found'], 422);
-        }
-
-        if ($customer) {
-            $customer->update([
-                'user_sms_id' => $user->id
-            ]);
-        } else {
-            $customer = new \App\Models\Customer;
-            $customer->email = $request->email;
-            $customer->phone = $request->phone;
-            $customer->first_name = $request->name;
-            $customer->source = \App\Enums\CustomerSource::SMS;
-            $customer->user_sms_id = $user->id;
-            if (!$customer->save()) return response()->json(['success' => false, 'message' => 'Error create customer'], 422);
-
-            $address = \App\Models\Address::create([
-                'address_line_1' => $request->address,
-                'type' => \App\Enums\AddressType::ADDRESS,
-                'customer_id' => $customer->id,
-            ]);
-            $customer->update(['default_address_id' => $address->id]);
-            $is_new_customer = 1;
-        }
-
-        $lead = Lead::create([
-            'label' => $request->label ?? null,
-            'type' => \App\Enums\LeadType::LEADS,
-            'status' => \App\Enums\LeadStatus::GREEN,
-            'is_new_customer' => $is_new_customer,
-            'is_unhandled' => 1,
-            'user_id' => $bum->id,
-            'customer_id' => $customer->id,
-            'channel_id' => $channel_id,
-            'interest' => $request->note ?? null,
-            'user_sms_id' => $user->id,
-            'sms_channel_id' => $user->channel_id,
-            'product_brand_id' => $request->product_brand_id ?? null,
-            'voucher' => $request->voucher ?? null,
-        ]);
-        if ($request->hasFile('voucher_image')) $lead->addMedia($request->file('voucher_image'))->toMediaCollection('photo');
-        return new LeadSmsResource($lead->loadMissing(['userSms']));
-    }
-
-    /**
-     * Update a lead SMS
-     *
-     * Update a given lead SMS
-     *
-     * @param UpdateLeadSmsRequest $request
-     * @param int $id
-     * @return LeadSmsResource
-     * @throws Exception
-     */
-    #[CustomOpenApi\Operation(id: 'leadUpdateSms', tags: [Tags::Lead, Tags::V1])]
-    #[OpenApi\Parameters(factory: DefaultHeaderParameters::class)]
-    #[CustomOpenApi\RequestBody(request: UpdateLeadSmsRequest::class)]
-    #[CustomOpenApi\Response(resource: LeadSmsResource::class)]
-    public function UpdateSms(UpdateLeadSmsRequest $request, int $id)
-    {
-        $user = auth()->user();
-        if ($user->type->is(UserType::SUPERVISOR_SMS)) return response()->json(['success' => false, 'message' => 'Only sales can update lead']);
-
-        $lead = Lead::findOrFail($id);
-        $customer = $lead->customer;
-        if (!$customer) {
-            return response()->json(['message' => 'Customer not found'], 404);
-        }
-
-        $customer->email = $request->email;
-        $customer->phone = $request->phone;
-        $customer->first_name = $request->name;
-        $customer->save();
-
-        $address = $customer->defaultCustomerAddress ? $customer->defaultCustomerAddress : $customer->customerAddresses->first();
-        if (!$address) $address = new \App\Models\Address;
-        $address->address_line_1 = $request->address;
-        $address->type = \App\Enums\AddressType::ADDRESS;
-        $address->customer_id = $customer->id;
-        $address->save();
-        $customer->update(['default_address_id' => $address->id]);
-
-        $lead->update([
-            'label' => $request->label ?? null,
-            'interest' => $request->note ?? null,
-            'product_brand_id' => $request->product_brand_id ?? null,
-            'voucher' => $request->voucher ?? null,
-        ]);
-
-        if ($request->hasFile('voucher_image')) {
-            if (count($lead->voucher_image) > 0) {
-                foreach ($lead->voucher_image as $media) {
-                    $media->delete();
-                }
-            }
-
-            $lead->addMedia($request->file('voucher_image'))->toMediaCollection('photo');
-        }
-
-        return new LeadSmsResource($lead->refresh()->loadMissing(['userSms']));
     }
 
     /**

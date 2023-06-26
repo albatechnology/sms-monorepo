@@ -11,7 +11,6 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductBrand;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
 trait SaveToSubscriber
 {

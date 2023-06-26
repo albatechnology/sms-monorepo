@@ -82,7 +82,6 @@ class User extends Authenticatable implements Tenanted, ReportableScope
     public static function boot()
     {
         self::deleted(function (self $model) {
-            // if ($model->type == UserType::SUPERVISOR_SMS) SmsChannel::where('user_id', $model->id)->update(['user_id' => null]);
         });
 
         parent::boot();
@@ -530,11 +529,6 @@ class User extends Authenticatable implements Tenanted, ReportableScope
     public function channel(): BelongsTo
     {
         return $this->belongsTo(Channel::class);
-    }
-
-    public function smsChannel(): BelongsTo
-    {
-        return $this->belongsTo(SmsChannel::class, 'channel_id', 'id');
     }
 
     public function channels(): BelongsToMany

@@ -40,14 +40,7 @@ class CustomerController extends BaseApiController
     #[CustomOpenApi\Response(resource: CustomerResource::class, isCollection: true)]
     public function index()
     {
-        $user = auth()->user();
-        $query = null;
-        // if ($user->type->is(\App\Enums\UserType::SALES_SMS)) {
-        //     $query = function ($query) use ($user) {
-        //         return $query->where('user_sms_id', $user->id);
-        //     };
-        // }
-        return CustomQueryBuilder::buildResource(Customer::class, CustomerResource::class, $query);
+        return CustomQueryBuilder::buildResource(Customer::class, CustomerResource::class, fn ($q) => $q->tenanted());
     }
 
     /**
@@ -214,7 +207,7 @@ class CustomerController extends BaseApiController
     #[CustomOpenApi\Response(resource: LeadResource::class, isCollection: true)]
     public function getCustomerLeads(int $customer)
     {
-        $query = fn ($q) => $q->where('customer_id', $customer)->with(LeadController::load_relation);
+        $query = fn ($q) => $q->tenanted()->where('customer_id', $customer)->with(LeadController::load_relation);
         return CustomQueryBuilder::buildResource(Lead::class, LeadResource::class, $query);
     }
 
@@ -228,14 +221,14 @@ class CustomerController extends BaseApiController
     #[CustomOpenApi\Response(resource: ActivityResource::class, isCollection: true)]
     public function getCustomerActivities(int $customer)
     {
-        $query = fn ($q) => $q->where('customer_id', $customer)->with(ActivityController::load_relation);
+        $query = fn ($q) => $q->tenanted()->where('customer_id', $customer)->with(ActivityController::load_relation);
         return CustomQueryBuilder::buildResource(Activity::class, ActivityResource::class, $query);
     }
 
     public function getCustomerByPhone()
     {
         request()->validate(['phone' => 'required']);
-        $customer = Customer::where('phone', request()->phone)->first();
+        $customer = Customer::tenanted()->where('phone', request()->phone)->first();
 
         return response()->json(['success' => $customer ? true : false, 'customer' => $customer]);
     }

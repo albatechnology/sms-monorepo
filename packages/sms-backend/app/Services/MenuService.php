@@ -355,24 +355,6 @@ class MenuService
             0,
         );
 
-        // $smsChannel = new Submenu(
-        //     'sms_channel_access',
-        //     route("admin.sms-channels.index"),
-        //     'admin/sms-channels',
-        //     'fas fa-store-alt',
-        //     trans('cruds.smsChannel.title'),
-        //     0,
-        // );
-
-        // $location = new Submenu(
-        //     'location_access',
-        //     route("admin.locations.index"),
-        //     'admin/locations',
-        //     'fas fa-store-alt',
-        //     trans('cruds.location.title'),
-        //     0,
-        // );
-
         return new Menu(
             'corporate_access',
             'fas fa-building',
@@ -382,8 +364,6 @@ class MenuService
                 // $account,
                 // $channelCategory,
                 $channel,
-                // $smsChannel,
-                // $location,
             ]
         );
     }

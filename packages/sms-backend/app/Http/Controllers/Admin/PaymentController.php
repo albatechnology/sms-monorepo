@@ -229,24 +229,4 @@ class PaymentController extends Controller
 
         return response()->json(['id' => $media->id, 'url' => $media->getUrl()], Response::HTTP_CREATED);
     }
-
-    public function createSiOrlan(Payment $payment)
-    {
-        $check = OrderService::validateCreateManualSI($payment);
-        if ($check['status'] === false) return redirect()->back()->with('message', $check['message']);
-
-        try {
-            $salesInvoice = Http::post(env('ORLANSOFT_API_URL') . 'orlan-orders/salesInvoice/' . $payment->order->orlan_tr_no . '/' . $payment->id . '/' . $payment->amount);
-            $salesInvoiceResult = $salesInvoice?->json();
-            if (isset($salesInvoiceResult) && !is_null($salesInvoiceResult)) {
-                $message = $salesInvoiceResult['message'] ?? '';
-            } else {
-                $payment->refresh();
-                $message = 'Sales Invoice with TrNo #' . $payment->orlan_tr_no . ' created successfully. If there is no TrNo, it means the Sales Invoice failed to created. Please check in Orlansoft';
-            }
-        } catch (\Throwable $th) {
-            $message = $th->getMessage();
-        }
-        return redirect()->back()->with('message', $message);
-    }
 }

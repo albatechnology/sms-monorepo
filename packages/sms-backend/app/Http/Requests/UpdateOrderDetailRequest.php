@@ -15,7 +15,6 @@ class UpdateOrderDetailRequest extends FormRequest
     public function rules()
     {
         return [
-            'location_id' => 'required|exists:locations,orlan_id',
             'status' => [
                 'required',
                 'integer',

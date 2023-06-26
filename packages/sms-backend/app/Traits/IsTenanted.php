@@ -32,7 +32,7 @@ trait IsTenanted
 
         // $query = $query->tenantedActiveCompany($hasActiveCompany);
 
-        return $user->is_admin ? $query : $query->tenantedUserChannels();
+        // return $user->is_admin ? $query : $query->tenantedUserChannels();
     }
 
     public function scopeFindTenanted($query, int $id)

@@ -24,17 +24,6 @@
                 <span class="help-block">{{ trans('cruds.orderDetail.fields.status_helper') }}</span>
             </div>
             <div class="form-group">
-                <label class="required" for="location_id">Location</label>
-                <select class="form-control select2 {{ $errors->has('location_id') ? 'is-invalid' : '' }}" name="location_id" id="location_id" required>
-                    @foreach($locations as $orlan_id => $name)
-                        <option value="{{ $orlan_id }}" {{ $orlan_id == $orderDetail->location_id ? 'selected' : '' }}>{{ $orlan_id .' - '. $name }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('location_id'))
-                    <span class="text-danger">{{ $errors->first('location_id') }}</span>
-                @endif
-            </div>
-            <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}
                 </button>
@@ -42,11 +31,7 @@
         </form>
     </div>
 </div>
-
-
-
 @endsection
-
 @section('scripts')
 <script>
     $(document).ready(function () {

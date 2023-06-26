@@ -51,7 +51,6 @@ class OrderDetail extends BaseModel implements HasMedia, DiscountableLine, Repor
         'created_at',
         'updated_at',
         'deleted_at',
-        'location_id',
     ];
 
     protected $casts = [

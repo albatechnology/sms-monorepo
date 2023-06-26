@@ -17,7 +17,6 @@ use App\Services\ApiReportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PDO;
 
 class DashboardController extends BaseApiController
 {
@@ -346,7 +345,7 @@ class DashboardController extends BaseApiController
 
     public function brandCategories(Request $request)
     {
-        $data = Order::notCancelled()->notReturned()->whereIn('payment_status', [OrderPaymentStatus::SETTLEMENT, OrderPaymentStatus::DOWN_PAYMENT, OrderPaymentStatus::OVERPAYMENT])
+        $data = Order::tenanted()->notCancelled()->notReturned()->whereIn('payment_status', [OrderPaymentStatus::SETTLEMENT, OrderPaymentStatus::DOWN_PAYMENT, OrderPaymentStatus::OVERPAYMENT])
             ->join('order_details', 'order_details.order_id', '=', 'orders.id')
             ->join('product_units', 'product_units.id', '=', 'order_details.product_unit_id')
             ->join('brand_categories', 'brand_categories.id', '=', 'product_units.brand_category_id');
@@ -429,7 +428,7 @@ class DashboardController extends BaseApiController
         //     ->join('brand_categories', 'brand_categories.id', '=', 'product_brand_categories.brand_category_id')
         //     ->whereHas('order', fn ($query) => $query->whereIn('payment_status', [OrderPaymentStatus::SETTLEMENT, OrderPaymentStatus::DOWN_PAYMENT, OrderPaymentStatus::OVERPAYMENT])->notCancelled()->notReturned())
         //     ->where('brand_categories.id', $brandCategoryId);
-        $data = Order::notCancelled()->notReturned()->whereIn('payment_status', [OrderPaymentStatus::SETTLEMENT, OrderPaymentStatus::DOWN_PAYMENT, OrderPaymentStatus::OVERPAYMENT])
+        $data = Order::tenanted()->notCancelled()->notReturned()->whereIn('payment_status', [OrderPaymentStatus::SETTLEMENT, OrderPaymentStatus::DOWN_PAYMENT, OrderPaymentStatus::OVERPAYMENT])
             ->join('order_details', 'order_details.order_id', '=', 'orders.id')
             ->join('product_units', 'product_units.id', '=', 'order_details.product_unit_id')
             ->join('products', 'products.id', '=', 'product_units.product_id')
@@ -488,7 +487,7 @@ class DashboardController extends BaseApiController
         }
 
         $productBrandIds = collect($data)->pluck('id')->all();
-        $dataEstimation = Activity::join('activity_product_brand', 'activity_product_brand.activity_id', '=', 'activities.id')
+        $dataEstimation = Activity::tenanted()->join('activity_product_brand', 'activity_product_brand.activity_id', '=', 'activities.id')
             ->join('product_brands', 'product_brands.id', '=', 'activity_product_brand.product_brand_id')
             ->whereHas('activityProductBrands')
             ->whereIn('product_brands.id', $productBrandIds);
@@ -526,7 +525,7 @@ class DashboardController extends BaseApiController
 
     public function interiorDesign(Request $request)
     {
-        $data = Order::whereNotNull('interior_design_id')->whereIn('payment_status', [OrderPaymentStatus::SETTLEMENT, OrderPaymentStatus::OVERPAYMENT, OrderPaymentStatus::DOWN_PAYMENT])->notCancelled()->notReturned()->selectRaw('IFNULL(sum(total_price), 0) as total');
+        $data = Order::tenanted()->whereIn('payment_status', [OrderPaymentStatus::SETTLEMENT, OrderPaymentStatus::OVERPAYMENT, OrderPaymentStatus::DOWN_PAYMENT])->notCancelled()->notReturned()->selectRaw('IFNULL(sum(total_price), 0) as total');
 
         if ($request->has('company_id') && $request->company_id != '') {
             $company_id = $request->company_id;
@@ -561,14 +560,14 @@ class DashboardController extends BaseApiController
 
     public function interiorDesignDetail(Request $request, $interiorDesignId = null)
     {
-        $data = Order::whereNotNull('interior_design_id')->whereIn('payment_status', [OrderPaymentStatus::SETTLEMENT, OrderPaymentStatus::OVERPAYMENT, OrderPaymentStatus::DOWN_PAYMENT])->notCancelled()->notReturned();
+        $data = Order::tenanted()->whereIn('payment_status', [OrderPaymentStatus::SETTLEMENT, OrderPaymentStatus::OVERPAYMENT, OrderPaymentStatus::DOWN_PAYMENT])->notCancelled()->notReturned();
 
         if ($interiorDesignId) {
-            $data = $data->join('channels', 'channels.id', '=', 'orders.channel_id')->join('users', 'users.id', '=', 'orders.user_id')->where('interior_design_id', $interiorDesignId)->select('orders.deal_at as date', 'channels.name as channel', 'users.name as sales', 'orders.total_price as total')->orderBy('orders.deal_at', 'desc');
+            $data = $data->join('channels', 'channels.id', '=', 'orders.channel_id')->join('users', 'users.id', '=', 'orders.user_id')->select('orders.deal_at as date', 'channels.name as channel', 'users.name as sales', 'orders.total_price as total')->orderBy('orders.deal_at', 'desc');
         } else {
             $data = $data->with(['interiorDesign' => function ($query) {
                 return $query->select('id', 'name');
-            }])->selectRaw('interior_design_id, sum(total_price) as total')->groupBy('interior_design_id')->orderBy('total', 'desc');
+            }])->selectRaw('sum(total_price) as total')->orderBy('total', 'desc');
         }
 
         if ($request->has('company_id') && $request->company_id != '') {
@@ -622,7 +621,7 @@ class DashboardController extends BaseApiController
 
         $user = tenancy()->getUser();
         $sales_id = app(User::class)->userSalesIds($user, $conditions);
-        $orders = Order::with(['customer' => function ($q) {
+        $orders = Order::tenanted()->with(['customer' => function ($q) {
             $q->select('id', 'first_name', 'last_name');
         }, 'activity' => function ($q) {
             $q->select('id', 'order_id');
@@ -738,7 +737,7 @@ class DashboardController extends BaseApiController
             $endDate = Carbon::createFromFormat('Y-m-d', $request->end_at)->endOfDay();
         }
 
-        $activities = Activity::join('customers', 'customers.id', '=', 'activities.customer_id')
+        $activities = Activity::tenanted()->join('customers', 'customers.id', '=', 'activities.customer_id')
             ->join('users as sales', 'sales.id', '=', 'activities.user_id')
             ->join('users as bum', 'bum.id', '=', 'sales.supervisor_id')
             ->join('activity_brand_values', 'activity_brand_values.activity_id', '=', 'activities.id')
@@ -761,7 +760,7 @@ class DashboardController extends BaseApiController
         }
 
         if ($request->has('supervisor_id') && $request->supervisor_id != '') {
-            $salesIds = User::whereDescendantOf($request->supervisor_id)->whereIsSales()->get(['id'])->pluck('id')->all();
+            $salesIds = User::tenanted()->whereDescendantOf($request->supervisor_id)->whereIsSales()->get(['id'])->pluck('id')->all();
             $activities = $activities->whereIn('activities.user_id', $salesIds);
         }
 
@@ -1129,7 +1128,7 @@ class DashboardController extends BaseApiController
             $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date)->endOfDay();
         }
 
-        $query = Lead::with('sales', 'customer', 'latestActivity', 'channel')->whereNull('leads.deleted_at')
+        $query = Lead::tenanted()->with('sales', 'customer', 'latestActivity', 'channel')->whereNull('leads.deleted_at')
             ->where('type', 4)
             ->whereDate('created_at', '>=', date($startDate))
             ->whereDate('created_at', '<=', date($endDate));
@@ -1311,7 +1310,7 @@ class DashboardController extends BaseApiController
             $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date)->endOfDay();
         }
 
-        $query = Lead::has('sales')->with('customer')->withSum('leadActivities as total_estimated_value', 'estimated_value')->withSum([
+        $query = Lead::tenanted()->has('sales')->with('customer')->withSum('leadActivities as total_estimated_value', 'estimated_value')->withSum([
             'leadActivityOrders as total_quotation' => function ($q) use ($startDate, $endDate) {
                 $q->whereDate('deal_at', '>=', date($startDate));
                 $q->whereDate('deal_at', '<=', date($endDate));

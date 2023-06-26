@@ -44,20 +44,6 @@
                         <td>
                             {{ $channel->company->name ?? '' }}
                         </td>
-                    </tr>
-                    <tr>
-                        <th>SMS Channel</th>
-                        <td>
-                            @if(isset($channel->smsChannels) && count($channel->smsChannels) > 0)
-                                <ol>
-                                    @foreach ($channel->smsChannels as $c)
-                                    <li>{{ $c->name }}</li>
-                                    @endforeach
-                                </ol>
-                            @else
-                                -
-                            @endif
-                        </td>
                     </tr> --}}
                 </tbody>
             </table>

@@ -31,7 +31,6 @@ use App\Models\Discount;
 use App\Models\InteriorDesign;
 use App\Models\Lead;
 use App\Models\LeadCategory;
-use App\Models\Location;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\OrderDetail;
@@ -51,7 +50,6 @@ use App\Models\PromoCategory;
 use App\Models\QaMessage;
 use App\Models\QaTopic;
 use App\Models\Report;
-use App\Models\SmsChannel;
 use App\Models\Stock;
 use App\Models\SubLeadCategory;
 use App\Models\SupervisorType;
@@ -307,14 +305,6 @@ class CustomQueryBuilder extends QueryBuilder
                 self::id('company_id'),
                 self::string('name', 'Toko ABC'),
             ],
-            SmsChannel::class             => [
-                self::ids(),
-                self::string('name', 'Toko ABC'),
-            ],
-            Location::class             => [
-                self::ids(),
-                self::string('name', 'WAREHOUSE Normal WH'),
-            ],
             Discount::class            => [
                 self::ids(),
                 // self::string('name', 'Discount ABC'),
@@ -336,7 +326,6 @@ class CustomQueryBuilder extends QueryBuilder
                 self::scope('customer_name', 'customerName', 'Customer A'),
                 self::scope('customer_search', 'customerSearch', 'Customer A', 'Search by customer name, email and phone'),
                 self::scope('channel_name', 'channelName', 'Channel A'),
-                self::scope('sms_channel_name', 'channelName', 'Channel A'),
                 [
                     'key'         => 'is_new_customer',
                     'type'        => self::TYPE_EXACT,

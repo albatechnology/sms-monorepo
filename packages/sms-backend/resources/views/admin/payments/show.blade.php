@@ -15,12 +15,6 @@
             </div>
             <table class="table table-bordered table-striped">
                 <tbody>
-                    {{-- <tr>
-                        <th>Orlan TrNo (SI)</th>
-                        <td>
-                            {{ $payment->orlan_tr_no }}
-                        </td>
-                    </tr> --}}
                     <tr>
                         <th>
                             {{ trans('cruds.payment.fields.id') }}
@@ -111,12 +105,6 @@
                 <a class="btn btn-default" href="{{ route('admin.payments.index') }}">
                     {{ trans('global.back_to_list') }}
                 </a>
-                {{-- @if (is_null($payment->orlan_tr_no))
-                    <form action="{{ route('admin.payments.createSiOrlan', $payment->id) }}" method="post" class="d-inline form-loading">
-                        @csrf
-                        <button type="submit" class="btn btn-danger">Create SI Orlansoft</button>
-                    </form>
-                @endif --}}
             </div>
         </div>
     </div>

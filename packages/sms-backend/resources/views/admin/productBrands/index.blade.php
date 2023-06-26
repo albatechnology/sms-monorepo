@@ -35,8 +35,6 @@
                         {{ trans('cruds.productBrand.fields.hpp_calculation') }}
                     </th> --}}
                     {{-- <th>Currency</th> --}}
-                    {{-- <th>Show in Moves</th>
-                    <th>Show in SMS</th> --}}
                     <th>
                         {{ trans('cruds.productBrand.fields.photo') }}
                     </th>
@@ -125,8 +123,6 @@
                     // {data: 'company_name', name: 'company.name'},
                     // {data: 'hpp_calculation', name: 'hpp_calculation'},
                     // {data: 'currency_id', name: 'currency_id'},
-                    // {data: 'show_in_moves', name: 'show_in_moves'},
-                    // {data: 'show_in_sms', name: 'show_in_sms'},
                     {data: 'photo', name: 'photo', sortable: false, searchable: false},
                     {data: 'actions', name: '{{ trans('global.actions') }}'}
                 ],

@@ -59,8 +59,6 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         'created_at',
         'updated_at',
         'deleted_at',
-        // 'user_sms_id',
-        // 'sms_channel_id',
         // 'product_brand_id',
         'parent_id',
     ];
@@ -79,8 +77,6 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         'status_history'   => 'array',
         'type'             => LeadType::class,
         'status'           => LeadStatus::class,
-        // 'user_sms_id' => 'integer',
-        // 'sms_channel_id' => 'integer',
         // 'product_brand_id' => 'integer',
     ];
 
@@ -270,11 +266,6 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         return $this->belongsTo(Channel::class, 'channel_id');
     }
 
-    // public function smsChannel()
-    // {
-    //     return $this->belongsTo(SmsChannel::class, 'sms_channel_id');
-    // }
-
     public function setNameAttribute($value)
     {
         return $this->label = $value;
@@ -326,13 +317,6 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         });
     }
 
-    public function scopeSmsChannelName($query, $name)
-    {
-        return $query->whereHas('sms_channel', function ($query) use ($name) {
-            return $query->where('name', 'LIKE', "%$name%");
-        });
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -342,11 +326,6 @@ class Lead extends BaseModel implements Tenanted, HasMedia
     {
         return $this->belongsTo(User::class, 'user_referral_id');
     }
-
-    // public function userSms()
-    // {
-    //     return $this->belongsTo(User::class, 'user_sms_id');
-    // }
 
     // public function productBrand()
     // {

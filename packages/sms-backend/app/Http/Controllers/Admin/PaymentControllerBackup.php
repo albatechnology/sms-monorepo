@@ -184,56 +184,6 @@ class PaymentControllerBackup extends Controller
         $payment->order->refreshPaymentStatus();
         $message = 'Payment updated successfully';
 
-        /**
-         * 1. create sales order sekaligus sales invoice ketika pembayaran >= 50%
-         * 2. setelah pembayaran >= 50%, setiap ada pembayaran create sales invoice
-         */
-        $order = $payment->order;
-        if ($order->payment_status->is(OrderPaymentStatus::DOWN_PAYMENT)) {
-            // jika status pembayaran masih SETTLEMENT, tapi sudah pernah create sales order
-            if ($order->orlan_tr_no != null && $order->orlan_tr_no != '') {
-                // create sales invoice
-                $salesInvoice = Http::post(env('ORLANSOFT_API_URL') . '/api/orders/salesInvoice/' . $order->orlan_tr_no, [
-                    'payment_id' => $payment->id,
-                    'total_payment' => $payment->amount,
-                ]);
-            } else {
-                // create sales order
-                $salesOrder = Http::post(env('ORLANSOFT_API_URL') . '/api/orders/' . $order->id);
-                $message .= '. ' . strval($salesOrder->json()['message']);
-
-                $order->refresh();
-                // create sales invoice
-                $salesInvoice = Http::post(env('ORLANSOFT_API_URL') . '/api/orders/salesInvoice/' . $order->orlan_tr_no, [
-                    'payment_id' => $payment->id,
-                    'total_payment' => $order->amount_paid,
-                ]);
-            }
-            $message .= '. ' . strval($salesInvoice->json()['message']);
-        }
-
-        /**
-         * Jika status pembayaran sudah OVERPAYMENT atau SETTLEMENT,
-         * cek dulu apakah sudah pernah terbuat sales order, jika belum create sales order
-         * Jika payment statusnya OVERPAYMENT, kirim total_price dari order tsb.
-         */
-        if ($order->payment_status->in([OrderPaymentStatus::OVERPAYMENT, OrderPaymentStatus::SETTLEMENT])) {
-
-            if ($order->orlan_tr_no == null || $order->orlan_tr_no == '') {
-                // create sales order
-                $salesOrder = Http::post(env('ORLANSOFT_API_URL') . '/api/orders/' . $order->id);
-                $message .= '. ' . strval($salesOrder->json()['message']);
-            }
-
-            $order->refresh();
-            // create sales invoice
-            $salesInvoice = Http::post(env('ORLANSOFT_API_URL') . '/api/orders/salesInvoice/' . $order->orlan_tr_no, [
-                'payment_id' => $payment->id,
-                'total_payment' => $order->payment_status->is(OrderPaymentStatus::OVERPAYMENT) ? $order->total_price : $payment->amount,
-            ]);
-            $message .= '. ' . strval($salesInvoice->json()['message']);
-        }
-
         return redirect()->route('admin.payments.index')->with('message', $message);
     }
 

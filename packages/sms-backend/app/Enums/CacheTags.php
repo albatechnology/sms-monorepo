@@ -11,6 +11,5 @@ final class CacheTags extends BaseEnum
 {
     const COMPANY = "company";
     const CHANNEL = "channel";
-    const LOCATION = "location";
     const SUPERVISOR_TYPE = "supervisor-type";
 }

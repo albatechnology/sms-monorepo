@@ -49,7 +49,6 @@ class MakeOrderLines
                 // $order_detail->product_brand_id = $product->product->product_brand_id;
                 $order_detail->product_brand_id = $product->product_brand_id;
                 // $order_detail->is_ready = $data['is_ready'] ?? 1;
-                // $order_detail->location_id = $data['location_id'] ?? null;
 
                 return $order_detail;
             });
