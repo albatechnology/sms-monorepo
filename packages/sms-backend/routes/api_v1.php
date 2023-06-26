@@ -31,6 +31,7 @@ use App\Http\Controllers\API\V1\DashboardController;
 use App\Http\Controllers\API\V1\NewReportController;
 use App\Http\Controllers\API\V1\OrderDetailController;
 use App\Http\Controllers\API\V1\PromoCategoryController;
+use App\Http\Controllers\API\V1\SubscribtionController;
 use App\Http\Controllers\API\V1\VoucherController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -49,6 +50,7 @@ use Illuminate\Support\Facades\Route;
 
 /** Push Notification */
 Route::put('/notifications/{code}/unsubscribe', [PushNotificationController::class, 'unsubscribe'])->name('push-notification.unsubscribe');
+Route::post('subscribe', [SubscribtionController::class, 'subscribe']);
 
 // Route::get('/orders/export-quotation', [OrderController::class, 'exportQuotation'])->name('orders.export-quotation');
 Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
@@ -225,5 +227,3 @@ Route::prefix('auth')->group(function () {
     Route::post('/token', [AuthController::class, 'token'])->name('auth.token');
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
 });
-
-Route::post('subscribe', [\App\Http\Controllers\Api\V1\SubscribtionController::class, 'subscribe']);
