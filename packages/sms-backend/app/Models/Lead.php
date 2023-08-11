@@ -206,7 +206,7 @@ class Lead extends BaseModel implements Tenanted, HasMedia
             return $query->whereIn('user_id', $user->getAllChildrenSupervisors()->pluck('id')->all());
         }
 
-        if (!$user->type->in([UserType::DIRECTOR, UserType::DIGITAL_MARKETING])) return $query->where('user_id', $user->id);
+        if (!$user->type->in([UserType::DIRECTOR])) return $query->where('user_id', $user->id);
         return;
     }
 

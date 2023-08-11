@@ -48,7 +48,7 @@
             $('#user_type').on('change', function() {
                 $('#user_id').attr('disabled', true).html('');
                 userType = $(this).val();
-                $.get('{{ url('admin/unhandle-leads/get-users/' . $lead->channel->company->id) }}/' +
+                $.get('{{ url('admin/unhandle-leads/get-users/' . $lead->channel_id) }}/' +
                     userType,
                     function(html) {
                         if (userType) {

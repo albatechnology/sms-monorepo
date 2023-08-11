@@ -41,7 +41,7 @@ class InteriorDesign extends BaseModel
     public function scopeCustomTenanted($query)
     {
         $user = tenancy()->getUser();
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $company_ids = $user->company_ids ?? $user->userCompanies->pluck('company_id')->all() ?? [];
             return $query->whereHas('sales', function ($q) use ($company_ids) {
                 $q->whereIn('company_id', $company_ids);

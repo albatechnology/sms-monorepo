@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 use App\Enums\NotificationType;
 use App\Classes\ExpoMessage;
-use App\Models\Company;
 use App\Models\LeadCategory;
 use App\Services\PushNotificationService;
 
@@ -26,7 +25,7 @@ class UnhandleLeadsController extends Controller
         abort_if(Gate::denies('unhandle_lead_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            if (auth()->user()->type->in([UserType::DEFAULT, UserType::DIGITAL_MARKETING, UserType::DIRECTOR])) {
+            if (auth()->user()->type->in([UserType::DEFAULT, UserType::DIRECTOR])) {
                 $query = Lead::unhandled()->with(['sales', 'customer', 'channel'])->select(sprintf('%s.*', (new Lead)->table));
             } else {
                 $query = Lead::tenanted()->unhandled()->with(['sales', 'customer', 'channel'])->select(sprintf('%s.*', (new Lead)->table));
@@ -109,9 +108,9 @@ class UnhandleLeadsController extends Controller
         return view('admin.unhandleLeads.index', compact('customers', 'channels', 'supervisors','leadCategories'));
     }
 
-    public function getUsers($companyId, $userType)
+    public function getUsers($channelId, $userType)
     {
-        $users = User::whereCompanyId($companyId);
+        $users = User::whereChannelId($channelId);
         switch ($userType) {
             case '2':
                 $users->where('type', UserType::SUPERVISOR)->where('supervisor_type_id', 1);

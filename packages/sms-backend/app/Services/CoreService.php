@@ -207,7 +207,7 @@ class CoreService
     {
         $user = user();
 
-        if ($user->is_admin || $user->is_director || $user->is_digital_marketing) {
+        if ($user->is_admin || $user->is_director) {
             return true;
         }
 

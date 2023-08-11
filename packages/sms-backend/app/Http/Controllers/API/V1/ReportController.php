@@ -89,7 +89,7 @@ class ReportController extends BaseApiController
             ->where('targets.model_type', 'user')
             ->where('targets.type', 0);
 
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $company_id = $request->company_id ? [$request->company_id] : $user->company_ids;
             $query = $query->whereIn('companies.id', $company_id ?? []);
         } elseif ($user->is_supervisor) {
@@ -236,7 +236,7 @@ class ReportController extends BaseApiController
             ->whereDate('leads.created_at', '<=', $endDate)
             ->whereNull('leads.deleted_at');
 
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $company_id = $request->company_id ? [$request->company_id] : $user->company_ids;
 
             $channel_ids = DB::table('channels')->whereIn('company_id', $company_id)->pluck('id')->all();

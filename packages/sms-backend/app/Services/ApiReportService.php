@@ -59,7 +59,7 @@ class ApiReportService
 
         $user = $is_export ? \App\Models\User::find($user_id) : user();
         $userType = '';
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $userType = 'director';
             $company_id = request()->company_id ? [request()->company_id] : $user->company_ids;
             // $company_id = [1, 2];
@@ -263,7 +263,7 @@ class ApiReportService
 
         $user = $is_export ? \App\Models\User::find($user_id) : user();
         $userType = '';
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $userType = 'director';
             if ($company_id == null) {
                 $company_id = request()->company_id ? request()->company_id : $user->company_id;
@@ -511,7 +511,7 @@ class ApiReportService
         $user = $is_export ? User::find($user_id) : user();
         $userType = null;
 
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $userType = 'director';
         } else if ($user->is_supervisor) {
             if ($user->supervisor_type_id == 1) {

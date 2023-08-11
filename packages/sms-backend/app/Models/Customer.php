@@ -81,9 +81,9 @@ class Customer extends BaseModel
         return $this->hasMany(TaxInvoice::class, 'customer_id', 'id');
     }
 
-    public function user_sms()
+    public function subscribtionUser()
     {
-        return $this->belongsTo(User::class, 'user_sms_id');
+        return $this->belongsTo(SubscribtionUser::class);
     }
 
     /**

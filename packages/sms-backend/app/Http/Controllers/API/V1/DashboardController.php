@@ -869,7 +869,7 @@ class DashboardController extends BaseApiController
         if ($request->user_id) $query = $query->where('leads.user_id', $request->user_id);
 
         $user = user();
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $company_id = $request->company_id ? [$request->company_id] : $user->company_ids;
 
             $channel_ids = DB::table('channels')->whereIn('company_id', $company_id)->pluck('id')->all();
@@ -931,7 +931,7 @@ class DashboardController extends BaseApiController
             ->whereBetween('leads.created_at', [$startDate, $endDate]);
 
         if ($request->sales_name) $query = $query->where('users.name', 'like', '%' . $request->sales_name . '%');
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             // $channel_ids = DB::table('channels')->whereIn('company_id', $company_id)->pluck('id')->all();
             $channel_ids = DB::table('channels')->where('company_id', $company_id)->pluck('id')->all();
             $query = $query->whereIn('leads.channel_id', $channel_ids ?? []);
@@ -1060,7 +1060,7 @@ class DashboardController extends BaseApiController
             ->whereBetween('leads.created_at', [$startDate, $endDate]);
 
         if ($request->sales_name) $query = $query->where('users.name', 'like', '%' . $request->sales_name . '%');
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $channel_ids = DB::table('channels')->where('company_id', $company_id)->pluck('id')->all();
             $query = $query->whereIn('leads.channel_id', $channel_ids ?? []);
         } elseif ($user->is_supervisor) {
@@ -1134,7 +1134,7 @@ class DashboardController extends BaseApiController
             ->whereDate('created_at', '<=', date($endDate));
 
         $user = user();
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $company_id = $request->company_id ? [$request->company_id] : $user->company_ids;
 
             $channel_ids = DB::table('channels')->whereIn('company_id', $company_id)->pluck('id')->all();
@@ -1209,7 +1209,7 @@ class DashboardController extends BaseApiController
             ->where('users.type', 2);
 
         $user = user();
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $company_id = $request->company_id ? [$request->company_id] : $user->company_ids;
 
             $channel_ids = DB::table('channels')->whereIn('company_id', $company_id)->pluck('id')->all();
@@ -1269,7 +1269,7 @@ class DashboardController extends BaseApiController
             ->where('users.type', 2);
 
         $user = user();
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $company_id = $request->company_id ? [$request->company_id] : $user->company_ids;
 
             $channel_ids = DB::table('channels')->whereIn('company_id', $company_id)->pluck('id')->all();
@@ -1323,7 +1323,7 @@ class DashboardController extends BaseApiController
         });
 
         $user = user();
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $company_id = $request->company_id ? [$request->company_id] : $user->company_ids;
 
             $channel_ids = Channel::whereIn('company_id', $company_id)->pluck('id')->all();

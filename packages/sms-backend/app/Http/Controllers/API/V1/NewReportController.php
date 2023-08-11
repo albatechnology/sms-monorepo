@@ -93,7 +93,7 @@ class NewReportController extends BaseApiController
         // $companyId = $request->company_id ?? $user->company_id;
         $channelId = $request->channel_id ?? null;
 
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $userType = 'director';
 
             // $target_deals = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', 0)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
@@ -128,7 +128,7 @@ class NewReportController extends BaseApiController
             $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
 
-        if ($user->is_director || $user->is_digital_marketing || $user->is_supervisor) {
+        if ($user->is_director || $user->is_supervisor) {
             if ($channelId) {
                 $target_deals = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', 0)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
@@ -986,7 +986,7 @@ class NewReportController extends BaseApiController
         // $companyId = $request->company_id ?? $user->company_id;
         $channelId = $request->channel_id ?? null;
 
-        if ($user->is_director || $user->is_digital_marketing) {
+        if ($user->is_director) {
             $userType = 'director';
         } else if ($user->is_supervisor) {
             if ($user->supervisor_type_id == 1) {
@@ -3813,7 +3813,7 @@ class NewReportController extends BaseApiController
         }
 
         // $userType = null;
-        // if ($user->is_director || $user->is_digital_marketing) {
+        // if ($user->is_director) {
         //     $userType = 'director';
         // } else if ($user->is_supervisor) {
         //     if ($user->supervisor_type_id == 1) {
