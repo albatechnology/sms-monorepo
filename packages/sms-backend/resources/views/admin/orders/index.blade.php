@@ -54,9 +54,9 @@
                         <th>
                             {{ trans('cruds.order.fields.payment_status') }}
                         </th>
-                        <th>
+                        {{-- <th>
                             {{ trans('cruds.order.fields.shipment_status') }}
-                        </th>
+                        </th> --}}
                         <th>
                             {{ trans('cruds.order.fields.price') }}
                         </th>
@@ -100,7 +100,7 @@
                         </td>
                         <x-filter-enum base-enum="{{ \App\Enums\OrderStatus::class }}"></x-filter-enum>
                         <x-filter-enum base-enum="{{ \App\Enums\OrderPaymentStatus::class }}"></x-filter-enum>
-                        <x-filter-enum base-enum="{{ \App\Enums\OrderShipmentStatus::class }}"></x-filter-enum>
+                        {{-- <x-filter-enum base-enum="{{ \App\Enums\OrderShipmentStatus::class }}"></x-filter-enum> --}}
                         <td>
                             <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                         </td>
@@ -208,10 +208,10 @@
                         data: 'payment_status',
                         name: 'payment_status'
                     },
-                    {
-                        data: 'shipment_status',
-                        name: 'shipment_status'
-                    },
+                    // {
+                    //     data: 'shipment_status',
+                    //     name: 'shipment_status'
+                    // },
                     {
                         data: 'total_price',
                         name: 'total_price'

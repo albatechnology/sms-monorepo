@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\OrderDetailShipmentStatus;
+// use App\Enums\OrderDetailShipmentStatus;
 use App\Enums\OrderDetailStatus;
 use App\Enums\ShipmentStatus;
 use App\Interfaces\DiscountableLine;
@@ -44,7 +44,7 @@ class OrderDetailDemand extends BaseModel implements HasMedia, DiscountableLine,
         'quantity_fulfilled',
         'unit_price',
         'total_cascaded_discount',
-        'shipment_status',
+        // 'shipment_status',
         'status',
         'price',
         'notes',
@@ -64,7 +64,7 @@ class OrderDetailDemand extends BaseModel implements HasMedia, DiscountableLine,
         'company_id'              => 'integer',
         'records'                 => 'json',
         'status'                  => OrderDetailStatus::class,
-        'shipment_status'         => OrderDetailShipmentStatus::class,
+        // 'shipment_status'         => OrderDetailShipmentStatus::class,
     ];
 
     public function registerMediaConversions(Media $media = null): void
@@ -154,52 +154,53 @@ class OrderDetailDemand extends BaseModel implements HasMedia, DiscountableLine,
 
     public function refreshShipmentStatus(): self
     {
-        // check for no shipment
-        if ($this->shipments->isEmpty()) {
-            $this->update(['shipment_status' => OrderDetailShipmentStatus::NONE]);
-            return $this;
-        }
-
-        // if shipping 0 quantity
-        if ($this->sumShippingQuantity() === 0) {
-            $this->update(['shipment_status' => OrderDetailShipmentStatus::NONE]);
-            return $this;
-        }
-
-        // if shipping partial quantity
-        if ($this->sumShippingQuantity() !== $this->quantity) {
-            $this->update(['shipment_status' => OrderDetailShipmentStatus::PARTIAL]);
-            return $this;
-        }
-
-        // for an order detail to not be partial, the whole of the quantity
-        // must be under the same status. For example. order detail quantity 2
-        // have 2 shipment, both shipment on status delivering, then order detail
-        // status would be delivering as well.
-        $allStatusMapping = [
-            ShipmentStatus::PREPARING  => OrderDetailShipmentStatus::PREPARING,
-            ShipmentStatus::DELIVERING => OrderDetailShipmentStatus::DELIVERING,
-            ShipmentStatus::ARRIVED    => OrderDetailShipmentStatus::ARRIVED,
-            ShipmentStatus::CANCELLED  => OrderDetailShipmentStatus::NONE,
-        ];
-
-        foreach ($allStatusMapping as $shipmentStatus => $orderDetailShipmentStatus) {
-
-            $sumByStatus = $this->shipments
-                ->filter(function (Shipment $shipment) use ($shipmentStatus) {
-                    return $shipment->status->is($shipmentStatus);
-                })
-                ->sum('pivot.quantity');
-
-            if ($sumByStatus === $this->quantity) {
-                $this->update(['shipment_status' => $orderDetailShipmentStatus]);
-                return $this;
-            }
-        }
-
-        // for everything else set partial (we have partial statuses)
-        $this->update(['shipment_status' => OrderDetailShipmentStatus::PARTIAL]);
         return $this;
+        // // check for no shipment
+        // if ($this->shipments->isEmpty()) {
+        //     $this->update(['shipment_status' => OrderDetailShipmentStatus::NONE]);
+        //     return $this;
+        // }
+
+        // // if shipping 0 quantity
+        // if ($this->sumShippingQuantity() === 0) {
+        //     $this->update(['shipment_status' => OrderDetailShipmentStatus::NONE]);
+        //     return $this;
+        // }
+
+        // // if shipping partial quantity
+        // if ($this->sumShippingQuantity() !== $this->quantity) {
+        //     $this->update(['shipment_status' => OrderDetailShipmentStatus::PARTIAL]);
+        //     return $this;
+        // }
+
+        // // for an order detail to not be partial, the whole of the quantity
+        // // must be under the same status. For example. order detail quantity 2
+        // // have 2 shipment, both shipment on status delivering, then order detail
+        // // status would be delivering as well.
+        // $allStatusMapping = [
+        //     ShipmentStatus::PREPARING  => OrderDetailShipmentStatus::PREPARING,
+        //     ShipmentStatus::DELIVERING => OrderDetailShipmentStatus::DELIVERING,
+        //     ShipmentStatus::ARRIVED    => OrderDetailShipmentStatus::ARRIVED,
+        //     ShipmentStatus::CANCELLED  => OrderDetailShipmentStatus::NONE,
+        // ];
+
+        // foreach ($allStatusMapping as $shipmentStatus => $orderDetailShipmentStatus) {
+
+        //     $sumByStatus = $this->shipments
+        //         ->filter(function (Shipment $shipment) use ($shipmentStatus) {
+        //             return $shipment->status->is($shipmentStatus);
+        //         })
+        //         ->sum('pivot.quantity');
+
+        //     if ($sumByStatus === $this->quantity) {
+        //         $this->update(['shipment_status' => $orderDetailShipmentStatus]);
+        //         return $this;
+        //     }
+        // }
+
+        // // for everything else set partial (we have partial statuses)
+        // $this->update(['shipment_status' => OrderDetailShipmentStatus::PARTIAL]);
+        // return $this;
     }
 
     /**

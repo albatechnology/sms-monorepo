@@ -148,9 +148,9 @@ class OrderController extends BaseApiController
     #[CustomOpenApi\Response(resource: OrderResource::class, statusCode: 201)]
     public function update(UpdateOrderRequest $request, Order $order): OrderResource
     {
-        if ($order->shipment_status->isNot(\App\Enums\OrderShipmentStatus::NONE) || $order->payment_status->isNot(\App\Enums\OrderPaymentStatus::NONE)) {
-            return $this->show($order->refresh()->loadMissing(self::load_relation));
-        }
+        // if ($order->shipment_status->isNot(\App\Enums\OrderShipmentStatus::NONE) || $order->payment_status->isNot(\App\Enums\OrderPaymentStatus::NONE)) {
+        //     return $this->show($order->refresh()->loadMissing(self::load_relation));
+        // }
 
         $order = app(Pipeline::class)
             ->send($order)

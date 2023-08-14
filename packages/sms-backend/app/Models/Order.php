@@ -61,7 +61,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         'approval_status',
         'status',
         'stock_status',
-        'shipment_status',
+        // 'shipment_status',
         'deal_at',
         'additional_discount_ratio',
         'approved_by',
@@ -108,7 +108,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         'status'                    => OrderStatus::class,
         'approval_status'           => OrderApprovalStatus::class,
         'stock_status'              => OrderStockStatus::class,
-        'shipment_status'           => OrderShipmentStatus::class,
+        // 'shipment_status'           => OrderShipmentStatus::class,
         'approval_send_to'          => \App\Enums\UserType::class,
         'approval_supervisor_type_id' => 'integer',
         'is_direct_purchase' => 'boolean',
@@ -400,7 +400,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
     {
         // terminate early if there is no order detail
         if ($this->order_details->isEmpty()) {
-            $this->update(['shipment_status' => OrderShipmentStatus::NONE]);
+            // $this->update(['shipment_status' => OrderShipmentStatus::NONE]);
             return $this;
         }
 
@@ -412,19 +412,19 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         ];
 
         // if all order detail have the same shipment status, use direct mapping
-        foreach ($allStatusMapping as $orderDetailShipmentStatus => $orderShipmentStatus) {
-            $hasAllStatus = $this->order_details->every(function (OrderDetail $detail) use ($orderDetailShipmentStatus) {
-                return $detail->shipment_status->is($orderDetailShipmentStatus);
-            });
+        // foreach ($allStatusMapping as $orderDetailShipmentStatus => $orderShipmentStatus) {
+        //     $hasAllStatus = $this->order_details->every(function (OrderDetail $detail) use ($orderDetailShipmentStatus) {
+        //         return $detail->shipment_status->is($orderDetailShipmentStatus);
+        //     });
 
-            if ($hasAllStatus) {
-                $this->update(['shipment_status' => $orderShipmentStatus]);
-                return $this;
-            }
-        }
+        //     if ($hasAllStatus) {
+        //         // $this->update(['shipment_status' => $orderShipmentStatus]);
+        //         return $this;
+        //     }
+        // }
 
         // otherwise use partial
-        $this->update(['shipment_status' => OrderShipmentStatus::PARTIAL()]);
+        // $this->update(['shipment_status' => OrderShipmentStatus::PARTIAL()]);
         return $this;
     }
 
@@ -454,8 +454,8 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
      */
     public function scopeWhereWaitingDelivery($query)
     {
-        return $query->where('status', OrderStatus::SHIPMENT)
-            ->where('shipment_status', '<>', OrderShipmentStatus::ARRIVED);
+        return $query->where('status', OrderStatus::SHIPMENT);
+            // ->where('shipment_status', '<>', OrderShipmentStatus::ARRIVED);
     }
 
     public function scopeNotCancelled($query)

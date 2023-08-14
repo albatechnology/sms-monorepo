@@ -109,9 +109,9 @@ class OrderController extends Controller
                 return $row->quotation_valid_until_datetime ? date('d-m-Y H:i:s', strtotime($row->quotation_valid_until_datetime)) : "";
             });
 
-            $table->editColumn('shipment_status', function ($row) {
-                return $row->shipment_status?->description ?? '';
-            });
+            // $table->editColumn('shipment_status', function ($row) {
+            //     return $row->shipment_status?->description ?? '';
+            // });
 
             $table->editColumn('total_price', function ($row) {
                 return $row->total_price ? rupiah($row->total_price) : "";

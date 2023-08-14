@@ -3,7 +3,6 @@
 namespace App\Pipes\Order\Admin;
 
 use App\Models\CartDemand;
-use App\Models\CustomerVoucher;
 use App\Models\Order;
 use Closure;
 use Illuminate\Support\Facades\DB;
