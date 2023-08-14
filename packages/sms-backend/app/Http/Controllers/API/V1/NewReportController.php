@@ -139,7 +139,7 @@ class NewReportController extends BaseApiController
         }
 
         if (in_array($userType, ['director', 'hs'])) {
-            $query = User::tenanted()->selectRaw("id, name, type")
+            $query = User::selectRaw("id, name, type")
                 ->selectRaw("(
                     SELECT
                         count(DISTINCT customer_id)
@@ -422,7 +422,7 @@ class NewReportController extends BaseApiController
 
             return response()->json(array_merge($data, $infoDate));
         } else if (in_array($userType, ['sl', 'bum'])) {
-            $query = User::tenanted()->selectRaw('id, name, type')
+            $query = User::selectRaw('id, name, type')
                 ->selectRaw("(
                     SELECT
                         count(DISTINCT customer_id)
@@ -706,7 +706,7 @@ class NewReportController extends BaseApiController
         }
 
         // else sales
-        $query = User::tenanted()->selectRaw('id,name,type')->where('id', $user->id)
+        $query = User::selectRaw('id,name,type')->where('id', $user->id)
             ->selectRaw("(
                 SELECT
                     count(DISTINCT customer_id)
@@ -1002,7 +1002,7 @@ class NewReportController extends BaseApiController
 
         if (in_array($userType, ['director', 'hs'])) {
             if ($request->user_type == 'bum') {
-                $query = User::tenanted()->selectRaw('id, name, type')
+                $query = User::selectRaw('id, name, type')
                     ->where('type', UserType::SUPERVISOR)
                     ->where('supervisor_type_id', 2);
                 // ->where('company_id', $companyId);
@@ -1409,7 +1409,7 @@ class NewReportController extends BaseApiController
 
                 return response()->json(array_merge($data, $infoDate));
             } elseif ($request->user_type == 'store_leader') {
-                $query = User::tenanted()->selectRaw('id, name, type')
+                $query = User::selectRaw('id, name, type')
                     ->where('type', UserType::SUPERVISOR)
                     ->where('supervisor_type_id', 1);
                 // ->where('company_id', $companyId);
@@ -1806,7 +1806,7 @@ class NewReportController extends BaseApiController
 
                 return response()->json(array_merge($data, $infoDate));
             } elseif ($request->user_type == 'store') {
-                $query = Channel::tenanted()->selectRaw('id, name');
+                $query = Channel::selectRaw('id, name');
                 // ->where('company_id', $companyId);
                 // ->whereIn('id', $user->channels->pluck('id')->all());
 
@@ -2175,7 +2175,7 @@ class NewReportController extends BaseApiController
                 return response()->json(array_merge($data, $infoDate));
             }
 
-            $query = User::tenanted()->selectRaw('id, name, type')
+            $query = User::selectRaw('id, name, type')
                 ->selectRaw("(
                     SELECT
                         count(DISTINCT customer_id)
@@ -2486,7 +2486,7 @@ class NewReportController extends BaseApiController
             return response()->json(array_merge($data, $infoDate));
         } else if (in_array($userType, ['sl', 'bum'])) {
             if ($request->user_type == 'store') {
-                $query = Channel::tenanted()->selectRaw('id, name')->whereIn('id', $user->channels->pluck('id')->all());
+                $query = Channel::selectRaw('id, name')->whereIn('id', $user->channels->pluck('id')->all());
 
                 $query->selectRaw("(SELECT SUM(target) FROM new_targets WHERE model_type='channel' AND model_id=channels.id AND type=0 AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
 
@@ -2852,7 +2852,7 @@ class NewReportController extends BaseApiController
 
                 return response()->json(array_merge($data, $infoDate));
             } elseif ($request->user_type == 'store_leader') {
-                $query = User::tenanted()->selectRaw('id, name, type')
+                $query = User::selectRaw('id, name, type')
                     ->where('type', 3)
                     ->where('supervisor_type_id', 1)
                     ->where('supervisor_id', $user->id)
@@ -3189,7 +3189,7 @@ class NewReportController extends BaseApiController
                 return response()->json(array_merge($data, $infoDate));
             }
 
-            $query = Channel::tenanted()->selectRaw('id,name')
+            $query = Channel::selectRaw('id,name')
                 ->whereIn('id', $user->channels->pluck('id')->all())
                 ->with(['sales' => function ($q) use ($channelId, $startTargetDate, $endTargetDate, $startDate, $endDate, $startDateCompare, $endDateCompare) {
 
@@ -3522,7 +3522,7 @@ class NewReportController extends BaseApiController
 
         $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', 7)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-        $query = User::tenanted()->selectRaw('id, name, type');
+        $query = User::selectRaw('id, name, type');
         // if ($startDate->month == $endDate->month) {
         $query = $query->selectRaw("users.id, users.name, users.channel_id, (SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type=0 AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_deals");
         // }
@@ -3750,7 +3750,7 @@ class NewReportController extends BaseApiController
 
         $user = user();
 
-        $query = Order::tenanted()->selectRaw("
+        $query = Order::selectRaw("
         orders.id,
         activities.id as activity_id,
         orders.invoice_number,
@@ -3931,8 +3931,7 @@ class NewReportController extends BaseApiController
             default => null,
         };
 
-        $query = Lead::tenanted()
-            ->with(['latestActivity' => function ($q) use ($activityStatus) {
+        $query = Lead::with(['latestActivity' => function ($q) use ($activityStatus) {
                 $q->selectRaw("
                     lead_id,
                     (
@@ -4159,7 +4158,7 @@ class NewReportController extends BaseApiController
         if ($user instanceof Channel) {
             $target_brands = DB::table('new_targets')->where('model_type', 'channel')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
             // $salesIds = User::where('channel_id', $user->id)->where('type', 2)->pluck('id')->all();
-            $query = ProductBrand::tenanted()->selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
+            $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
                 ->with(['activityBrandValues' => function ($q) use ($id, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate)
                         // ->whereIn('user_id', $salesIds)
@@ -4185,7 +4184,7 @@ class NewReportController extends BaseApiController
 
             // $companyIds = [$companyId] ?? $user->companies->pluck('id')->all() ?? [];
 
-            $query = ProductBrand::tenanted()->selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
+            $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
                 ->with(['activityBrandValues' => function ($q) use ($filterChannelId, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate)
                         // ->where('user_id', $id)
@@ -4214,7 +4213,7 @@ class NewReportController extends BaseApiController
 
             $channelIds = $user->channels->pluck('id')->all();
 
-            $query = ProductBrand::tenanted()->selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
+            $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
                 ->with(['activityBrandValues' => function ($q) use ($filterChannelId, $channelIds, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate)
                         // ->where('user_id', $id)
@@ -4239,7 +4238,7 @@ class NewReportController extends BaseApiController
         } else {
             $target_brands = DB::table('new_targets')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
 
-            $query = ProductBrand::tenanted()->selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
+            $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
                 ->with(['activityBrandValues' => function ($q) use ($id, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate)
                         ->where('user_id', $id)
@@ -4299,7 +4298,7 @@ class NewReportController extends BaseApiController
 
     public function getPbs($user, $startDate, $endDate, $startDateCompare, $endDateCompare, $filterChannelId = null, $companyId = null)
     {
-        $query = ProductBrand::tenanted()->selectRaw('id');
+        $query = ProductBrand::selectRaw('id');
         if ($user instanceof Channel) {
             $query = $query->with(['activityBrandValues' => function ($q) use ($user, $filterChannelId, $startDate, $endDate) {
                 $q->whereHas('lead', fn ($q2) => $q2->where('channel_id', $user->id));
