@@ -67,7 +67,7 @@ class UpdateAdditionalDiscount
         if (count($productBrandIds) > 1) {
             $additional_discount_ratio = $order->additional_discount_ratio;
             $storeLeaderLimitApprovals = $storeLeader->supervisorApprovalLimits->whereIn('product_brand_id', $productBrandIds)->filter(function ($data) use ($additional_discount_ratio) {
-                return $data->limit >= $additional_discount_ratio;
+                return $data?->limit ?? 0 >= $additional_discount_ratio;
             });
 
             if (count($storeLeaderLimitApprovals) > 0) {
@@ -80,7 +80,7 @@ class UpdateAdditionalDiscount
             $storeLeaderLimitApproval = $storeLeader->supervisorApprovalLimits->first(fn ($data) => $data->product_brand_id == $productBrandId);
             $approval_supervisor_type_id = 1;
 
-            if ($order->additional_discount_ratio > $storeLeaderLimitApproval->limit) {
+            if ($order->additional_discount_ratio > $storeLeaderLimitApproval?->limit ?? 0) {
                 $approval_supervisor_type_id = 2;
             }
         }
@@ -117,7 +117,7 @@ class UpdateAdditionalDiscount
             if (count($productBrandIds) > 1) {
                 $additional_discount_ratio = $order->additional_discount_ratio;
                 $userLimitApprovals = $user->supervisorApprovalLimits->whereIn('product_brand_id', $productBrandIds)->filter(function ($data) use ($additional_discount_ratio) {
-                    return $data->limit >= $additional_discount_ratio;
+                    return $data?->limit ?? 0 >= $additional_discount_ratio;
                 });
 
                 if (count($userLimitApprovals) > 0) {
@@ -129,7 +129,7 @@ class UpdateAdditionalDiscount
             } else {
                 $productBrandId = $productBrandIds[0];
                 $userLimitApproval = $user->supervisorApprovalLimits->first(fn ($data) => $data->product_brand_id == $productBrandId);
-                if ($order->additional_discount <= $userLimitApproval->limit) {
+                if ($order->additional_discount <= $userLimitApproval?->limit ?? 0) {
                     $order->approved_by = $user->id;
                     $order->approval_status = OrderApprovalStatus::APPROVED();
                 } else {

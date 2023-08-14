@@ -97,14 +97,14 @@ class UpdateUserRequest extends FormRequest
                     }
                 }
             ],
-            'product_brand_ids'         => [
-                'nullable',
-                'array',
-            ],
-            'product_brand_ids.*'         => [
-                'integer',
-                'exists:product_brands,id'
-            ],
+            // 'product_brand_ids'         => [
+            //     'nullable',
+            //     'array',
+            // ],
+            // 'product_brand_ids.*'         => [
+            //     'integer',
+            //     'exists:product_brands,id'
+            // ],
         ];
     }
 }

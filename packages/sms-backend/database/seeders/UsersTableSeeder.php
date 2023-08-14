@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\UserType;
 use App\Models\Channel;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +35,11 @@ class UsersTableSeeder extends Seeder
             'subscribtion_user_id' => 2
         ]);
 
+        $userRole = Role::create([
+            'name' => 'user',
+            'guard_name' => 'web',
+        ]);
+
         // Director
         $director = User::create(
             [
@@ -47,6 +53,12 @@ class UsersTableSeeder extends Seeder
             ],
         );
         $director->channels()->sync([$channel->id]);
+        DB::table('model_has_roles')->insert([
+            'role_id' => $userRole->id,
+            'model_type' => 'user',
+            'model_id' => $director->id,
+            'subscribtion_user_id' => 2
+        ]);
 
         $bum = User::create(
             [
@@ -62,6 +74,12 @@ class UsersTableSeeder extends Seeder
             ],
         );
         $bum->channels()->sync([$channel->id]);
+        DB::table('model_has_roles')->insert([
+            'role_id' => $userRole->id,
+            'model_type' => 'user',
+            'model_id' => $bum->id,
+            'subscribtion_user_id' => 2
+        ]);
 
         $storeLeader = User::create(
             [
@@ -77,6 +95,12 @@ class UsersTableSeeder extends Seeder
             ],
         );
         $storeLeader->channels()->sync([$channel->id]);
+        DB::table('model_has_roles')->insert([
+            'role_id' => $userRole->id,
+            'model_type' => 'user',
+            'model_id' => $storeLeader->id,
+            'subscribtion_user_id' => 2
+        ]);
 
         $sales = User::create(
             [
@@ -91,6 +115,12 @@ class UsersTableSeeder extends Seeder
             ],
         );
         $sales->channels()->sync([$channel->id]);
+        DB::table('model_has_roles')->insert([
+            'role_id' => $userRole->id,
+            'model_type' => 'user',
+            'model_id' => $sales->id,
+            'subscribtion_user_id' => 2
+        ]);
 
         $channel = Channel::create([
             // 'company_id' => $company->id,

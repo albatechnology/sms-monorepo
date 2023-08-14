@@ -2,7 +2,6 @@
 
 namespace App\Pipes\Order\Admin;
 
-use App\Models\CartDemand;
 use App\Models\Order;
 use Closure;
 use Illuminate\Support\Facades\DB;
@@ -42,10 +41,10 @@ class SaveOrder
             }
 
             if ($order_discounts->count() > 0) $order->order_discounts()->saveMany($order_discounts);
-            $this->applyVouchers($order, $order_vouchers);
+            // $this->applyVouchers($order, $order_vouchers);
 
-            $cartDemand = CartDemand::where('user_id', $order->user_id)->whereNotNull('items')->whereNotOrdered()->first();
-            if ($cartDemand) $cartDemand->update(['order_id' => $order->id, 'created_at' => $order->created_at]);
+            // $cartDemand = CartDemand::where('user_id', $order->user_id)->whereNotNull('items')->whereNotOrdered()->first();
+            // if ($cartDemand) $cartDemand->update(['order_id' => $order->id, 'created_at' => $order->created_at]);
 
             // for calculate in CreateActivity class
             $activityDatas = collect($activityDatas)
@@ -69,7 +68,7 @@ class SaveOrder
         $orderVouchers = $order->orderVouchers;
         $customer = $order->customer;
 
-        if($orderVouchers->count() > 0) $order->orderVouchers()->delete();
+        if ($orderVouchers->count() > 0) $order->orderVouchers()->delete();
 
         $customer->vouchers()->where('customer_id', $customer->id)->whereIn('voucher_id', $orderVouchers?->pluck('voucher_id') ?? [])->update(['is_used' => 0]);
 

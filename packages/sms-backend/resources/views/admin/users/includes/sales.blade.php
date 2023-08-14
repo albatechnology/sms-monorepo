@@ -48,19 +48,15 @@
     @endif
     <span class="help-block">{{ trans('cruds.user.fields.channels_helper') }}</span>
 </div>
-<div class="form-group">
+{{-- <div class="form-group">
     <label>Product Brand</label>
-    {{-- <div class="mb-1">
-        <button type="button" class="btn btn-success btn-xs btnSelectAll">Select All</button>
-        <button type="button" class="btn btn-success btn-xs btnDeselectAll">Deselect All</button>
-    </div> --}}
     <select name="product_brand_ids[]" id="product_brand_ids"
         class="form-control select2 @error('product_brand_ids') is-invalid @enderror" multiple disabled>
     </select>
     @error('product_brand_ids')
         <span class="error invalid-feedback">{{ $message }}</span>
     @enderror
-</div>
+</div> --}}
 <script>
     var selectedProductBrands = {{ $selectedProductBrands ? json_encode($selectedProductBrands) : json_encode([]) }};
     var selectedChannels = {{ $selectedChannels ? json_encode($selectedChannels) : json_encode([]) }};
@@ -90,27 +86,27 @@
 
     }
 
-    function getProductBrands() {
-        var options = '';
-        $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
-        // if (companyId) {
-            $.get('{{ url('admin/product-brands/get-product-brands') }}',
-                function(
-                    res) {
-                    res.forEach(data => {
-                        var selected2 = selectedProductBrands.includes(data.id) ? 'selected' : '';
-                        options += '<option value="' + data.id + '" ' + selected2 + '>' + data.name +
-                            '</option>';
-                    });
-                    $('#product_brand_ids').attr('disabled', false).html(options).change();
-                })
-        // } else {
-        //     $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
-        // }
-    }
+    // function getProductBrands() {
+    //     var options = '';
+    //     $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
+    //     // if (companyId) {
+    //         $.get('{{ url('admin/product-brands/get-product-brands') }}',
+    //             function(
+    //                 res) {
+    //                 res.forEach(data => {
+    //                     var selected2 = selectedProductBrands.includes(data.id) ? 'selected' : '';
+    //                     options += '<option value="' + data.id + '" ' + selected2 + '>' + data.name +
+    //                         '</option>';
+    //                 });
+    //                 $('#product_brand_ids').attr('disabled', false).html(options).change();
+    //             })
+    //     // } else {
+    //     //     $('#product_brand_ids').attr('disabled', true).html(options).val('').change();
+    //     // }
+    // }
 
     getSupervisors();
-    getProductBrands();
+    // getProductBrands();
     // $('#company_id').on('change', function() {
     //     getSupervisors($(this).val());
     //     getProductBrands($(this).val());

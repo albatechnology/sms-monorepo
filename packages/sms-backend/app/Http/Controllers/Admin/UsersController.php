@@ -185,14 +185,13 @@ class UsersController extends Controller
     public function edit(User $user)
     {
         abort_if(Gate::denies('user_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $roles = Role::tenanted()->pluck('name', 'id');
+        $roles = Role::tenanted()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $supervisor_types = SupervisorType::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $supervisors = User::tenanted()->whereIsSupervisor()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         // $companies = Company::tenanted()->get()->pluck('name', 'id');
-
         $user->load('roles', 'supervisor_type', 'supervisor', 'channels');
         $user_channels = $user->channels->pluck('id')->all();
         return view('admin.users.edit', compact('roles', 'supervisor_types', 'supervisors', 'user_channels', 'user'));
@@ -200,8 +199,8 @@ class UsersController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        // dd($request->all());
         $user->update($request->validated());
-        // dd($user);
         $user->roles()->sync($request->input('role', []));
 
         // $user->productBrands()->sync($request->input('product_brand_ids', []));
@@ -219,16 +218,16 @@ class UsersController extends Controller
         //     // UserCompany::create(['user_id' => $user->id, 'company_id' => $user->company_id]);
         // }
 
-        $userId = $user->id;
-        PermissionUser::where('user_id', $userId)->delete();
-        $user->roles->each(function ($role) use ($userId) {
-            $role->permissions->each(function ($permission) use ($userId) {
-                PermissionUser::insert([
-                    'user_id' => $userId,
-                    'permission_id' => $permission->id,
-                ]);
-            });
-        });
+        // $userId = $user->id;
+        // PermissionUser::where('user_id', $userId)->delete();
+        // $user->roles->each(function ($role) use ($userId) {
+        //     $role->permissions->each(function ($permission) use ($userId) {
+        //         PermissionUser::insert([
+        //             'user_id' => $userId,
+        //             'permission_id' => $permission->id,
+        //         ]);
+        //     });
+        // });
 
         if (isset($request->channel_ids) && count($request->channel_ids) > 0) {
             $user->channels()->sync($request->input('channel_ids', []));
