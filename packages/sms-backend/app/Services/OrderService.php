@@ -382,6 +382,7 @@ class OrderService
                 'added_by_id'     => $user->id ?? user()->id,
                 'order_id'        => $order_id,
                 'channel_id'        => $order->channel_id,
+                'subscribtion_user_id' => $order->subscribtion_user_id,
                 // 'company_id'      => $order->company_id,
             ]
         );
