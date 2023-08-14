@@ -42,6 +42,11 @@ class Role extends ModelsRole
         return $query->where('subscribtion_user_id', '!=', 1)->orWhereNull('subscribtion_user_id');
     }
 
+    public function subscribtionUser()
+    {
+        return $this->belongsTo(SubscribtionUser::class);
+    }
+
     // public function scopeTenanted($query)
     // {
     //     $hasActiveTenant = tenancy()->getActiveTenant();

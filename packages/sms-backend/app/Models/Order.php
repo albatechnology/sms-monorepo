@@ -165,6 +165,11 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
     //     return $this->belongsTo(InteriorDesign::class);
     // }
 
+    public function subscribtionUser()
+    {
+        return $this->belongsTo(SubscribtionUser::class);
+    }
+
     public function orderOrderTrackings(): HasMany
     {
         return $this->hasMany(OrderTracking::class, 'order_id', 'id');

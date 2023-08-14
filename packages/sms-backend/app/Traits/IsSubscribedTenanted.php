@@ -3,13 +3,11 @@
 
 namespace App\Traits;
 
-use App\Exceptions\UnauthorisedTenantAccessException;
+// use App\Exceptions\UnauthorisedTenantAccessException;
 use App\Models\Channel;
-use App\Models\Company;
+// use App\Models\Company;
 use App\Models\SubscribtionUser;
 use App\Models\User;
-use Exception;
-use Illuminate\Support\Collection;
 
 /**
  * Trait for model that is company based (i.e., model has company_id)
@@ -50,7 +48,8 @@ trait IsSubscribedTenanted
     {
         if (!$user) $user = tenancy()->getUser();
         if ($user->is_admin) return true;
-        return $this->company_id == $user->company_id;
+        return $this->subscribtion_user_id == $user->subscribtion_user_id;
+        // return $this->company_id == $user->company_id;
     }
 
     public function subscribtionUser()

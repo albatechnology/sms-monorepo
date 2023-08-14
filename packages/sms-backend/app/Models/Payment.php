@@ -8,7 +8,7 @@ use App\Events\PaymentDisapproved;
 use App\Interfaces\Reportable;
 use App\Interfaces\Tenanted;
 use App\Traits\Auditable;
-use App\Traits\IsTenanted;
+use App\Traits\IsSubscribedTenanted;
 use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,7 +21,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class Payment extends BaseModel implements HasMedia, Tenanted, Reportable
 {
-    use SoftDeletes, InteractsWithMedia, Auditable, IsTenanted;
+    use SoftDeletes, InteractsWithMedia, Auditable, IsSubscribedTenanted;
 
     public const PROOF_COLLECTION = 'proof';
 
@@ -121,6 +121,11 @@ class Payment extends BaseModel implements HasMedia, Tenanted, Reportable
     {
         $this->addMediaConversion('thumb')->fit('crop', 50, 50);
         $this->addMediaConversion('preview')->fit('crop', 120, 120);
+    }
+
+    public function subscribtionUser()
+    {
+        return $this->belongsTo(SubscribtionUser::class);
     }
 
     public function payment_type()

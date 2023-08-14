@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Enums\CacheTags;
 use App\Interfaces\ReportableScope;
+use App\Interfaces\Tenanted;
 use App\Traits\Auditable;
+use App\Traits\IsSubscribedTenanted;
 use App\Traits\SaveToSubscriber;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,9 +14,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @mixin IdeHelperChannel
  */
-class Channel extends BaseModel implements ReportableScope
+class Channel extends BaseModel implements ReportableScope, Tenanted
 {
-    use SoftDeletes, Auditable, SaveToSubscriber;
+    use SoftDeletes, Auditable, SaveToSubscriber, IsSubscribedTenanted;
 
     public $table = 'channels';
 

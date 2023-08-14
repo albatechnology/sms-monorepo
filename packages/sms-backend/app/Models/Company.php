@@ -7,7 +7,7 @@ use App\Enums\LeadStatus;
 use App\Interfaces\ReportableScope;
 use App\Interfaces\Tenanted;
 use App\Traits\Auditable;
-use App\Traits\IsTenanted;
+use App\Traits\IsSubscribedTenanted;
 use DateTimeInterface;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,7 +21,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
  */
 class Company extends BaseModel implements Tenanted, HasMedia, ReportableScope
 {
-    use SoftDeletes, Auditable, IsTenanted, InteractsWithMedia;
+    use SoftDeletes, Auditable, InteractsWithMedia, IsSubscribedTenanted;
 
     public $table = 'companies';
 
