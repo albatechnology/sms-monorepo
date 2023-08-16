@@ -225,5 +225,5 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
 
 Route::prefix('auth')->group(function () {
     Route::post('/token', [AuthController::class, 'token'])->name('auth.token');
-    Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
+    // Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
 });

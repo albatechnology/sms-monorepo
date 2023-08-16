@@ -50,7 +50,7 @@ use App\Http\Controllers\Admin\SalesEstimationController;
 use App\Http\Controllers\Admin\FollowupPerChannelController;
 use App\Http\Controllers\Admin\StockTransferController;
 use App\Http\Controllers\Admin\InteriorDesignController;
-use App\Http\Controllers\Admin\LocationController;
+// use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\NewTargetController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use Illuminate\Support\Facades\Route;
@@ -130,10 +130,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('products/ckmedia', [ProductController::class, 'storeCKEditorImages'])->name('products.storeCKEditorImages');
     Route::post('products/parse-csv-import', [ProductController::class, 'parseCsvImport'])->name('products.parseCsvImport');
     Route::post('products/process-csv-import', [ProductController::class, 'processCsvImport'])->name('products.processCsvImport');
-    Route::get('products/getModels', [ProductController::class, 'getModels'])->name('products.getModels');
-    Route::get('products/getVersions', [ProductController::class, 'getVersions'])->name('products.getVersions');
-    Route::get('products/getCategoryCodes', [ProductController::class, 'getCategoryCodes'])->name('products.getCategoryCodes');
-    Route::match(['get', 'post'], 'products/generateBarcode/{id?}', [ProductController::class, 'generateBarcode'])->name('products.generateBarcode');
+    // Route::get('products/getModels', [ProductController::class, 'getModels'])->name('products.getModels');
+    // Route::get('products/getVersions', [ProductController::class, 'getVersions'])->name('products.getVersions');
+    // Route::get('products/getCategoryCodes', [ProductController::class, 'getCategoryCodes'])->name('products.getCategoryCodes');
+    // Route::match(['get', 'post'], 'products/generateBarcode/{id?}', [ProductController::class, 'generateBarcode'])->name('products.generateBarcode');
     Route::resource('products', 'ProductController');
 
     // Product Units
@@ -177,8 +177,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('channels/destroy', [ChannelController::class, 'massDestroy'])->name('channels.massDestroy');
     Route::resource('channels', 'ChannelController');
 
-    Route::delete('locations/destroy', [LocationController::class, 'massDestroy'])->name('locations.massDestroy');
-    Route::resource('locations', 'LocationController');
+    // Route::delete('locations/destroy', [LocationController::class, 'massDestroy'])->name('locations.massDestroy');
+    // Route::resource('locations', 'LocationController');
 
     // Leads
     Route::get('leads/get-sublead-categories/{leadCategoryId}', [LeadsController::class, 'getSubLeadCategories']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Classes\CustomQueryBuilder;
 use App\Classes\DocGenerator\Enums\Tags;
 use App\Enums\OrderStatus;
+use App\Exceptions\InvalidOrderCancellationException;
 use App\Exceptions\UnauthorisedTenantAccessException;
 use App\Http\Requests\API\V1\Order\ApproveOrderRequest;
 use App\Http\Requests\API\V1\Order\CloneOrderRequest;
@@ -388,10 +389,11 @@ class OrderController extends BaseApiController
     #[CustomOpenApi\Operation(id: 'OrderCancel', tags: [Tags::Order, Tags::V1])]
     #[OpenApi\Parameters(factory: DefaultHeaderParameters::class)]
     #[CustomOpenApi\Response(resource: OrderResource::class, statusCode: 201)]
-    public function cancel(Order $order): OrderResource
+    public function cancel(Order $order)
     {
-        if (count($order->orderPayments) > 0) {
-            throw new Exception('Tidak dapat membatalkan order yang sudah memiliki pembayaran!');
+        if ($order->orderPayments->count() > 0) {
+            return response()->json(['message' => 'Tidak dapat membatalkan order yang sudah memiliki pembayaran!'], 400);
+            // throw new Exception('Tidak dapat membatalkan order yang sudah memiliki pembayaran!');
         }
 
         $canceledOrder = app(OrderService::class)->cancelOrder($order);
