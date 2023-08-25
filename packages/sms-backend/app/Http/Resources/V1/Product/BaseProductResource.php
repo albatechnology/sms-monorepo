@@ -13,6 +13,7 @@ class BaseProductResource extends BaseResource
         return [
             ResourceData::make('id', Schema::TYPE_INTEGER, 1, cast: 'int'),
             ResourceData::make('name', Schema::TYPE_STRING, 'product unit name'),
+            ResourceData::make('sku', Schema::TYPE_STRING, '120001924'),
             ResourceData::make('price', Schema::TYPE_INTEGER, 100000, cast: 'int'),
             ResourceData::make("description", Schema::TYPE_STRING, 'Product description'),
             ResourceData::make('volume', Schema::TYPE_INTEGER, 10, cast: 'float'),
