@@ -40,6 +40,7 @@ class ProductSeederImport implements ToModel, WithHeadingRow
             'sku' => $sku,
             'price' => $row['price'] ?? 0,
             'production_cost' => $row['production_cost'] ?? 0,
+            'is_active' => 1,
         ]);
     }
 }

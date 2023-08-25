@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Imports\ProductSeederImport;
 use App\Models\BrandCategory;
-use App\Models\Product;
 use App\Models\ProductBrand;
 use App\Models\ProductCategory;
 use Illuminate\Database\Seeder;
