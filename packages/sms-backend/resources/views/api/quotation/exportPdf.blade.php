@@ -181,7 +181,7 @@
     <table style="width: 100%; border: 0; margin-top: 12px; margin-bottom: 24px;">
         <tr>
             <td style="text-align: left; padding: 0;">
-                <img src="{{ public_path("images/logo/logo-trek.png") }}" class="logo" alt="Logo" />
+                <img src="{{ public_path('images/logo/logo-trek.webp') }}" class="logo" alt="Logo" />
             </td>
             <td style="text-align: right; padding: 0; width: 30%; vertical-align: top;">
                 <table style="width: 100%; border: 0;">
@@ -275,16 +275,16 @@
         @foreach ($params['order']->order_details as $item)
             <tr>
                 <td>
-                    {{-- @php
-                        // if (isset($item->photo) && count($item->photo) > 0) {
-                        //     $photo = $item->photo[0]['url'];
-                        // } elseif (isset($item->records['images']) && count($item->records['images']) > 0) {
-                        //     $photo = $item->records['images'][0]['url'];
-                        // } else {
-                        //     $photo = asset('images/no-image.jpg');
-                        // }
-                    @endphp --}}
-                    {{-- <img src="{{ $photo }}" alt="productImage" style="width: 126px; height: auto; display: block; margin-left: auto; margin-right: auto;" /> --}}
+                    @php
+                        if (isset($item->photo) && count($item->photo) > 0) {
+                            $photo = $item->photo[0]['url'];
+                        } elseif (isset($item->records['images']) && count($item->records['images']) > 0) {
+                            $photo = $item->records['images'][0]['url'];
+                        } else {
+                            $photo = public_path('images/no-image.jpg');
+                        }
+                    @endphp
+                    <img src="{{ $photo }}" alt="productImage" style="width: 126px; height: auto; display: block; margin-left: auto; margin-right: auto;" />
                 </td>
                 <td style="text-align: left;">{{ $item->product?->name }}</td>
                 <td>{{ $item->is_ready == 1 ? 'ready' : 'indent' }}</td>
