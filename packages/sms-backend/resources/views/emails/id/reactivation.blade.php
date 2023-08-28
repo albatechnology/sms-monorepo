@@ -34,8 +34,8 @@
                <table class="content" width="100%" cellpadding="0" cellspacing="0" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; margin: 0; padding: 0; width: 100%; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%;">
                   <tr>
                      <td class="header" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; padding: 25px 0; text-align: center; background: #313132;">
-                        <a href="https://melandas-indonesia.com/" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #bbbfc3; font-size: 19px; font-weight: bold; text-decoration: none; text-shadow: 0 1px 0 white;">
-                            <img alt="Logo" src="{{ URL::to('/') }}/images/logo-melandas.png" alt="Melandas Email" width="200">
+                        <a href="https://trek.albatech.id/" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #bbbfc3; font-size: 19px; font-weight: bold; text-decoration: none; text-shadow: 0 1px 0 white;">
+                            <img alt="Logo" src="{{ URL::to('/') }}/images/logo-trek.png" alt="Melandas Email" width="200">
                         </a>
                      </td>
                   </tr>
@@ -51,7 +51,7 @@
                                  <p style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #74787E; font-size: 14px; line-height: 1.5em; margin-top: 0; text-align: left;">Melandas Indonesia saat ini mewakili 5 brand International seperti Cattelan Italia, Eichholtz, Natuzzi Editions, La-Z-Boy dan yang terakhir yaitu Natuzzi Italia yang baru saja kami resmikan pembukaan Showroomnya yang berlokasi di Flagship Store Melandas.</p>
                                  <p style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #74787E; font-size: 14px; line-height: 1.5em; margin-top: 0; text-align: left;">Jika Anda membutuhkan bantuan untuk menemukan Furniture terbaik, silahkan hubungi saya. Dengan senang hati akan saya bantu. </p>
                                  <p style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #74787E; font-size: 14px; line-height: 1.5em; margin-top: 0; text-align: left;">Jika ada yang dapat kami lakukan untuk membantu Bapak/Ibu untuk perihal ini, mohon dapat diinformasikan kepada kami.</p>
-                                 <p style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #74787E; font-size: 14px; line-height: 1.5em; margin-top: 0; text-align: left;">Silahkan kunjungi <a href="https://melandas-indonesia.com/" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #3869D4;">www.melandas-indonesia.com</a> atau follow IG <a href="https://www.instagram.com/melandas_indonesia/" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #000000; text-decoration: none;">@melandas_indonesia</a> untuk informasi lainnya. </p>
+                                 <p style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #74787E; font-size: 14px; line-height: 1.5em; margin-top: 0; text-align: left;">Silahkan kunjungi <a href="https://trek.albatech.id/" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #3869D4;">www.melandas-indonesia.com</a> atau follow IG <a href="https://www.instagram.com/melandas_indonesia/" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #000000; text-decoration: none;">@melandas_indonesia</a> untuk informasi lainnya. </p>
                                  <h1 style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #2F3133; font-size: 14px; margin-top: 0; text-align: left;">Regards, <br> Melandas Indonesia </h1>
                               </td>
                            </tr>

@@ -34,8 +34,8 @@
                <table class="content" width="100%" cellpadding="0" cellspacing="0" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; margin: 0; padding: 0; width: 100%; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%;">
                   <tr>
                      <td class="header" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; padding: 25px 0; text-align: center; background: #313132;">
-                        <a href="https://melandas-indonesia.com/" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #bbbfc3; font-size: 19px; font-weight: bold; text-decoration: none; text-shadow: 0 1px 0 white;">
-                            <img alt="Logo" src="{{ URL::to('/') }}/images/logo-melandas.png" alt="Melandas Email" width="200">
+                        <a href="https://trek.albatech.id/" style="font-family: Avenir, Helvetica, sans-serif; box-sizing: border-box; color: #bbbfc3; font-size: 19px; font-weight: bold; text-decoration: none; text-shadow: 0 1px 0 white;">
+                            <img alt="Logo" src="{{ URL::to('/') }}/images/logo-trek.png" alt="Melandas Email" width="200">
                         </a>
                      </td>
                   </tr>

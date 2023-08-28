@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'site_title' => 'Melandas',
+    'site_title' => 'Trek',
 ];
