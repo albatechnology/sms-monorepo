@@ -29,8 +29,8 @@ class NewTarget extends BaseModel
         return $this->belongsTo(Channel::class, 'model_id', 'id')->where('model_type', 'channel');
     }
 
-    public function company()
-    {
-        return $this->belongsTo(Company::class, 'model_id', 'id')->where('model_type', 'company');
-    }
+    // public function company()
+    // {
+    //     return $this->belongsTo(Company::class, 'model_id', 'id')->where('model_type', 'company');
+    // }
 }

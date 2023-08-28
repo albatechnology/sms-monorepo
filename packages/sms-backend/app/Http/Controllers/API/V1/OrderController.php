@@ -414,7 +414,7 @@ class OrderController extends BaseApiController
 
         $params['logo'] = asset("images/logo/logo-trek.png");
         $params['type'] = $request->type;
-        $params['order'] = Order::findOrFail($request->order_id);
+        $params['order'] = Order::with('order_details')->findOrFail($request->order_id);
         $params['user'] = $user;
         $pdf = PDF::loadView('api.quotation.exportPdf', ['params' => $params])->setPaper('a3', 'potrait');
 

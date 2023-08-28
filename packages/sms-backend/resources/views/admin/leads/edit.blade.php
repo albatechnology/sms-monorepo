@@ -41,10 +41,10 @@
                     @endif
                     <span class="help-block">{{ trans('cruds.lead.fields.type_helper') }}</span>
                 </div> --}}
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="required">Company</label>
                     <input type="text" class="form-control" value="{{ $lead->channel?->company->name ?? "" }}" disabled>
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label class="required">Channel</label>
                     <input type="text" class="form-control" value="{{ $lead->channel?->name ?? "" }}" disabled>
@@ -57,7 +57,7 @@
                     <label class="required">Product Brand</label>
                     <input type="text" class="form-control" value="{{ $lead->productBrand?->name ?? "" }}" disabled>
                 </div>
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label for="user_referral_id">Sales Referral</label>
                     <select class="form-control select2 {{ $errors->has('user_referral_id') ? 'is-invalid' : '' }}"
                         name="user_referral_id" id="user_referral_id">
@@ -70,7 +70,7 @@
                     @if ($errors->has('user_referral_id'))
                         <span class="text-danger">{{ $errors->first('user_referral_id') }}</span>
                     @endif
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label class="required">Customer</label>
                     <input type="text" class="form-control" value="{{ $lead->customer?->fullName ?? "" }}" disabled>
@@ -81,7 +81,7 @@
                         id="status" required>
                         <option value disabled {{ old('status', null) === null ? 'selected' : '' }}>
                             {{ trans('global.pleaseSelect') }}</option>
-                        @foreach (App\Enums\LeadStatus::getInstances() as $enum)
+                        @foreach (\App\Enums\LeadStatus::getInstances() as $enum)
                             <option value="{{ $enum->value }}"
                                 {{ old('status', $lead->status->value) === (int) $enum->value ? 'selected' : '' }}>
                                 {{ $enum->label }}</option>
@@ -159,26 +159,26 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            $('#customer_id').select2({
-                placeholder: 'Search by name, email, or phone',
-                minimumInputLength: 2,
-                ajax: {
-                    url: "{{ url('admin/customers/ajax-get-customers') }}?has_address=1",
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function(data) {
-                        return {
-                            results: $.map(data, function(item) {
-                                return {
-                                    text: item.name,
-                                    id: item.id
-                                }
-                            })
-                        };
-                    },
-                    cache: true
-                }
-            });
+            // $('#customer_id').select2({
+            //     placeholder: 'Search by name, email, or phone',
+            //     minimumInputLength: 2,
+            //     ajax: {
+            //         url: "{{ url('admin/customers/ajax-get-customers') }}?has_address=1",
+            //         dataType: 'json',
+            //         delay: 250,
+            //         processResults: function(data) {
+            //             return {
+            //                 results: $.map(data, function(item) {
+            //                     return {
+            //                         text: item.name,
+            //                         id: item.id
+            //                     }
+            //                 })
+            //             };
+            //         },
+            //         cache: true
+            //     }
+            // });
         });
     </script>
 @endpush()

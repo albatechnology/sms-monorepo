@@ -243,14 +243,13 @@ class LeadsController extends Controller
     {
         abort_if(Gate::denies('lead_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $userReferrals = User::tenanted()->where('type', UserType::SALES_REFERRAL)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        // $userReferrals = User::tenanted()->where('type', UserType::SALES_REFERRAL)->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         $users = User::tenanted()->where('type', UserType::SALES)->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $channels = Channel::tenanted()->all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-
+        $channels = Channel::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         $lead->load('customer', 'channel');
 
-        return view('admin.leads.edit', compact('channels', 'lead', 'users', 'userReferrals'));
+        return view('admin.leads.edit', compact('channels', 'lead', 'users'));
     }
 
     public function update(UpdateLeadRequest $request, Lead $lead)
@@ -288,7 +287,7 @@ class LeadsController extends Controller
 
     public function getSubLeadCategories($leadCategoryId)
     {
-        $subLeadCategories = SubLeadCategory::where('lead_category_id', $leadCategoryId)->pluck('name', 'id')->all();
+        $subLeadCategories = SubLeadCategory::where('lead_category_id', $leadCategoryId)->pluck('name', 'id')->get();
         $html = '<option value="">- Sub Category is Empty -</option>';
         if ($subLeadCategories) {
             $html = '<option value="">- Select Sub Category -</option>';
