@@ -198,21 +198,21 @@
                     {{ trans('cruds.orderDetail.title') }}
                 </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link" href="#order_shipments" role="tab" data-toggle="tab">
                     {{ trans('cruds.shipment.title') }}
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item">
                 <a class="nav-link" href="#order_payments" role="tab" data-toggle="tab">
                     {{ trans('cruds.payment.title') }}
                 </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link" href="#product_units" role="tab" data-toggle="tab">
                     Product Units
                 </a>
-            </li>
+            </li> --}}
         </ul>
         <div class="tab-content">
             <div class="tab-pane fade show active" role="tabpanel" id="order_order_details">
@@ -224,7 +224,7 @@
             <div class="tab-pane" role="tabpanel" id="order_payments">
                 @includeIf('admin.orders.relationships.orderPayments', ['payments' => $order->orderPayments])
             </div>
-            <div class="tab-pane" role="tabpanel" id="product_units">
+            {{-- <div class="tab-pane" role="tabpanel" id="product_units">
                 @if($order->cartDemand)
                     @includeIf('admin.orders.relationships.insertProductUnits', ['company' => ['id' => $order->company_id, 'name' => $order->company->name], 'cartDemand' => $order->cartDemand])
                 @else
@@ -236,7 +236,7 @@
                         </div>
                     </div>
                 @endif
-            </div>
+            </div> --}}
         </div>
     </div>
 @endsection
