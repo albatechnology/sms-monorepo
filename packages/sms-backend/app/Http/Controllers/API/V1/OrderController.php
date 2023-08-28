@@ -412,7 +412,7 @@ class OrderController extends BaseApiController
 
         $user = auth()->user();
 
-        $params['logo'] = asset("images/logo/logo-trek.png");
+        $params['logo'] = public_path("images/logo/logo-trek.png");
         $params['type'] = $request->type;
         $params['order'] = Order::with('order_details')->findOrFail($request->order_id);
         $params['user'] = $user;

@@ -181,7 +181,7 @@
     <table style="width: 100%; border: 0; margin-top: 12px; margin-bottom: 24px;">
         <tr>
             <td style="text-align: left; padding: 0;">
-                {{-- <img src="{{ $params['logo'] }}" class="logo" alt="Logo" /> --}}
+                <img src="{{ $params['logo'] }}" class="logo" alt="Logo" />
             </td>
             <td style="text-align: right; padding: 0; width: 30%; vertical-align: top;">
                 <table style="width: 100%; border: 0;">
