@@ -51,7 +51,7 @@
                                 {{ trans('cruds.order.fields.user') }}
                             </th>
                             <td>
-                                {{ $order->user->name ?? '' }}
+                                {{ $order->user?->name ?? '' }}
                             </td>
                         </tr>
                         <tr>
@@ -59,7 +59,7 @@
                                 {{ trans('cruds.order.fields.customer') }}
                             </th>
                             <td>
-                                {{ $order->customer->full_name ?? '' }}
+                                {{ $order->customer?->full_name ?? '' }}
                             </td>
                         </tr>
                         <tr>
@@ -67,15 +67,15 @@
                                 {{ trans('cruds.order.fields.channel') }}
                             </th>
                             <td>
-                                {{ $order->channel->name ?? '' }}
+                                {{ $order->channel?->name ?? '' }}
                             </td>
                         </tr>
-                        <tr>
+                        {{-- <tr>
                             <th>Interior Design</th>
                             <td>
-                                {{ $order->interiorDesign->name ?? '' }}
+                                {{ $order->interiorDesign?->name ?? '' }}
                             </td>
-                        </tr>
+                        </tr> --}}
                         <tr>
                             <th>
                                 {{ trans('cruds.order.fields.reference') }}
@@ -140,10 +140,14 @@
                             {{ $order->tax_invoice->company_name ?? '' }}
                         </td>
                     </tr> --}}
-                        <x-show-row :model="$order" key="total_discount" type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
-                        <x-show-row :model="$order" key="shipping_fee" type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
-                        <x-show-row :model="$order" key="packing_fee" type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
-                        <x-show-row :model="$order" key="additional_discount" type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
+                        <x-show-row :model="$order" key="total_discount"
+                            type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
+                        <x-show-row :model="$order" key="shipping_fee"
+                            type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
+                        <x-show-row :model="$order" key="packing_fee"
+                            type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
+                        <x-show-row :model="$order" key="additional_discount"
+                            type="{{ \App\View\Components\ShowRow::TYPE_PRICE }}"></x-show-row>
                         <tr>
                             <th>
                                 {{ trans('cruds.order.fields.price') }}
@@ -163,15 +167,12 @@
                         <tr>
                             <th>Discount Used</th>
                             <td>
-                                @if($order->order_discounts->count() > 0)
-                                    <ol>
-                                        @foreach ($order->order_discounts as $od)
-                                            <li><a href="{{ route("admin.discounts.show", $od->discount_id) }}" target="_blank">{{ $od->discount->name }}</a></li>
-                                        @endforeach
-                                    </ol>
+                                @if ($order->discount)
+                                    {{ $order->discount?->name ?? '' }}
                                 @else
                                     <p class="text-muted">No discount used</p>
                                 @endif
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -194,7 +195,8 @@
                 </a>
             </li> --}}
             <li class="nav-item">
-                <a class="nav-link active" href="#order_order_details" role="tab" data-toggle="tab" aria-selected="true">
+                <a class="nav-link active" href="#order_order_details" role="tab" data-toggle="tab"
+                    aria-selected="true">
                     {{ trans('cruds.orderDetail.title') }}
                 </a>
             </li>
@@ -216,7 +218,9 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane fade show active" role="tabpanel" id="order_order_details">
-                @includeIf('admin.orders.relationships.orderOrderDetails', ['orderDetails' => $order->orderOrderDetails])
+                @includeIf('admin.orders.relationships.orderOrderDetails', [
+                    'orderDetails' => $order->orderOrderDetails,
+                ])
             </div>
             {{-- <div class="tab-pane" role="tabpanel" id="order_shipments">
                 @includeIf('admin.orders.relationships.orderShipments', ['shipments' => $order->orderShipments])
@@ -225,7 +229,7 @@
                 @includeIf('admin.orders.relationships.orderPayments', ['payments' => $order->orderPayments])
             </div>
             {{-- <div class="tab-pane" role="tabpanel" id="product_units">
-                @if($order->cartDemand)
+                @if ($order->cartDemand)
                     @includeIf('admin.orders.relationships.insertProductUnits', ['company' => ['id' => $order->company_id, 'name' => $order->company->name], 'cartDemand' => $order->cartDemand])
                 @else
                     <div class="m-3">

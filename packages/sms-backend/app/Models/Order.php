@@ -56,6 +56,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         'raw_source',
         'note',
         'channel_id',
+        'discount_id',
         'discount_error',
         'payment_status',
         'approval_status',
@@ -183,6 +184,11 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
     public function order_details(): HasMany
     {
         return $this->hasMany(OrderDetail::class, 'order_id', 'id');
+    }
+
+    public function discount(): BelongsTo
+    {
+        return $this->belongsTo(Discount::class);
     }
 
     // public function order_discounts(): HasMany
@@ -455,7 +461,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
     public function scopeWhereWaitingDelivery($query)
     {
         return $query->where('status', OrderStatus::SHIPMENT);
-            // ->where('shipment_status', '<>', OrderShipmentStatus::ARRIVED);
+        // ->where('shipment_status', '<>', OrderShipmentStatus::ARRIVED);
     }
 
     public function scopeNotCancelled($query)
