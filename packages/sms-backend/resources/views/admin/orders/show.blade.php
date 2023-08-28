@@ -218,9 +218,9 @@
             <div class="tab-pane fade show active" role="tabpanel" id="order_order_details">
                 @includeIf('admin.orders.relationships.orderOrderDetails', ['orderDetails' => $order->orderOrderDetails])
             </div>
-            <div class="tab-pane" role="tabpanel" id="order_shipments">
+            {{-- <div class="tab-pane" role="tabpanel" id="order_shipments">
                 @includeIf('admin.orders.relationships.orderShipments', ['shipments' => $order->orderShipments])
-            </div>
+            </div> --}}
             <div class="tab-pane" role="tabpanel" id="order_payments">
                 @includeIf('admin.orders.relationships.orderPayments', ['payments' => $order->orderPayments])
             </div>

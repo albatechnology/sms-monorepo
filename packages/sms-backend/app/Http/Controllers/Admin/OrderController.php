@@ -292,7 +292,7 @@ class OrderController extends Controller
         abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         // $order->load('user', 'customer', 'address', 'channel', 'tax_invoice', 'orderOrderDetails', 'orderShipments', 'orderPayments');
-        $order->load('user', 'customer', 'address', 'channel', 'orderOrderDetails', 'orderShipments', 'orderPayments', 'cartDemand');
+        $order->load('user', 'customer', 'address', 'channel', 'orderOrderDetails', 'orderPayments', 'cartDemand');
 
         $total_amount = OrderService::getTotalPaymentAmount($order);
 
