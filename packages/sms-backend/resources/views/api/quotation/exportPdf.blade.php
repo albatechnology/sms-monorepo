@@ -448,7 +448,7 @@
         <div
             style="
               color: white;
-              background-color: #313132;
+              background-color: #1d4076;
               font-size: 18px;
               font-weight: bold;
               text-align: center;
