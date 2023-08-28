@@ -14,7 +14,7 @@
                 <select class="form-control select2 {{ $errors->has('promo_id') ? 'is-invalid' : '' }}"
                     name="promo_id" id="promo_id" required>
                     @foreach ($promos as $id => $name)
-                        <option value="{{ $id }}" {{ $discount->promo_id ?? null == $id ? 'selected' : '' }}>{{ $name }}</option>
+                        <option value="{{ $id }}" {{ $discount->promo_id == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
                 @if ($errors->has('promo_id'))
@@ -121,12 +121,11 @@
 @push('js')
 <script type="text/javascript">
 	$(function() {
-        var companyId = '{{$discount->company_id}}';
         var productBrandId = '{{$discount->product_brand_id}}';
         $('#scope').on('change', function(){
             if($(this).val() == 1){
                 $('#select_product_unit_ids').show();
-                $('#company_id').change();
+                // $('#company_id').change();
             } else {
                 $('#selectProduct').val('').change();
                 $('#select_product_unit_ids').hide();
@@ -145,7 +144,7 @@
 
             if($(this).val() == 4){
                 $('#product_brand_label').addClass('required');
-                $('#company_id').change();
+                // $('#company_id').change();
                 $('#product_brand').attr('required');
             } else {
                 $('#product_brand').val('').change();
@@ -154,79 +153,84 @@
             }
         });
 
-        initializeProductUnits(companyId, productBrandId);
-        initializeProductBrand(companyId);
+        // initializeProductUnits(companyId, productBrandId);
+        // initializeProductBrand(companyId);
+        // initializeProductUnits(productBrandId);
+        // initializeProductBrand();
 
-        $('#company_id').on('change', function(){
-            if($(this).val()){
-                $('#selectProduct').val('').change();
-                $('#product_brand').val('').change();
-                initializeProductUnits();
-                initializeProductBrand($(this).val());
-            } else {
-                $('#product_brand').attr('disabled', true).val('').change();
-            }
-        });
+        // $('#company_id').on('change', function(){
+        //     if($(this).val()){
+        //         $('#selectProduct').val('').change();
+        //         $('#product_brand').val('').change();
+        //         initializeProductUnits();
+        //         initializeProductBrand($(this).val());
+        //     } else {
+        //         $('#product_brand').attr('disabled', true).val('').change();
+        //     }
+        // });
 
         $('#product_brand').on('change', function(){
             $('#selectProduct').val('').change();
-            initializeProductUnits();
+            // initializeProductUnits();
         });
 
-        function initializeProductUnits(company_id = null, product_brand = null){
-            companyId = company_id == null ? $('#company_id').val() : company_id;
-            productBrandId = product_brand == null ? $('#product_brand').val() : product_brand;
-            $('#selectProduct').select2({
-                placeholder: 'Select an product units',
-                minimumInputLength: 4,
-                ajax: {
-                    url: '{{ route("admin.orders.getproduct") }}'+'?company_id='+companyId+'&product_brand='+productBrandId,
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function (data) {
-                        return {
-                            results:  $.map(data, function (item) {
-                                return {
-                                    text: item.name,
-                                    id: item.id
-                                }
-                            })
-                        };
-                    },
-                    cache: true
-                }
-            });
+        // function initializeProductUnits(company_id = null, product_brand = null){
+        // function initializeProductUnits(product_brand = null){
+        //     // companyId = company_id == null ? $('#company_id').val() : company_id;
+        //     productBrandId = product_brand == null ? $('#product_brand').val() : product_brand;
+        //     $('#selectProduct').select2({
+        //         placeholder: 'Select an product units',
+        //         minimumInputLength: 4,
+        //         ajax: {
+        //             // url: '{{ route("admin.orders.getproduct") }}'+'?company_id='+companyId+'&product_brand='+productBrandId,
+        //             url: '{{ route("admin.orders.getproduct") }}'+'?product_brand='+productBrandId,
+        //             dataType: 'json',
+        //             delay: 250,
+        //             processResults: function (data) {
+        //                 return {
+        //                     results:  $.map(data, function (item) {
+        //                         return {
+        //                             text: item.name,
+        //                             id: item.id
+        //                         }
+        //                     })
+        //                 };
+        //             },
+        //             cache: true
+        //         }
+        //     });
 
-            if($('#scope').val() == 1){
-                $('#select_product_unit_ids').show();
-            } else {
-                $('#selectProduct').val('').change();
-                $('#select_product_unit_ids').hide();
-            }
-        }
+        //     if($('#scope').val() == 1){
+        //         $('#select_product_unit_ids').show();
+        //     } else {
+        //         $('#selectProduct').val('').change();
+        //         $('#select_product_unit_ids').hide();
+        //     }
+        // }
 
-        function initializeProductBrand(company_id){
-            $('#product_brand').attr('disabled', false).select2({
-                placeholder: 'Select Product Brand',
-                allowClear: true,
-                ajax: {
-                    url: '{{ route("admin.orders.get.product-brand") }}'+'?company_id='+company_id,
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function (data) {
-                        return {
-                            results:  $.map(data, function (item) {
-                                return {
-                                    text: item.name,
-                                    id: item.id
-                                }
-                            })
-                        };
-                    },
-                    cache: true
-                }
-            });
-        }
+        // function initializeProductBrand(company_id){
+        // function initializeProductBrand(){
+        //     $('#product_brand').attr('disabled', false).select2({
+        //         placeholder: 'Select Product Brand',
+        //         allowClear: true,
+        //         ajax: {
+        //             url: '{{ route("admin.orders.get.product-brand") }}',
+        //             dataType: 'json',
+        //             delay: 250,
+        //             processResults: function (data) {
+        //                 return {
+        //                     results:  $.map(data, function (item) {
+        //                         return {
+        //                             text: item.name,
+        //                             id: item.id
+        //                         }
+        //                     })
+        //                 };
+        //             },
+        //             cache: true
+        //         }
+        //     });
+        // }
 	});
 </script>
 @endpush

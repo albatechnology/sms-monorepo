@@ -33,9 +33,9 @@
                 <x-show-row :model="$discount" key="max_discount_price_per_order" type="price"></x-show-row>
                 <x-show-row :model="$discount" key="max_use_per_customer"></x-show-row>
                 <x-show-row :model="$discount" key="min_order_price" type="price"></x-show-row>
-                <x-show-row :model="$discount" key="company" value="{{ $discount->company->name }}"></x-show-row>
-                <x-show-row :model="$discount" key="product_brand" value="{{ $discount->productBrand?->name }}"></x-show-row>
-                <x-show-row :model="$discount" key="product_category" value="{{ $discount->product_category?->description }}"></x-show-row>
+                <x-show-row :model="$discount" key="company" value="{{ $discount->subscribtionUser?->name ?? '' }}"></x-show-row>
+                {{-- <x-show-row :model="$discount" key="product_brand" value="{{ $discount->productBrand?->name }}"></x-show-row> --}}
+                {{-- <x-show-row :model="$discount" key="product_category" value="{{ $discount->product_category?->description }}"></x-show-row> --}}
                 @if (!empty($discount->product_unit_ids))
                     <tr>
                         <th>Product Units</th>

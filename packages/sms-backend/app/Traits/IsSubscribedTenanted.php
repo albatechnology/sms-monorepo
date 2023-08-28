@@ -22,7 +22,6 @@ trait IsSubscribedTenanted
     public function scopeTenanted($query)
     {
         $user = tenancy()->getUser();
-
         if ($user->is_super_admin) return $query;
         return $query->where('subscribtion_user_id', $user->subscribtion_user_id);
     }

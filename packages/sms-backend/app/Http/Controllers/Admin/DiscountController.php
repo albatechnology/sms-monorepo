@@ -96,7 +96,6 @@ class DiscountController extends Controller
 
         // $companies = Company::tenanted()->get()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         // $discount->load('company');
-
         $selectedProducts = [];
         if (isset($discount->product_unit_ids) && !empty($discount->product_unit_ids)) {
             $selectedProducts = Product::tenanted()->whereActive()->whereIn('id', $discount->product_unit_ids)->pluck('name', 'id')->all();
@@ -109,6 +108,7 @@ class DiscountController extends Controller
     public function update(UpdateDiscountRequest $request, Discount $discount)
     {
         $data = $request->validated();
+
         if ($request->scope != 1) {
             unset($data['product_unit_ids']);
         }

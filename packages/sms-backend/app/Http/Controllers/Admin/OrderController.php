@@ -476,9 +476,10 @@ class OrderController extends Controller
         return response()->json($data);
     }
 
-    public function getProductBrand(Request $request)
+    public function getProductBrand()
     {
-        $data = ProductBrand::select("id", "name")->where('company_id', $request->company_id)->get();
+        // $data = ProductBrand::select("id", "name")->where('company_id', $request->company_id)->get();
+        $data = ProductBrand::select("id", "name")->tenanted()->get();
 
         return response()->json($data);
     }

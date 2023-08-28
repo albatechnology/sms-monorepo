@@ -8,7 +8,6 @@ use App\Exceptions\LeadIsUnassignedException;
 use App\Interfaces\Reportable;
 use App\Interfaces\Tenanted;
 use App\Jobs\QueueActivityReminder;
-use App\Services\CacheService;
 use App\Services\ReportService;
 use App\Traits\Auditable;
 use App\Traits\CustomInteractsWithMedia;
