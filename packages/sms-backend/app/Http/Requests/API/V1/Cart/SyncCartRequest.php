@@ -42,7 +42,7 @@ class SyncCartRequest extends BaseApiRequest
                 }),
             ],
             'items.*.quantity' => 'required|integer|min:1',
-            'sku' => ['nullable', 'exists:products,sku'],
+            // 'sku' => ['nullable', 'exists:products,sku'],
             'discount_id'     => [
                 'nullable', 'integer',
                 Rule::exists('discounts', 'id')->where(function ($query) {

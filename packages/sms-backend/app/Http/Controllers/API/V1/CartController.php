@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 use App\OpenApi\Parameters\DefaultHeaderParameters;
 use Vyuldashev\LaravelOpenApi\Attributes as OpenApi;
 
-
 #[OpenApi\PathItem]
 class CartController extends BaseApiController
 {
@@ -60,14 +59,6 @@ class CartController extends BaseApiController
         return new CartResource($cart);
     }
 
-    /**
-     * Show cart channel stock.
-     *
-     * Show channel stock of product unit
-     */
-    // #[CustomOpenApi\Operation(id: 'CartChannelStockIndex', tags: [Tags::Cart, Tags::V1])]
-    // #[OpenApi\Parameters(factory: DefaultHeaderParameters::class)]
-    // #[CustomOpenApi\Response(resource: CartChannelStockResource::class, statusCode: 200)]
     public function stockIndex(Request $request, $productId)
     {
         // return CustomQueryBuilder::buildResource(
@@ -144,18 +135,6 @@ class CartController extends BaseApiController
         ]);
     }
 
-    // /**
-    //  * Sync cart
-    //  *
-    //  * Sync user cart content
-    //  *
-    //  * @param SyncCartRequest $request
-    //  * @return CartResource
-    //  */
-    // #[CustomOpenApi\Operation(id: 'CartSync', tags: [Tags::Cart, Tags::V1])]
-    // #[OpenApi\Parameters(factory: DefaultHeaderParameters::class)]
-    // #[CustomOpenApi\RequestBody(request: SyncCartRequest::class)]
-    // #[CustomOpenApi\Response(resource: CartResource::class, statusCode: 200)]
     public function stockSync(Request $request)
     {
         $stockTransfer = StockTransfer::where(function ($q) use ($request) {

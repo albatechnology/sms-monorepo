@@ -15,4 +15,9 @@ class SubscribtionUser extends Model
     {
         return $this->belongsTo(SubscribtionPackage::class);
     }
+
+    public function supervisorDiscountApprovalLimits()
+    {
+        return $this->hasMany(SupervisorDiscountApprovalLimit::class);
+    }
 }

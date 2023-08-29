@@ -14,9 +14,11 @@ class CreateSupervisorDiscountApprovalLimitsTable extends Migration
     public function up()
     {
         Schema::create('supervisor_discount_approval_limits', function (Blueprint $table) {
-            $table->foreignId('supervisor_type_id')->constrained('supervisor_types')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('product_brand_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('subscribtion_user_id')->constrained('subscribtion_users');
+            $table->foreignId('supervisor_type_id')->constrained('supervisor_types');
             $table->tinyInteger('limit')->default(0);
+            // $table->foreignId('product_brand_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            // $table->tinyInteger('limit')->default(0);
         });
     }
 

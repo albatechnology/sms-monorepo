@@ -507,6 +507,9 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         return $this->hasMany(QaTopic::class, 'creator_id', 'id');
     }
 
+    /**
+     * add whereHas condition where subscribtion_user_id = user.subscribtion_user_id
+     */
     public function supervisorApprovalLimits(): HasMany
     {
         return $this->hasMany(SupervisorDiscountApprovalLimit::class, 'supervisor_type_id', 'supervisor_type_id');
@@ -696,8 +699,9 @@ class User extends Authenticatable implements Tenanted, ReportableScope
 
     public function checkLimitApproval(int $total_price): int
     {
-        $limit = $this->supervisorType ? (int) $this->supervisorType->discount_approval_limit_percentage : 0;
-        return ($limit / 100) * $total_price;
+        // $limit = $this->supervisorType ? (int) $this->supervisorType->discount_approval_limit_percentage : 0;
+        $limit = $this->supervisorType ? ($this->supervisorApprovalLimits()->where('subscribtion_user_id', $this->subscribtion_user_id)->first()?->limit ?? 0) : 0;
+        return ((int)$limit / 100) * $total_price;
     }
 
     public function getMyBrandIds(): array

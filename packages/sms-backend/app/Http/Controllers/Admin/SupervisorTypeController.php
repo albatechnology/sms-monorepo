@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroySupervisorTypeRequest;
 use App\Http\Requests\StoreSupervisorTypeRequest;
 use App\Http\Requests\UpdateSupervisorTypeRequest;
-// use App\Models\ProductBrand;
 use App\Models\SupervisorDiscountApprovalLimit;
 use App\Models\SupervisorType;
 use Gate;

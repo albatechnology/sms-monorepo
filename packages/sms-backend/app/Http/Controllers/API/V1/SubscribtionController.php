@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Enums\UserType;
 use App\Models\SubscribtionUser;
+use App\Models\SupervisorType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,13 @@ class SubscribtionController extends BaseApiController
                 'phone' => $request->phone,
                 'expiration_date' => $request->expiration_date ?? date('Y-m-d', strtotime('+1 month')),
             ]);
+
+            SupervisorType::select('id')->get()->each(function ($supervisorType) use ($subscribtionUser) {
+                $subscribtionUser->supervisorDiscountApprovalLimits()->create([
+                    'supervisor_type_id' => $supervisorType->id,
+                    'limit' => 0
+                ]);
+            });
 
             $user = User::create([
                 'subscribtion_user_id' => $subscribtionUser->id,
