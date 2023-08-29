@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Imports\CustomerSeederImport;
 use App\Models\Address;
 use App\Models\Customer;
 use Illuminate\Database\Seeder;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerSeeder extends Seeder
 {
@@ -37,5 +39,7 @@ class CustomerSeeder extends Seeder
             'type' => 1,
             'phone' => '0987654321',
         ]);
+
+        Excel::import(new CustomerSeederImport, public_path('customers.xlsx'));
     }
 }

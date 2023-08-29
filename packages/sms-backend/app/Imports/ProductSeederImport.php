@@ -30,7 +30,7 @@ class ProductSeederImport implements ToModel, WithHeadingRow
         $productBrandId = ProductBrand::find($row['product_brand_id'])?->id ?? 1;
         $brandCategoryId = BrandCategory::find($row['brand_category_id'])?->id ?? 1;
 
-        return new Product([
+        $product = Product::create([
             'subscribtion_user_id' => $subscriptionUserId,
             'product_category_id' => $productCategoryId,
             'product_brand_id' => $productBrandId,
@@ -42,5 +42,8 @@ class ProductSeederImport implements ToModel, WithHeadingRow
             'production_cost' => $row['production_cost'] ?? 0,
             'is_active' => 1,
         ]);
+
+        if (isset($row['url']) && $row['url'] != '') $product->addMediaFromUrl($row['url'])->toMediaCollection('photo');
+        return;
     }
 }
