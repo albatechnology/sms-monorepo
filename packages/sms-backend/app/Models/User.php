@@ -697,6 +697,12 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         }
     }
 
+    public function getLimitApproval(): int
+    {
+        $limit = $this->supervisorType ? ($this->supervisorApprovalLimits()->where('subscribtion_user_id', $this->subscribtion_user_id)->first()?->limit ?? 0) : 0;
+        return $limit;
+    }
+
     public function checkLimitApproval(int $total_price): int
     {
         // $limit = $this->supervisorType ? (int) $this->supervisorType->discount_approval_limit_percentage : 0;

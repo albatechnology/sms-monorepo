@@ -45,9 +45,6 @@ class UpdateAdditionalDiscount
         // $order->approval_status = OrderApprovalStatus::WAITING_APPROVAL();
         // $order->additional_discount_ratio = $this->calculateOrderAdditionalDiscountRatio($order);
 
-
-        ///
-
         $user = auth()->user();
 
         $order->discount_take_over_by = $user->id;
@@ -56,36 +53,44 @@ class UpdateAdditionalDiscount
         $order->approval_status = OrderApprovalStatus::WAITING_APPROVAL();
         $order->additional_discount_ratio = $this->calculateOrderAdditionalDiscountRatio($order);
 
-        $productBrandIds = $order->raw_source['product_brand_ids'];
+        // $productBrandIds = $order->raw_source['product_brand_ids'];
 
         if ($user->is_supervisor) {
-            $storeLeader = $user;
+            $supervisor = $user;
         } else {
-            $storeLeader = $user->supervisor;
+            $supervisor = $user->supervisor;
         }
 
-        if (count($productBrandIds) > 1) {
-            $additional_discount_ratio = $order->additional_discount_ratio;
-            $storeLeaderLimitApprovals = $storeLeader->supervisorApprovalLimits->whereIn('product_brand_id', $productBrandIds)->filter(function ($data) use ($additional_discount_ratio) {
-                return $data?->limit ?? 0 >= $additional_discount_ratio;
-            });
-
-            if (count($storeLeaderLimitApprovals) > 0) {
-                $approval_supervisor_type_id = 1;
-            } else {
-                $approval_supervisor_type_id = 2;
-            }
+        if ($supervisor && ($supervisor->getLimitApproval() >= $order->additional_discount_ratio)) {
+            $order->approval_supervisor_type_id = $supervisor->supervisor_type_id;
         } else {
-            $productBrandId = $productBrandIds[0];
-            $storeLeaderLimitApproval = $storeLeader->supervisorApprovalLimits->first(fn ($data) => $data->product_brand_id == $productBrandId);
-            $approval_supervisor_type_id = 1;
-
-            if ($order->additional_discount_ratio > $storeLeaderLimitApproval?->limit ?? 0) {
-                $approval_supervisor_type_id = 2;
-            }
+            $order->approval_supervisor_type_id = 2;
         }
 
-        $order->approval_supervisor_type_id = $approval_supervisor_type_id;
+        // if (count($productBrandIds) > 1) {
+        //     $additional_discount_ratio = $order->additional_discount_ratio;
+        //     $storeLeaderLimitApprovals = $storeLeader->supervisorApprovalLimits->whereIn('product_brand_id', $productBrandIds)->filter(function ($data) use ($additional_discount_ratio) {
+        //         return $data?->limit ?? 0 >= $additional_discount_ratio;
+        //     });
+
+        //     if (count($storeLeaderLimitApprovals) > 0) {
+        //         $approval_supervisor_type_id = 1;
+        //     } else {
+        //         $approval_supervisor_type_id = 2;
+        //     }
+        // } else {
+        //     $productBrandId = $productBrandIds[0];
+        //     $storeLeaderLimitApproval = $storeLeader->supervisorApprovalLimits->first(fn ($data) => $data->product_brand_id == $productBrandId);
+        //     $approval_supervisor_type_id = 1;
+
+        //     if ($order->additional_discount_ratio > $storeLeaderLimitApproval?->limit ?? 0) {
+        //         $approval_supervisor_type_id = 2;
+        //     }
+        // }
+
+        // $order->approval_supervisor_type_id = $approval_supervisor_type_id;
+
+
 
         return $next($order);
     }
@@ -100,53 +105,56 @@ class UpdateAdditionalDiscount
             $order->total_price -= $order->additional_discount;
         }
 
-        // if ($user->is_supervisor && ($order->additional_discount <= $user->checkLimitApproval($order->total_price))) {
-        //     $order->approved_by = $user->id;
-        //     $order->approval_status = OrderApprovalStatus::APPROVED();
-        // } else {
-        //     $order->approval_status = OrderApprovalStatus::WAITING_APPROVAL();
-        // }
-
-        // $order->approval_note = request()->approval_note ?? null;
-        // $order->approval_send_to = $user->supervisor_type_id == 1 ? 3 : 4; // send to supervisor or director
-        // $order->additional_discount_ratio = $order->additional_discount == 0 ? null : $this->calculateOrderAdditionalDiscountRatio($order);
-
-        if ($user->is_supervisor) {
-            $productBrandIds = $order->raw_source['product_brand_ids'];
-
-            if (count($productBrandIds) > 1) {
-                $additional_discount_ratio = $order->additional_discount_ratio;
-                $userLimitApprovals = $user->supervisorApprovalLimits->whereIn('product_brand_id', $productBrandIds)->filter(function ($data) use ($additional_discount_ratio) {
-                    return $data?->limit ?? 0 >= $additional_discount_ratio;
-                });
-
-                if (count($userLimitApprovals) > 0) {
-                    $order->approved_by = $user->id;
-                    $order->approval_status = OrderApprovalStatus::APPROVED();
-                } else {
-                    $order->approval_status = OrderApprovalStatus::WAITING_APPROVAL();
-                }
-            } else {
-                $productBrandId = $productBrandIds[0];
-                $userLimitApproval = $user->supervisorApprovalLimits->first(fn ($data) => $data->product_brand_id == $productBrandId);
-                if ($order->additional_discount <= $userLimitApproval?->limit ?? 0) {
-                    $order->approved_by = $user->id;
-                    $order->approval_status = OrderApprovalStatus::APPROVED();
-                } else {
-                    $order->approval_status = OrderApprovalStatus::WAITING_APPROVAL();
-                }
-            }
+        if ($user->is_supervisor && ($user->getLimitApproval() >= $order->additional_discount_ratio)) {
+            $order->approved_by = $user->id;
+            $order->approval_status = OrderApprovalStatus::APPROVED();
         } else {
             $order->approval_status = OrderApprovalStatus::WAITING_APPROVAL();
         }
 
-        $approval_send_to = $user->supervisor_type_id == 1 ? 3 : 4;
         $order->approval_note = request()->approval_note ?? null;
-        $order->approval_send_to = $approval_send_to; // send to supervisor or director
+        $order->approval_send_to = $user->supervisor_type_id == 1 ? 3 : 4; // send to supervisor or director
         $order->additional_discount_ratio = $order->additional_discount == 0 ? null : $this->calculateOrderAdditionalDiscountRatio($order);
-        $order->approval_supervisor_type_id = $approval_send_to == 4 ? null : 2; // if director fill null
+        $order->approval_supervisor_type_id = $order->approval_send_to == 4 ? null : 2; // if director fill null
 
         return $order;
+
+        // if ($user->is_supervisor) {
+        //     $productBrandIds = $order->raw_source['product_brand_ids'];
+
+        //     if (count($productBrandIds) > 1) {
+        //         $additional_discount_ratio = $order->additional_discount_ratio;
+        //         $userLimitApprovals = $user->supervisorApprovalLimits->whereIn('product_brand_id', $productBrandIds)->filter(function ($data) use ($additional_discount_ratio) {
+        //             return $data?->limit ?? 0 >= $additional_discount_ratio;
+        //         });
+
+        //         if (count($userLimitApprovals) > 0) {
+        //             $order->approved_by = $user->id;
+        //             $order->approval_status = OrderApprovalStatus::APPROVED();
+        //         } else {
+        //             $order->approval_status = OrderApprovalStatus::WAITING_APPROVAL();
+        //         }
+        //     } else {
+        //         $productBrandId = $productBrandIds[0];
+        //         $userLimitApproval = $user->supervisorApprovalLimits->first(fn ($data) => $data->product_brand_id == $productBrandId);
+        //         if ($order->additional_discount <= $userLimitApproval?->limit ?? 0) {
+        //             $order->approved_by = $user->id;
+        //             $order->approval_status = OrderApprovalStatus::APPROVED();
+        //         } else {
+        //             $order->approval_status = OrderApprovalStatus::WAITING_APPROVAL();
+        //         }
+        //     }
+        // } else {
+        //     $order->approval_status = OrderApprovalStatus::WAITING_APPROVAL();
+        // }
+
+        // $approval_send_to = $user->supervisor_type_id == 1 ? 3 : 4;
+        // $order->approval_note = request()->approval_note ?? null;
+        // $order->approval_send_to = $approval_send_to; // send to supervisor or director
+        // $order->additional_discount_ratio = $order->additional_discount == 0 ? null : $this->calculateOrderAdditionalDiscountRatio($order);
+        // $order->approval_supervisor_type_id = $approval_send_to == 4 ? null : 2; // if director fill null
+
+        // return $order;
     }
 
     public function calculateOrderAdditionalDiscountRatio(Order $order): ?int

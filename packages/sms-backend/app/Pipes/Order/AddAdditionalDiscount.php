@@ -70,25 +70,25 @@ class AddAdditionalDiscount
         // }
 
         $supervisor = $user->supervisor ?? null;
-        if ($supervisor && (($supervisor->supervisorType?->discount_approval_limit_percentage ?? 0) >= $order->additional_discount_ratio)) {
+        if ($supervisor && ($supervisor->getLimitApproval() >= $order->additional_discount_ratio)) {
             $order->approval_supervisor_type_id = $supervisor->supervisor_type_id;
             return $next($order);
         }
 
         $supervisor = $supervisor?->supervisor ?? null;
-        if ($supervisor && (($supervisor->supervisorType?->discount_approval_limit_percentage ?? 0) >= $order->additional_discount_ratio)) {
+        if ($supervisor && ($supervisor->getLimitApproval() >= $order->additional_discount_ratio)) {
             $order->approval_supervisor_type_id = $supervisor->supervisor_type_id;
             return $next($order);
         }
 
         $supervisor = $supervisor?->supervisor ?? null;
-        if ($supervisor && (($supervisor->supervisorType?->discount_approval_limit_percentage ?? 0) >= $order->additional_discount_ratio)) {
+        if ($supervisor && ($supervisor->getLimitApproval() >= $order->additional_discount_ratio)) {
             $order->approval_supervisor_type_id = $supervisor->supervisor_type_id;
             return $next($order);
         }
 
         $supervisor = $supervisor?->supervisor ?? null;
-        if ($supervisor && (($supervisor->supervisorType?->discount_approval_limit_percentage ?? 0) >= $order->additional_discount_ratio)) {
+        if ($supervisor && ($supervisor->getLimitApproval() >= $order->additional_discount_ratio)) {
             $order->approval_supervisor_type_id = $supervisor->supervisor_type_id;
             return $next($order);
         }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\V1;
 use App\Classes\CustomQueryBuilder;
 use App\Classes\DocGenerator\Enums\Tags;
 use App\Enums\OrderStatus;
-use App\Exceptions\InvalidOrderCancellationException;
 use App\Exceptions\UnauthorisedTenantAccessException;
 use App\Http\Requests\API\V1\Order\ApproveOrderRequest;
 use App\Http\Requests\API\V1\Order\CloneOrderRequest;
