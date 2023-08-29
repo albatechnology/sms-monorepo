@@ -17,7 +17,7 @@ class SyncCartRequest extends BaseApiRequest
             Schema::array('items')->items(
                 Schema::object()->properties(
                     Schema::integer('id')->example(1)->description('The product id to add to cart'),
-                    Schema::string('sku')->example('1441068311742')->description('sku of product unit'),
+                    // Schema::string('sku')->example('1441068311742')->description('sku of product unit'),
                     Schema::integer('quantity')->example(1)
                 ),
             ),

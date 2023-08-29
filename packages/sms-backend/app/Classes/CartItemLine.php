@@ -22,7 +22,7 @@ class CartItemLine implements JsonSerializable, Arrayable, DiscountableLine
 
     public int     $id;
     public int     $quantity;
-    public string $sku;
+    // public string $sku;
     public ?int    $product_id;
     public ?int    $discount_id;
     public ?string $name;
@@ -42,7 +42,7 @@ class CartItemLine implements JsonSerializable, Arrayable, DiscountableLine
     {
         $this->id             = $attributes['id'];
         $this->quantity       = $attributes['quantity'];
-        $this->sku       = $attributes['sku'];
+        // // $this->sku       = $attributes['sku'];
         $this->product_id     = $attributes['product_id'] ?? null;
         $this->discount_id    = $attributes['discount_id'] ?? null;
         $this->name           = $attributes['name'] ?? null;
@@ -59,7 +59,7 @@ class CartItemLine implements JsonSerializable, Arrayable, DiscountableLine
             [
                 'id'          => $unit->id,
                 'quantity'    => $quantity,
-                'sku'    => $unit->sku,
+                // // 'sku'    => $unit->sku,
                 'product_id'  => $unit->product_id,
                 'name'        => $unit->name,
                 'unit_price'  => $unit->price,
@@ -88,7 +88,7 @@ class CartItemLine implements JsonSerializable, Arrayable, DiscountableLine
     {
         $unit              = Product::findOrFail($this->id);
         $this->name        = $unit->name;
-        $this->sku        = $unit->sku;
+        // // $this->sku        = $unit->sku;
         $this->unit_price  = $unit->unit_price;
         $this->total_price = ($unit->price * $this->quantity) - $this->total_discount;
         $this->product_id  = $unit->product_id;
@@ -104,7 +104,7 @@ class CartItemLine implements JsonSerializable, Arrayable, DiscountableLine
         return [
             'id'             => $this->id,
             'quantity'       => $this->quantity,
-            'sku'             => $this->sku,
+            // // 'sku'             => $this->sku,
             'product_id'     => $this->product_id,
             'discount_id'    => $this->discount_id,
             'name'           => $this->name,

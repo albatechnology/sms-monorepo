@@ -14,7 +14,7 @@ class CartItemLineResource extends BaseResource
     {
         return [
             ResourceData::make('id', Schema::TYPE_INTEGER, 1),
-            ResourceData::make('sku', Schema::TYPE_STRING, '1441068311742'),
+            // ResourceData::make('sku', Schema::TYPE_STRING, '1441068311742'),
             ResourceData::make('quantity', Schema::TYPE_INTEGER, 10),
             ResourceData::make('name', Schema::TYPE_STRING, 'test product'),
             ResourceData::make('unit_price', Schema::TYPE_INTEGER, 100)->description('Price per item quantity'),
