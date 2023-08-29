@@ -33,8 +33,6 @@ use App\Http\Controllers\API\V1\OrderDetailController;
 use App\Http\Controllers\API\V1\PromoCategoryController;
 use App\Http\Controllers\API\V1\SubscribtionController;
 use App\Http\Controllers\API\V1\VoucherController;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 /*

@@ -11,6 +11,18 @@ class SubscribtionUser extends Model
 
     protected $guarded = [];
 
+    protected static function booted()
+    {
+        static::created(function ($model) {
+            SupervisorType::select('id')->get()->each(function ($supervisorType) use ($model) {
+                $model->supervisorDiscountApprovalLimits()->create([
+                    'supervisor_type_id' => $supervisorType->id,
+                    'limit' => 0
+                ]);
+            });
+        });
+    }
+
     public function subscribtionPackage()
     {
         return $this->belongsTo(SubscribtionPackage::class);

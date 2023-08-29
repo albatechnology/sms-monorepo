@@ -10,10 +10,10 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-            SubscribtionPackageSeeder::class,
-            PermissionSeeder::class,
-            AdminUsersTableSeeder::class,
             SupervisorTypeSeeder::class,
+            PermissionSeeder::class,
+            SubscribtionPackageSeeder::class,
+            AdminUsersTableSeeder::class,
             // ChannelSeeder::class,
             UsersTableSeeder::class,
             // PermissionsTableSeeder::class,
@@ -25,7 +25,6 @@ class DatabaseSeeder extends Seeder
             CustomerSeeder::class,
             LeadSeeder::class,
             PaymentSeeder::class,
-
 
             // Ensure non empty company
             // DefaultCompanySeeder::class,

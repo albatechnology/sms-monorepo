@@ -31,13 +31,6 @@ class SubscribtionController extends BaseApiController
                 'expiration_date' => $request->expiration_date ?? date('Y-m-d', strtotime('+1 month')),
             ]);
 
-            SupervisorType::select('id')->get()->each(function ($supervisorType) use ($subscribtionUser) {
-                $subscribtionUser->supervisorDiscountApprovalLimits()->create([
-                    'supervisor_type_id' => $supervisorType->id,
-                    'limit' => 0
-                ]);
-            });
-
             $user = User::create([
                 'subscribtion_user_id' => $subscribtionUser->id,
                 'name' => $subscribtionUser->name,
