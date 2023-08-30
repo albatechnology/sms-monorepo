@@ -28,7 +28,6 @@ class PreviewOrderRequest extends BaseApiRequest
             // Schema::array('voucher_ids')->example(['GratisOngkir', 'Clearance', 'CuciGudang']),
             // Schema::array('discount_ids')->example([1, 2, 3]),
             Schema::integer('discount_id')->example(1),
-            Schema::integer('interior_design_id')->example(1),
             Schema::integer('expected_price')
                 ->example(1000)
                 ->description('Provide expected price of the order for consistency checking.')
@@ -44,7 +43,6 @@ class PreviewOrderRequest extends BaseApiRequest
             Schema::integer('additional_discount')->example(10000),
             Schema::string('expected_shipping_datetime')->example(ApiDataExample::TIMESTAMP),
             Schema::string('quotation_valid_until_datetime')->example(ApiDataExample::TIMESTAMP),
-            Schema::boolean('is_direct_purchase')->example(1),
         ];
     }
 
@@ -87,7 +85,6 @@ class PreviewOrderRequest extends BaseApiRequest
             'discount_id' => 'nullable|exists:discounts,id',
             // 'discount_ids' => 'nullable|array',
             // 'discount_ids.*' => 'integer|exists:discounts,id',
-            'interior_design_id'      => 'nullable|integer|exists:interior_designs,id',
             'expected_price'      => 'nullable|integer',
             'shipping_address_id' => [
                 'required',
@@ -134,7 +131,6 @@ class PreviewOrderRequest extends BaseApiRequest
             'note'                           => 'nullable|string',
             'expected_shipping_datetime'     => 'required|string|date',
             'quotation_valid_until_datetime' => 'nullable|string|date',
-            'is_direct_purchase' => 'nullable|boolean',
         ];
     }
 

@@ -26,9 +26,7 @@ class CreateOrderRequest extends BaseApiRequest
                 ),
             ),
             // Schema::array('voucher_ids')->example(['GratisOngkir', 'Clearance', 'CuciGudang']),
-            Schema::array('discount_ids')->example([1, 2, 3]),
-            // Schema::integer('discount_id')->example(1),
-            Schema::integer('interior_design_id')->example(1),
+            Schema::integer('discount_id')->example(1),
             Schema::integer('expected_price')
                 ->example(1000)
                 ->description('Provide expected price of the order for consistency checking.')
@@ -44,7 +42,6 @@ class CreateOrderRequest extends BaseApiRequest
             Schema::integer('additional_discount')->example(10000),
             Schema::string('expected_shipping_datetime')->example(ApiDataExample::TIMESTAMP),
             Schema::string('quotation_valid_until_datetime')->example(ApiDataExample::TIMESTAMP),
-            Schema::boolean('is_direct_purchase')->example(1),
         ];
     }
 
@@ -83,9 +80,7 @@ class CreateOrderRequest extends BaseApiRequest
             'items.*.quantity' => [Rule::requiredIf(!empty(request()->input('items'))), 'integer', 'min:1'],
             // 'voucher_ids' => 'nullable|array',
             // 'voucher_ids.*' => 'string|exists:vouchers,id',
-            'discount_ids' => 'nullable|array',
-            'discount_ids.*' => 'integer|exists:discounts,id',
-            'interior_design_id'      => 'nullable|integer|exists:interior_designs,id',
+            'discount_id' => 'nullable|exists:discounts,id',
             'expected_price'      => 'nullable|integer',
             'shipping_address_id' => [
                 'required',
@@ -132,7 +127,6 @@ class CreateOrderRequest extends BaseApiRequest
             'note'                           => 'nullable|string',
             'expected_shipping_datetime'     => 'required|string|date',
             'quotation_valid_until_datetime' => 'nullable|string|date',
-            'is_direct_purchase' => 'nullable|boolean',
         ];
     }
 
