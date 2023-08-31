@@ -13,12 +13,11 @@ use App\Models\Lead;
 use App\Models\Order;
 use App\Models\ProductBrand;
 use App\Models\User;
-use App\Services\ApiNewReportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class NewReportController extends BaseApiController
+class NewReportControllerBackup extends BaseApiController
 {
     protected function getDates($start_date, $end_date)
     {
@@ -48,17 +47,6 @@ class NewReportController extends BaseApiController
             'startDateCompare' => $startDateCompare,
             'endDateCompare' => $endDateCompare
         ];
-    }
-
-    public function deals(Request $request){
-        $data = ApiNewReportService::subDeals($request);
-        return response()->json(array_merge($data['data'], $data['info_date']));
-    }
-
-    public function quotation(Request $request)
-    {
-        $data = ApiNewReportService::subQuotation($request);
-        return response()->json($data['data']);
     }
 
     public function index(Request $request)
@@ -3766,7 +3754,6 @@ class NewReportController extends BaseApiController
         orders.id,
         activities.id as activity_id,
         orders.invoice_number,
-        orders.status,
         orders.total_price,
         orders.created_at,
         IF(customers.last_name IS NOT NULL, CONCAT(customers.first_name, ' ', customers.last_name),
@@ -3786,19 +3773,18 @@ class NewReportController extends BaseApiController
             //     ->whereNotIn('orders.payment_status', [5])
             //     ->whereDealAtRange($startDate, $endDate);
         } elseif ($request->invoice_type == 'settlement') {
-            $query = $query->whereIn('orders.payment_status', [3, 4])->whereDealAtRange($startDate, $endDate);
+            $query = $query->whereIn('orders.payment_status', [3, 4])
+                ->whereDealAtRange($startDate, $endDate);
         } elseif ($request->invoice_type == 'retail') {
             // $query = $query->join('payments', fn($join) => $join->on('orders.id', '=', 'payments.order_id')->where('payments.status', '<>', 2))
-            // $query = $query->whereHas('orderPayments', fn ($q2) => $q2->where('status', '<>', 2))
-            //     ->whereNotIn('orders.payment_status', [5])
-            //     ->whereDealAtRange($startDate, $endDate)
-            $query = $query->whereDeal($startDate, $endDate);
-        } elseif ($request->invoice_type == 'cancelled') {
-            $query = $query->where('orders.status', 5)->whereCreatedAtRange($startDate, $endDate);
+            $query = $query->whereHas('orderPayments', fn ($q2) => $q2->where('status', '<>', 2))
+                ->whereNotIn('orders.payment_status', [5])
+                ->whereDealAtRange($startDate, $endDate);
+            // ->whereNull('orders.interior_design_id');
         } else {
             // quotation
-            // $query = $query->whereCreatedAtRange($startDate, $endDate)->whereDoesntHave('orderPayments');
-            $query = $query->whereNotDeal($startDate, $endDate)->where('orders.status', '!=', 5);
+            $query = $query->whereCreatedAtRange($startDate, $endDate)
+                ->whereDoesntHave('orderPayments');
             // ->where(fn ($q2) => $q2->whereDoesntHave('orderPayments')->orWhereHas('orderPayments', fn ($q3) => $q3->where('status', 0)));
         }
 
@@ -3821,22 +3807,40 @@ class NewReportController extends BaseApiController
             // $query = $query->whereHas('orderPayments', fn ($q2) => $q2->where('status', '<>', 2))
             //     ->whereNotIn('orders.payment_status', [5])
             //     ->whereDealAtRange($startDate, $endDate);
-        } elseif ($request->payment_type == 'cancelled') {
-            $query = $query->whereCreatedAtRange($startDate, $endDate);
         } else {
             // quotation
-            $query = $query->whereNotIn('orders.payment_status', [5])->where('orders.status', '!=', 5);
+            $query = $query->whereNotIn('orders.payment_status', [5]);
         }
 
-        // $companyId = $request->company_id ?? $user->company_id;
-        $channelId = $request->channel_id ?? null;
+        // $userType = null;
+        // if ($user->is_director) {
+        //     $userType = 'director';
+        // } else if ($user->is_supervisor) {
+        //     if ($user->supervisor_type_id == 1) {
+        //         $userType = 'sl';
+        //     } else if ($user->supervisor_type_id == 2) {
+        //         $userType = 'bum';
+        //     } else if ($user->supervisor_type_id == 3) {
+        //         $userType = 'hs';
+        //     }
+        // } else if ($user->is_sales) {
+        //     $userType = 'sales';
+        // }
+
+        // if (in_array($userType, ['director', 'hs'])) {
+        //     $companyIds = $user->company_ids ?? $user->companies->pluck('id')->all();
+        //     $query = $query->whereIn('company_id', $companyIds);
+        // } elseif (in_array($userType, ['bum', 'sl'])) {
+        //     $query = $query->whereIn('channel_id', $user->channels->pluck('id')->all());
+        // } else {
+        //     $query = $query->where('user_id', $user->id);
+        // }
 
         $userType = $request->user_type ?? null;
         $id = $request->id ?? null;
 
         if ($userType && $id) {
             $user = match ($userType) {
-                'hs' => User::findOrFail($id),
                 'bum' => User::findOrFail($id),
                 'store' => Channel::findOrFail($id),
                 'store_leader' => User::findOrFail($id),
@@ -3852,20 +3856,18 @@ class NewReportController extends BaseApiController
             // $query = $query->whereIn('orders.company_id', $companyIds);
         } elseif ($user->type->is(UserType::SUPERVISOR)) {
             $query = $query->whereIn('orders.channel_id', $user->channels->pluck('id')->all());
-            // $query = $query->whereHas('leadUser', fn ($q) => $q->where('user_id', $user->id));
         } else {
             // sales
-            $query = $query->where('orders.user_id', $user->id)->where('orders.channel_id', $user->channel_id);
+            $query = $query->where('orders.user_id', $user->id);
         }
 
-        // $query = $query->where('orders.company_id', $companyId);
-        $query = $query->where('orders.subscribtion_user_id', $user->subscribtion_user_id);
-        if ($channelId) $query = $query->where('orders.channel_id', $channelId);
+        // if ($request->company_id) $query = $query->where('orders.company_id', $request->company_id);
+        if ($request->channel_id) $query = $query->where('orders.channel_id', $request->channel_id);
         if ($request->user_id) $query = $query = $query->where('orders.user_id', $request->user_id);
 
-        // if ($request->product_brand_id) {
-        //     $query = $query->whereHas('activityBrandValues', fn ($q) => $q->where('product_brand_id', $request->product_brand_id));
-        // }
+        if ($request->product_brand_id) {
+            $query = $query->whereHas('activityBrandValues', fn ($q) => $q->where('product_brand_id', $request->product_brand_id));
+        }
 
         if ($request->search_type && $request->name) {
             $searchType = $request->search_type;
@@ -3905,12 +3907,9 @@ class NewReportController extends BaseApiController
             if (!is_null($paymentStatus)) $query = $query->where('orders.payment_status', $paymentStatus);
         }
 
-        $result = $query->where('orders.status', '!=', 6)->groupBy('orders.id')->orderBy('orders.id', 'desc')->get();
+        $result = $query->whereNotIn('orders.status', [5, 6])->orderBy('orders.id', 'desc')->get();
 
-        return response()->json([
-            'total' => $result->sum('total_price') ?? 0,
-            'data' => $result,
-        ]);
+        return response()->json($result);
     }
 
     public function leads(Request $request)

@@ -623,7 +623,7 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         if (is_null($startDate)) $startDate = Carbon::now()->startOfMonth();
         if (is_null($endDate)) $endDate = Carbon::now()->endOfMonth();
 
-        return $query->whereNotIn('orders.status', [5, 6])
+        return $query->whereNotIn('orders.status', [OrderStatus::CANCELLED, OrderStatus::RETURNED])
             ->whereNotIn('orders.payment_status', [OrderPaymentStatus::REFUNDED])
             ->where(function ($q) use ($startDate, $endDate) {
                 $q->whereHas('firstOrderPayments', function ($q) use ($startDate, $endDate) {
@@ -637,12 +637,16 @@ class Order extends BaseModel implements Tenanted, Discountable, Reportable
         if (is_null($startDate)) $startDate = Carbon::now()->startOfMonth();
         if (is_null($endDate)) $endDate = Carbon::now()->endOfMonth();
 
-        return $query->whereIn('orders.status', [5, 6])
-            ->whereIn('orders.payment_status', [OrderPaymentStatus::REFUNDED])
+        return $query->whereNotIn('orders.status', [OrderStatus::CANCELLED, OrderStatus::RETURNED])
+            ->whereIn('orders.payment_status', [OrderPaymentStatus::NONE, OrderPaymentStatus::REFUNDED])
             ->where(function ($q) use ($startDate, $endDate) {
-                $q->whereHas('firstOrderPayments', function ($q) use ($startDate, $endDate) {
-                    $q->whereCreatedAtRange($startDate, $endDate)->where('status', 2);
-                })->orWhereDoesntHave('firstOrderPayments');
+                $q->where(function ($q) use ($startDate, $endDate) {
+                    $q->whereHas('firstOrderPayments', fn ($q) => $q->whereCreatedAtRange($startDate, $endDate)->where('status', 2));
+                })->orWhere(function ($q) use ($startDate, $endDate) {
+                    $q->whereHas('firstOrderPayments', fn ($q) => $q->where('status', 2))->whereCreatedAtRange($startDate, $endDate);
+                })->orWhere(function ($q) use ($startDate, $endDate) {
+                    $q->doesntHave('firstOrderPayments')->whereCreatedAtRange($startDate, $endDate);
+                });
             });
     }
 }

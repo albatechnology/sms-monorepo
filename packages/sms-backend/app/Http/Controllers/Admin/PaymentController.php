@@ -13,10 +13,8 @@ use App\Models\Payment;
 use App\Models\PaymentCategory;
 use App\Models\PaymentType;
 use App\Models\User;
-use App\Services\OrderService;
 use Gate;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
@@ -129,10 +127,9 @@ class PaymentController extends Controller
             [
                 'added_by_id' => user()->id,
                 'order_id'    => $order->id,
-                'company_id'  => $order->company_id,
+                'subscribtion_user_id'  => $order->subscribtion_user_id,
             ]
         );
-
         $payment = Payment::create($data);
 
         foreach ($request->input('proof', []) as $file) {

@@ -93,7 +93,6 @@ trait IsTenanted
     public function scopeTenantedUserChannels($query, Collection $tenants = null)
     {
         if (!$tenants) $tenants = tenancy()->getTenants();
-
         if (method_exists(static::class, 'channel')) {
             return $query->whereIn('channel_id', $tenants->pluck('id'));
         } elseif (method_exists(static::class, 'channels')) {

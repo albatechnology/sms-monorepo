@@ -53,7 +53,7 @@ class Payment extends BaseModel implements HasMedia, Tenanted, Reportable
         'status',
         'order_id',
         // 'company_id',
-        'channel_id',
+        // 'channel_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -65,7 +65,7 @@ class Payment extends BaseModel implements HasMedia, Tenanted, Reportable
         'added_by_id'     => 'integer',
         'approved_by_id'  => 'integer',
         'order_id'        => 'integer',
-        'channel_id'      => 'integer',
+        // 'channel_id'      => 'integer',
         'status'          => PaymentStatus::class,
     ];
 

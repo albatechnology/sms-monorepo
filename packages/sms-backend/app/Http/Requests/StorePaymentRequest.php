@@ -44,7 +44,7 @@ class StorePaymentRequest extends FormRequest
             ],
             'payment_type_id' => [
                 'required',
-                Rule::exists('payment_types', 'id')->where('company_id', $order->company_id),
+                Rule::exists('payment_types', 'id')->where('subscribtion_user_id', $order->subscribtion_user_id),
             ],
             'reference'       => [
                 'string',
