@@ -4,6 +4,7 @@ namespace App\Http\Resources\V1\Lead;
 
 use App\Classes\DocGenerator\BaseResource;
 use App\Classes\DocGenerator\ResourceData;
+use App\Enums\ActivityStatus;
 use App\Enums\LeadStatus;
 use App\Enums\LeadType;
 use App\Http\Resources\V1\Channel\ChannelResource;
@@ -30,6 +31,7 @@ class LeadResource extends BaseResource
             ResourceData::makeRelationship('channel', ChannelResource::class, 'channel'),
             ResourceData::make('is_unhandled', Schema::TYPE_BOOLEAN, true),
             ResourceData::make('has_activity', Schema::TYPE_BOOLEAN, true),
+            ResourceData::makeEnum("last_activity_status", ActivityStatus::class),
             // ResourceData::channel(),
             ...ResourceData::timestamps()
         ];

@@ -89,12 +89,24 @@ class LeadController extends BaseApiController
 
         $query = function ($q) use ($startDate, $endDate) {
             $activityStatus = match (request()->activity_status) {
-                'HOT' => ActivityStatus::HOT,
-                'WARM' => ActivityStatus::WARM,
-                'COLD' => ActivityStatus::COLD,
-                default => ActivityStatus::HOT,
+                'HOT' => ActivityStatus::HOT(),
+                'WARM' => ActivityStatus::WARM(),
+                'COLD' => ActivityStatus::COLD(),
+                default => ActivityStatus::HOT(),
             };
-            $q->tenanted()->whereHas('leadActivities', fn ($q2) => $q2->where('status', $activityStatus)->whereCreatedAtRange($startDate, $endDate));
+
+            // $q->whereHas('leadActivities', fn ($q) => $q->where('status', $activityStatus)->whereCreatedAtRange($startDate, $endDate));
+
+
+            $q->where('last_activity_status', $activityStatus->value)->whereHas('leadActivities', fn ($q) => $q->where('status', $activityStatus->value)->whereCreatedAtRange($startDate, $endDate));
+
+            if ($activityStatus->is(ActivityStatus::HOT())) {
+                $q->whereDoesntHave('leadOrders', fn ($q) => $q->whereDeal($startDate, $endDate));
+            }
+
+            // $q->whereHas('leadActivities', fn ($q2) => $q2->where('status', $activityStatus)->whereCreatedAtRange($startDate, $endDate));
+
+            // if ($activityStatus == ActivityStatus::HOT) $q->whereIn('type', [1, 3, 4])->whereHas('leadOrders', fn ($q) => $q->whereNotDeal());
 
             $userType = request()->user_type ?? null;
             $id = request()->id ?? null;
@@ -102,9 +114,11 @@ class LeadController extends BaseApiController
 
             if ($userType && $id) {
                 $user = match ($userType) {
+                    'hs' => User::findOrFail($id),
                     'bum' => User::findOrFail($id),
                     'store' => Channel::findOrFail($id),
                     'sales' => User::findOrFail($id),
+                    'store_leader' => User::findOrFail($id),
                     default => $user,
                 };
             }
@@ -112,13 +126,14 @@ class LeadController extends BaseApiController
             if ($user instanceof Channel) {
                 $q->where('channel_id', $user->id);
             } elseif ($user->type->is(UserType::DIRECTOR)) {
-                // $companyIds = $user->company_ids ?? $user->companies->pluck('id')->all();
-                // $q->whereIn('company_id', $companyIds);
+                // $companyId = request()->company_id ?? $user->company_id;
+                $q->whereHas('channel', fn ($q) => $q->where('subscribtion_user_id', $user->subscribtion_user_id));
             } elseif ($user->type->is(UserType::SUPERVISOR)) {
-                $q->whereIn('channel_id', $user->channels->pluck('id')->all());
+                $q->whereIn('channel_id', $user->channels->pluck('id')?->all() ?? []);
+                // $q->whereHas('leadUsers', fn ($q) => $q->where('user_id', $user->id));
             } else {
                 // sales
-                $q->where('user_id', $user->id);
+                $q->where('user_id', $user->id)->where('channel_id', $user->channel_id);
             }
 
             if ($channelId = request()->channel_id) $q->where('channel_id', $channelId);
@@ -128,7 +143,7 @@ class LeadController extends BaseApiController
                     $q2->where('product_brand_id', $productBrandId);
                 });
             }
-            return $q->with(self::load_relation);
+            return $q->with(['customer', 'user' => fn ($q) => $q->withTrashed(), 'channel', 'leadCategory', 'subLeadCategory', 'latestActivity']);
         };
 
         return CustomQueryBuilder::buildResource(Lead::class, LeadResource::class, $query);
