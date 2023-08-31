@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Enums\LeadStatus;
 use App\Enums\LeadType;
-use App\Enums\NewTargetType;
+// use App\Enums\NewTargetType;
 use App\Enums\UserType;
 use App\Models\Activity;
 use Carbon\Carbon;
@@ -414,7 +414,7 @@ class ApiNewReportService
             $user = $request->user_id ? User::find($request->user_id) : user();
         }
 
-        $companyId = $request->company_id ?? $user->company_id;
+        // $companyId = $request->company_id ?? $user->company_id;
         $channelId = $request->channel_id ?? null;
 
         if ($userType == 'store') {
@@ -422,7 +422,7 @@ class ApiNewReportService
         } else if ($user->is_director || $user->is_digital_marketing) {
             $userType = 'director';
 
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_supervisor) {
             if ($user->supervisor_type_id == 1) {
                 $userType = 'store_leader';
@@ -432,16 +432,16 @@ class ApiNewReportService
                 $userType = 'hs';
             }
 
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_sales) {
             $userType = 'sales';
 
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
 
         if ($user->is_director || $user->is_digital_marketing || $user->is_supervisor || $userType == 'store') {
             if ($channelId) {
-                $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+                // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
             }
         }
 
@@ -463,7 +463,7 @@ class ApiNewReportService
                 ],
             ];
         } else if (in_array($userType, ['director'])) {
-            $summary_deals = Order::selectRaw('SUM(total_price) as total_price')->where('company_id', $companyId)->whereDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
+            $summary_deals = Order::selectRaw('SUM(total_price) as total_price')->where('subscribtion_user_id', $user->subscribtion_user_id)->whereDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
 
             $data = [
                 'deals' => [
@@ -560,7 +560,7 @@ class ApiNewReportService
         //     $user = $request->user_id ? User::find($request->user_id) : user();
         // }
 
-        $companyId = $companyId ?? $user->company_id;
+        // $companyId = $companyId ?? $user->company_id;
         $channelId = $channelId ?? null;
 
         if ($userType == 'store') {
@@ -568,7 +568,7 @@ class ApiNewReportService
         } else if ($user->is_director || $user->is_digital_marketing) {
             // $userType = 'director';
 
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_supervisor) {
             // if ($user->supervisor_type_id == 1) {
             //     $userType = 'store_leader';
@@ -578,16 +578,16 @@ class ApiNewReportService
             //     $userType = 'hs';
             // }
 
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_sales) {
             // $userType = 'sales';
 
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
 
         // if ($user->is_director || $user->is_digital_marketing || $user->is_supervisor || $userType == 'store') {
         if ($channelId) {
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
         // }
 
@@ -716,19 +716,19 @@ class ApiNewReportService
             //     $summary_interior_design_total_transaction += (int)$sales->interior_design_total_transaction ?? 0;
             // }
 
-            $summary_deals = Order::selectRaw('SUM(total_price) as total_price')->where('company_id', $companyId)->whereDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
+            $summary_deals = Order::selectRaw('SUM(total_price) as total_price')->where('subscribtion_user_id', $user->subscribtion_user_id)->whereDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
 
-            $summary_compare_deals = Order::selectRaw('SUM(total_price) as total_price')->where('company_id', $companyId)->whereDeal($startDateCompare, $endDateCompare)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
+            $summary_compare_deals = Order::selectRaw('SUM(total_price) as total_price')->where('subscribtion_user_id', $user->subscribtion_user_id)->whereDeal($startDateCompare, $endDateCompare)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
 
-            $summary_total_deals_transaction = Order::where('company_id', $companyId)->whereDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->count() ?? 0;
+            $summary_total_deals_transaction = Order::where('subscribtion_user_id', $user->subscribtion_user_id)->whereDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->count() ?? 0;
 
-            $summary_interior_design = Order::selectRaw('SUM(total_price) as total_price')->where('company_id', $companyId)->whereDeal($startDate, $endDate)->whereNotNull('interior_design_id')->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
+            // $summary_interior_design = Order::selectRaw('SUM(total_price) as total_price')->where('subscribtion_user_id', $user->subscribtion_user_id)->whereDeal($startDate, $endDate)->whereNotNull('interior_design_id')->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
 
-            $summary_interior_design_total_transaction = Order::where('company_id', $companyId)->whereDeal($startDate, $endDate)->whereNotNull('interior_design_id')->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->count() ?? 0;
+            // $summary_interior_design_total_transaction = Order::where('subscribtion_user_id', $user->subscribtion_user_id)->whereDeal($startDate, $endDate)->whereNotNull('interior_design_id')->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->count() ?? 0;
 
-            $summary_exhibition = Order::selectRaw('SUM(total_price) as total_price')->where('company_id', $companyId)->whereDeal($startDate, $endDate)->whereNotNull('exhibition_id')->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
+            // $summary_exhibition = Order::selectRaw('SUM(total_price) as total_price')->where('subscribtion_user_id', $user->subscribtion_user_id)->whereDeal($startDate, $endDate)->whereNotNull('exhibition_id')->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
 
-            $summary_exhibition_total_transaction = Order::where('company_id', $companyId)->whereDeal($startDate, $endDate)->whereNotNull('exhibition_id')->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->count() ?? 0;
+            // $summary_exhibition_total_transaction = Order::where('subscribtion_user_id', $user->subscribtion_user_id)->whereDeal($startDate, $endDate)->whereNotNull('exhibition_id')->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->count() ?? 0;
 
             $data = [
                 'deals' => [
@@ -737,18 +737,18 @@ class ApiNewReportService
                     'total_transaction' => $summary_total_deals_transaction,
                     'target_deals' => (int)$target_deals ?? 0,
                 ],
-                'interior_design' => [
-                    'value' => potongPPN($summary_interior_design),
-                    'total_transaction' => $summary_interior_design_total_transaction,
-                ],
-                'exhibition' => [
-                    'value' => potongPPN($summary_exhibition),
-                    'total_transaction' => $summary_exhibition_total_transaction,
-                ],
-                'retail' => [
-                    'value' => potongPPN($summary_deals - $summary_interior_design - $summary_exhibition),
-                    'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction - $summary_exhibition_total_transaction,
-                ],
+                // 'interior_design' => [
+                //     'value' => potongPPN($summary_interior_design),
+                //     'total_transaction' => $summary_interior_design_total_transaction,
+                // ],
+                // 'exhibition' => [
+                //     'value' => potongPPN($summary_exhibition),
+                //     'total_transaction' => $summary_exhibition_total_transaction,
+                // ],
+                // 'retail' => [
+                //     'value' => potongPPN($summary_deals - $summary_interior_design - $summary_exhibition),
+                //     'total_transaction' => $summary_total_deals_transaction - $summary_interior_design_total_transaction - $summary_exhibition_total_transaction,
+                // ],
             ];
         } else if (in_array($userType, self::SUPERVISOR_TYPE)) {
             // $query = Channel::selectRaw(self::CHANNEL_COLUMNS)->whereIn('id', $user->channels->pluck('id')->all())
@@ -989,6 +989,7 @@ class ApiNewReportService
             ]
         ];
         $target_deals = 0;
+        $target_deals_ytd = 0;
         // $userType = null;
 
         // if ($request->user_type == 'store') {
@@ -998,7 +999,7 @@ class ApiNewReportService
         //     $user = $request->user_id ? User::find($request->user_id) : user();
         // }
 
-        $companyId = $companyId ?? $user->company_id;
+        // $companyId = $companyId ?? $user->company_id;
         $channelId = $channelId ?? null;
 
         if ($userType == 'store') {
@@ -1006,9 +1007,9 @@ class ApiNewReportService
         } else if ($user->is_director || $user->is_digital_marketing) {
             // $userType = 'director';
 
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_deals_ytd = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate->copy()->startOfYear())->whereDate('reports.start_date', '<=', $startTargetDate->copy()->endOfYear())->first()?->target ?? 0;
+            // $target_deals_ytd = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate->copy()->startOfYear())->whereDate('reports.start_date', '<=', $startTargetDate->copy()->endOfYear())->first()?->target ?? 0;
         } else if ($user->is_supervisor) {
             // if ($user->supervisor_type_id == 1) {
             //     $userType = 'store_leader';
@@ -1018,22 +1019,22 @@ class ApiNewReportService
             //     $userType = 'hs';
             // }
 
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_deals_ytd = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate->copy()->startOfYear())->whereDate('reports.start_date', '<=', $startTargetDate->copy()->endOfYear())->first()?->target ?? 0;
+            // $target_deals_ytd = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate->copy()->startOfYear())->whereDate('reports.start_date', '<=', $startTargetDate->copy()->endOfYear())->first()?->target ?? 0;
         } else if ($user->is_sales) {
             // $userType = 'sales';
 
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_deals_ytd = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate->copy()->startOfYear())->whereDate('reports.start_date', '<=', $startTargetDate->copy()->endOfYear())->first()?->target ?? 0;
+            // $target_deals_ytd = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate->copy()->startOfYear())->whereDate('reports.start_date', '<=', $startTargetDate->copy()->endOfYear())->first()?->target ?? 0;
         }
 
         // if ($user->is_director || $user->is_digital_marketing || $user->is_supervisor || $userType == 'store') {
         if ($channelId) {
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_deals_ytd = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate->copy()->startOfYear())->whereDate('reports.start_date', '<=', $startTargetDate->copy()->endOfYear())->first()?->target ?? 0;
+            // $target_deals_ytd = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startTargetDate->copy()->startOfYear())->whereDate('reports.start_date', '<=', $startTargetDate->copy()->endOfYear())->first()?->target ?? 0;
         }
         // }
 
@@ -1105,7 +1106,7 @@ class ApiNewReportService
             //     $summary_compare_deals += (int)$sales->compare_total_deals ?? 0;
             // }
 
-            $summary_deals = Order::selectRaw('SUM(total_price) as total_price')->where('company_id', $companyId)->whereDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
+            $summary_deals = Order::selectRaw('SUM(total_price) as total_price')->where('subscribtion_user_id', $user->subscribtion_user_id)->whereDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
 
             // $summary_compare_deals = Order::selectRaw('SUM(total_price) as total_price')->where('company_id', $companyId)->whereDeal($startDateCompare, $endDateCompare)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
 
@@ -1538,15 +1539,17 @@ class ApiNewReportService
         //     $user = $request->user_id ? User::find($request->user_id) : user();
         // }
 
-        $companyId = $companyId ?? $user->company_id;
+        // $companyId = $companyId ?? $user->company_id;
         $channelId = $channelId ?? null;
+
+        $target_leads = 0;
 
         if ($userType == 'store') {
             $channelId = $user->id ?? null;
         } else if ($user->is_director || $user->is_digital_marketing) {
             // $userType = 'director';
 
-            $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_supervisor) {
             // if ($user->supervisor_type_id == 1) {
             //     $userType = 'store_leader';
@@ -1556,16 +1559,16 @@ class ApiNewReportService
             //     $userType = 'hs';
             // }
 
-            $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_sales) {
             // $userType = 'sales';
 
-            $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
 
         // if ($user->is_director || $user->is_digital_marketing || $user->is_supervisor || $userType == 'store') {
         if ($channelId) {
-            $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
         // }
 
@@ -1607,7 +1610,7 @@ class ApiNewReportService
             ];
         } else if (in_array($userType, ['director'])) {
             $query = User::selectRaw(self::USER_COLUMNS)
-                ->where('company_id', $companyId)
+                ->where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->where('type', 2)
                 ->withCount(['leads as total_leads' => function ($q) use ($channelId, $startDate, $endDate) {
                     $q->select(DB::raw('count(distinct(customer_id))'))
@@ -1789,6 +1792,7 @@ class ApiNewReportService
         }
 
         $userType = null;
+        $target_leads = 0;
 
         if ($request->user_type == 'store') {
             $userType = 'store';
@@ -1797,7 +1801,7 @@ class ApiNewReportService
             $user = $request->user_id ? User::find($request->user_id) : user();
         }
 
-        $companyId = $request->company_id ?? $user->company_id;
+        // $companyId = $request->company_id ?? $user->company_id;
         $channelId = $request->channel_id ?? null;
 
         if ($userType == 'store') {
@@ -1805,7 +1809,7 @@ class ApiNewReportService
         } else if ($user->is_director || $user->is_digital_marketing) {
             $userType = 'director';
 
-            $target_leads = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
 
             // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_supervisor) {
@@ -1817,20 +1821,20 @@ class ApiNewReportService
                 $userType = 'hs';
             }
 
-            $target_leads = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
 
             // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_sales) {
             $userType = 'sales';
 
-            $target_leads = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
 
             // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
 
         if ($user->is_director || $user->is_digital_marketing || $user->is_supervisor || $userType == 'store') {
             if ($channelId) {
-                $target_leads = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+                // $target_leads = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
 
                 // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
             }
@@ -1860,7 +1864,7 @@ class ApiNewReportService
             ];
         } else if (in_array($userType, ['director'])) {
             $totalActivities = Activity::selectRaw('count("id") as total_activity')
-                ->whereHas('channel', fn ($q) => $q->where('company_id', $companyId))
+                ->whereHas('channel', fn ($q) => $q->where('subscribtion_user_id', $user->subscribtion_user_id))
                 ->whereCreatedAtRange($startDate, $endDate)
                 ->when(!is_null($channelId), fn ($q) => $q->where('channel_id', $channelId))
                 ->groupByLeadAndDate()
@@ -1868,7 +1872,7 @@ class ApiNewReportService
                 ->get();
 
             $compareTotalActivities = Activity::selectRaw('count("id") as total_activity')
-                ->whereHas('channel', fn ($q) => $q->where('company_id', $companyId))
+                ->whereHas('channel', fn ($q) => $q->where('subscribtion_user_id', $user->subscribtion_user_id))
                 ->whereCreatedAtRange($startDateCompare, $endDateCompare)
                 ->when(!is_null($channelId), fn ($q) => $q->where('channel_id', $channelId))
                 ->groupByLeadAndDate()
@@ -1974,7 +1978,9 @@ class ApiNewReportService
         //     $user = $request->user_id ? User::find($request->user_id) : user();
         // }
 
-        $companyId = $companyId ?? $user->company_id;
+        $target_leads = 0;
+
+        // $companyId = $companyId ?? $user->company_id;
         $channelId = $channelId ?? null;
 
         if ($userType == 'store') {
@@ -1982,7 +1988,7 @@ class ApiNewReportService
         } else if ($user->is_director || $user->is_digital_marketing) {
             // $userType = 'director';
 
-            $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_supervisor) {
             // if ($user->supervisor_type_id == 1) {
             //     $userType = 'store_leader';
@@ -1992,16 +1998,16 @@ class ApiNewReportService
             //     $userType = 'hs';
             // }
 
-            $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_sales) {
             // $userType = 'sales';
 
-            $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
 
         // if ($user->is_director || $user->is_digital_marketing || $user->is_supervisor || $userType == 'store') {
         if ($channelId) {
-            $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('new_targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', NewTargetType::LEAD)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
         // }
 
@@ -2029,7 +2035,7 @@ class ApiNewReportService
             ];
         } else if (in_array($userType, ['director'])) {
             $totalActivities = Activity::selectRaw('count("id") as total_activity')
-                ->whereHas('channel', fn ($q) => $q->where('company_id', $companyId))
+                ->whereHas('channel', fn ($q) => $q->where('subscribtion_user_id', $user->subscribtion_user_id))
                 ->whereCreatedAtRange($startDate, $endDate)
                 ->when(!is_null($channelId), fn ($q) => $q->where('channel_id', $channelId))
                 ->groupByLeadAndDate()
@@ -2037,7 +2043,7 @@ class ApiNewReportService
                 ->get();
 
             $compareTotalActivities = Activity::selectRaw('count("id") as total_activity')
-                ->whereHas('channel', fn ($q) => $q->where('company_id', $companyId))
+                ->whereHas('channel', fn ($q) => $q->where('subscribtion_user_id', $user->subscribtion_user_id))
                 ->whereCreatedAtRange($startDate, $endDate)
                 ->when(!is_null($channelId), fn ($q) => $q->where('channel_id', $channelId))
                 ->groupByLeadAndDate()
@@ -2399,7 +2405,7 @@ class ApiNewReportService
         //     $user = $request->user_id ? User::find($request->user_id) : user();
         // }
 
-        $companyId = $companyId ?? $user->company_id;
+        // $companyId = $companyId ?? $user->company_id;
         $channelId = $channelId ?? null;
 
         if ($userType == 'store') {
@@ -2452,7 +2458,7 @@ class ApiNewReportService
             ];
         } else if (in_array($userType, ['director'])) {
             $query = User::selectRaw(self::USER_COLUMNS)
-                ->where('company_id', $companyId)
+                ->where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->where('type', 2)
                 ->withCount(['leads as active_leads' => function ($q) use ($channelId, $startDate, $endDate) {
                     $q->whereHas('latestActivity', fn ($q) => $q->whereCreatedAtRange($startDate, $endDate));
@@ -2929,7 +2935,7 @@ class ApiNewReportService
         //     $user = $request->user_id ? User::find($request->user_id) : user();
         // }
 
-        $companyId = $companyId ?? $user->company_id;
+        // $companyId = $companyId ?? $user->company_id;
         $channelId = $channelId ?? null;
 
         if ($userType == 'store') {
@@ -2937,7 +2943,7 @@ class ApiNewReportService
         } else if ($user->is_director || $user->is_digital_marketing) {
             // $userType = 'director';
 
-            $target_activities = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_activities = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_supervisor) {
             // if ($user->supervisor_type_id == 1) {
             //     $userType = 'store_leader';
@@ -2947,16 +2953,16 @@ class ApiNewReportService
             //     $userType = 'hs';
             // }
 
-            $target_activities = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_activities = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_sales) {
             // $userType = 'sales';
 
-            $target_activities = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_activities = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
 
         // if ($user->is_director || $user->is_digital_marketing || $user->is_supervisor || $userType == 'store') {
         if ($channelId) {
-            $target_activities = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_activities = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 7)->whereDate('reports.start_date', '>=', $startTargetDate)->whereDate('reports.end_date', '<=', $endTargetDate)->first()?->target ?? 0;
         }
         // }
 
@@ -2998,7 +3004,7 @@ class ApiNewReportService
             ];
         } else if (in_array($userType, ['director'])) {
             $query = User::selectRaw(self::USER_COLUMNS)
-                ->where('company_id', $companyId)
+                ->where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->where('type', 2)
                 ->withCount(['userActivities as total_activities' => function ($q) use ($channelId, $startDate, $endDate) {
                     // $q->whereHas('leadActivities', function ($q2) use ($startDate, $endDate) {
@@ -3534,7 +3540,7 @@ class ApiNewReportService
         //     $user = $request->user_id ? User::find($request->user_id) : user();
         // }
 
-        $companyId = $companyId ?? $user->company_id;
+        // $companyId = $companyId ?? $user->company_id;
         $channelId = $channelId ?? null;
 
         if ($userType == 'store') {
@@ -3602,7 +3608,7 @@ class ApiNewReportService
             ];
         } else if (in_array($userType, ['director'])) {
             $query = User::selectRaw(self::USER_COLUMNS)
-                ->where('company_id', $companyId)
+                ->where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->where('type', 2)
                 ->withCount(['leads as hot_activities' => function ($q) use ($channelId, $startDate, $endDate) {
                     $q->where('last_activity_status', 1)->whereHas('leadActivities', fn ($q) => $q->whereCreatedAtRange($startDate, $endDate))
@@ -3859,7 +3865,7 @@ class ApiNewReportService
             $user = $request->user_id ? User::find($request->user_id) : user();
         }
 
-        $companyId = $request->company_id ?? $user->company_id;
+        // $companyId = $request->company_id ?? $user->company_id;
         $channelId = $request->channel_id ?? null;
 
         if ($userType == 'store') {
@@ -3921,7 +3927,7 @@ class ApiNewReportService
             ];
         } else if (in_array($userType, ['director'])) {
             $query = User::selectRaw(self::USER_COLUMNS)
-                ->where('company_id', $companyId)
+                ->where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->where('type', 2);
 
             foreach ($leadCategories as $leadCategoryId => $leadCategoryName) {
@@ -4121,7 +4127,7 @@ class ApiNewReportService
         //     $user = $request->user_id ? User::find($request->user_id) : user();
         // }
 
-        $companyId = $companyId ?? $user->company_id;
+        // $companyId = $companyId ?? $user->company_id;
         $channelId = $channelId ?? null;
 
         if ($userType == 'store') {
@@ -4184,7 +4190,7 @@ class ApiNewReportService
             ];
         } else if (in_array($userType, ['director'])) {
             $query = User::selectRaw(self::USER_COLUMNS)
-                ->where('company_id', $companyId)
+                ->where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->where('type', 2);
 
             foreach ($leadCategories as $leadCategoryId => $leadCategoryName) {
@@ -4593,7 +4599,7 @@ class ApiNewReportService
         //     $user = $request->user_id ? User::find($request->user_id) : user();
         // }
 
-        $companyId = $companyId ?? $user->company_id;
+        // $companyId = $companyId ?? $user->company_id;
         $channelId = $channelId ?? null;
 
         if ($userType == 'store') {
@@ -4661,9 +4667,9 @@ class ApiNewReportService
             //     $summary_compare_quotation += (int)$sales->compare_total_quotation ?? 0;
             // }
 
-            $summary_quotation = Order::selectRaw('SUM(total_price) as total_price')->where('company_id', $companyId)->whereNotDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
+            $summary_quotation = Order::selectRaw('SUM(total_price) as total_price')->where('subscribtion_user_id', $user->subscribtion_user_id)->whereNotDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
 
-            $summary_compare_quotation = Order::selectRaw('SUM(total_price) as total_price')->where('company_id', $companyId)->whereNotDeal($startDateCompare, $endDateCompare)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
+            $summary_compare_quotation = Order::selectRaw('SUM(total_price) as total_price')->where('subscribtion_user_id', $user->subscribtion_user_id)->whereNotDeal($startDateCompare, $endDateCompare)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
 
             $data = [
                 'quotation' => [
@@ -4804,7 +4810,7 @@ class ApiNewReportService
             $user = $request->user_id ? User::find($request->user_id) : user();
         }
 
-        $companyId = $request->company_id ?? $user->company_id;
+        // $companyId = $request->company_id ?? $user->company_id;
         $channelId = $request->channel_id ?? null;
 
         if ($userType == 'store') {
@@ -4838,7 +4844,7 @@ class ApiNewReportService
             ];
         } else if (in_array($userType, ['director'])) {
             $query = User::selectRaw(self::USER_COLUMNS)
-                ->where('company_id', $companyId)
+                ->where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->where('type', 2);
 
             $result = $query->get();
@@ -4934,7 +4940,7 @@ class ApiNewReportService
         //     $user = $request->user_id ? User::find($request->user_id) : user();
         // }
 
-        $companyId = $companyId ?? $user->company_id;
+        // $companyId = $companyId ?? $user->company_id;
         $channelId = $channelId ?? null;
 
         if ($userType == 'store') {
@@ -4969,7 +4975,7 @@ class ApiNewReportService
             ];
         } else if (in_array($userType, ['director'])) {
             $query = User::selectRaw(self::USER_COLUMNS)
-                ->where('company_id', $companyId)
+                ->where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->where('type', 2);
 
             $result = $query->get();
@@ -5043,9 +5049,9 @@ class ApiNewReportService
 
     public static function getPbs($user, $startDate, $endDate, $startDateCompare, $endDateCompare, $filterChannelId = null, $companyId = null)
     {
-        $query = ProductBrand::selectRaw('id')->where('show_in_moves', 1);
+        $query = ProductBrand::selectRaw('id');
         if ($user instanceof Channel) {
-            $query->where('company_id', $user->company_id)
+            $query->where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->withSum(['activityBrandValues as estimated_value' => function ($q) use ($user, $filterChannelId, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate)
                         ->orderBy('lead_id', 'desc')
@@ -5104,33 +5110,34 @@ class ApiNewReportService
             //     }]);
         } elseif ($user->type->is(UserType::DIRECTOR)) {
             // $companyIds = [$companyId] ?? $user->companies->pluck('id')->all() ?? [];
-            $companyId = $companyId ?? $user->company_id ?? 1;
+            // $companyId = $companyId ?? $user->company_id ?? 1;
+            $subscribtion_user_id = $user->subscribtion_user_id;
 
-            $query->where('company_id', $companyId)
-                ->withSum(['activityBrandValues as estimated_value' => function ($q) use ($filterChannelId, $companyId, $startDate, $endDate) {
+            $query->where('subscribtion_user_id', $subscribtion_user_id)
+                ->withSum(['activityBrandValues as estimated_value' => function ($q) use ($filterChannelId, $subscribtion_user_id, $startDate, $endDate) {
                     $q->whereCreatedAtRange($startDate, $endDate)
                         ->orderBy('lead_id', 'desc')
                         ->orderBy('activity_id', 'desc');
 
-                    $q->whereHas('lead', fn ($q2) => $q2->whereIn('channel_id', Channel::where('company_id', $companyId)->pluck('id')->all()));
+                    $q->whereHas('lead', fn ($q2) => $q2->whereIn('channel_id', Channel::where('subscribtion_user_id', $subscribtion_user_id)->pluck('id')->all()));
 
                     $q->whereDoesntHave(
                         'order',
-                        fn ($q2) => $q2->whereDeal($startDate, $endDate)->where('company_id', $companyId)
+                        fn ($q2) => $q2->whereDeal($startDate, $endDate)->where('subscribtion_user_id', $subscribtion_user_id)
                     );
 
                     if ($filterChannelId) $q->whereHas('lead', fn ($q2) => $q2->where('channel_id', $filterChannelId));
                 }], 'estimated_value')
-                ->withSum(['activityBrandValuesDeals as compare_estimated_value' => function ($q) use ($filterChannelId, $companyId, $startDateCompare, $endDateCompare) {
+                ->withSum(['activityBrandValuesDeals as compare_estimated_value' => function ($q) use ($filterChannelId, $subscribtion_user_id, $startDateCompare, $endDateCompare) {
                     $q->whereCreatedAtRange($startDateCompare, $endDateCompare)
                         ->orderBy('lead_id', 'desc')
                         ->orderBy('activity_id', 'desc');
 
-                    $q->whereHas('lead', fn ($q2) => $q2->whereIn('channel_id', Channel::where('company_id', $companyId)->pluck('id')->all()));
+                    $q->whereHas('lead', fn ($q2) => $q2->whereIn('channel_id', Channel::where('subscribtion_user_id', $subscribtion_user_id)->pluck('id')->all()));
 
                     $q->whereDoesntHave(
                         'order',
-                        fn ($q2) => $q2->whereDeal($startDateCompare, $endDateCompare)->where('company_id', $companyId)
+                        fn ($q2) => $q2->whereDeal($startDateCompare, $endDateCompare)->where('subscribtion_user_id', $subscribtion_user_id)
                     );
 
                     if ($filterChannelId) $q->whereHas('lead', fn ($q2) => $q2->where('channel_id', $filterChannelId));
@@ -5393,7 +5400,8 @@ class ApiNewReportService
         $user = $request->user_id ? User::find($request->user_id) : ($user ? $user : user());
         $userType = null;
 
-        $companyId = $request->company_id ?? $user->company_id;
+        // $companyId = $request->company_id ?? $user->company_id;
+        $companyId = $user->subscribtion_user_id;
         $channelId = $request->channel_id ?? null;
 
         if ($user->is_director || $user->is_digital_marketing) {
@@ -5424,7 +5432,7 @@ class ApiNewReportService
             $data = [
                 array_merge(
                     [
-                        'name' => $user->is_director ? DB::table('companies')->where('id', $companyId)->select('name')->first()->name : $user->name
+                        'name' => $user->is_director ? DB::table('subscribtion_users')->where('id', $companyId)->select('name')->first()->name : $user->name
                     ],
                     $subDeals['data'],
                     [
@@ -5434,7 +5442,7 @@ class ApiNewReportService
             ];
         } else if (in_array($userType, ['director'])) {
             if ($request->user_type == 'bum') {
-                $bum = User::where('company_id', $companyId)
+                $bum = User::where('subscribtion_user_id', $companyId)
                     ->where('type', UserType::SUPERVISOR)
                     ->where('supervisor_type_id', 2)
                     ->when($request->supervisor_id, fn ($q) => $q->where('id', $request->supervisor_id))
@@ -5669,7 +5677,7 @@ class ApiNewReportService
                 }
             } else {
                 // default show hs
-                $headSales = User::where('company_id', $companyId)
+                $headSales = User::where('subscribtion_user_id', $user->subscribtion_user_id)
                     ->where('type', UserType::SUPERVISOR)
                     ->where('supervisor_type_id', 3)
                     ->when($request->supervisor_id, fn ($q) => $q->where('id', $request->supervisor_id))
@@ -5905,7 +5913,7 @@ class ApiNewReportService
             }
         } else if (in_array($userType, self::SUPERVISOR_TYPE)) {
             if ($request->user_type == 'store_leader') {
-                $storeLeader = User::where('company_id', $companyId)
+                $storeLeader = User::where('subscribtion_user_id', $user->subscribtion_user_id)
                     ->where('type', UserType::SUPERVISOR)
                     ->where('supervisor_type_id', 1)
                     ->when($request->supervisor_id, fn ($q) => $q->where('id', $request->supervisor_id))
@@ -6151,7 +6159,7 @@ class ApiNewReportService
                 }
             } else {
                 // default show bum
-                $bum = User::where('company_id', $companyId)
+                $bum = User::where('subscribtion_user_id', $user->subscribtion_user_id)
                     ->where('type', UserType::SUPERVISOR)
                     ->where('supervisor_type_id', 2)
                     ->when($request->supervisor_id, fn ($q) => $q->where('id', $request->supervisor_id))
@@ -6487,25 +6495,26 @@ class ApiNewReportService
         $companyId = null,
         $channelId = null,
     ) {
-        $companyId = $companyId ?? $user->company_id;
+        $target_deals = 0;
+        // $companyId = $companyId ?? $user->company_id;
         $channelId = $channelId ?? null;
 
         if ($userType == 'store') {
             $channelId = $user->id ?? null;
         } else if ($user->is_director || $user->is_digital_marketing) {
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startDate)->whereDate('reports.end_date', '<=', $endDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'company')->where('targets.model_id', $companyId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startDate)->whereDate('reports.end_date', '<=', $endDate)->first()?->target ?? 0;
         } else if ($user->is_supervisor) {
 
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startDate)->whereDate('reports.end_date', '<=', $endDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startDate)->whereDate('reports.end_date', '<=', $endDate)->first()?->target ?? 0;
         } else if ($user->is_sales) {
             // $userType = 'sales';
 
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startDate)->whereDate('reports.end_date', '<=', $endDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'user')->where('targets.model_id', $user->id)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startDate)->whereDate('reports.end_date', '<=', $endDate)->first()?->target ?? 0;
         }
 
         // if ($user->is_director || $user->is_digital_marketing || $user->is_supervisor || $userType == 'store') {
         if ($channelId) {
-            $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startDate)->whereDate('reports.end_date', '<=', $endDate)->first()?->target ?? 0;
+            // $target_deals = DB::table('targets')->join('reports', 'reports.id', '=', 'targets.report_id')->selectRaw('SUM(target) as target')->where('targets.model_type', 'channel')->where('targets.model_id', $channelId)->where('targets.type', 0)->whereDate('reports.start_date', '>=', $startDate)->whereDate('reports.end_date', '<=', $endDate)->first()?->target ?? 0;
         }
         // }
 
@@ -6525,7 +6534,7 @@ class ApiNewReportService
                 'target_deals' => (int)$target_deals ?? 0,
             ];
         } else if (in_array($userType, ['director'])) {
-            $summary_deals = Order::selectRaw('SUM(total_price) as total_price')->where('company_id', $companyId)->whereDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
+            $summary_deals = Order::selectRaw('SUM(total_price) as total_price')->where('subscribtion_user_id', $user->subscribtion_user_id)->whereDeal($startDate, $endDate)->when($channelId, fn ($q) => $q->where('channel_id', $channelId))->first()?->total_price ?? 0;
 
             $data = [
                 'value' => potongPPN($summary_deals),
@@ -6601,7 +6610,7 @@ class ApiNewReportService
             $user = $request->user_id ? User::find($request->user_id) : user();
         }
 
-        $companyId = $request->company_id ?? $user->company_id;
+        // $companyId = $request->company_id ?? $user->company_id;
         $channelId = $request->channel_id ?? null;
 
         if ($userType == 'store') {
@@ -6691,13 +6700,13 @@ class ApiNewReportService
                 ],
             ];
         } else if (in_array($userType, ['director'])) {
-            $total_orders_transaction = Order::where('company_id', $companyId)
+            $total_orders_transaction = Order::where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->whereCreatedAtRange($startDate, $endDate)
                 ->where('status', '!=', 6)
                 ->when($channelId, fn ($q) => $q->where('channel_id', $channelId))
                 ->count() ?? 0;
 
-            $total_cancelled_transaction = Order::where('company_id', $companyId)
+            $total_cancelled_transaction = Order::where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->whereCreatedAtRange($startDate, $endDate)
                 ->where('status', 5)
                 ->when($channelId, fn ($q) => $q->where('channel_id', $channelId))
@@ -6708,7 +6717,7 @@ class ApiNewReportService
             //     ->when($channelId, fn ($q) => $q->where('channel_id', $channelId))
             //     ->count() ?? 0;
 
-            $total_deals_transaction = Order::where('company_id', $companyId)
+            $total_deals_transaction = Order::where('subscribtion_user_id', $user->subscribtion_user_id)
                 ->whereDeal($startDate, $endDate)
                 ->when($channelId, fn ($q) => $q->where('channel_id', $channelId))
                 ->count() ?? 0;
