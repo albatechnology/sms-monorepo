@@ -50,7 +50,8 @@ class NewReportController extends BaseApiController
         ];
     }
 
-    public function deals(Request $request){
+    public function deals(Request $request)
+    {
         $data = ApiNewReportService::subDeals($request);
         return response()->json(array_merge($data['data'], $data['info_date']));
     }
@@ -3956,7 +3957,8 @@ class NewReportController extends BaseApiController
             default => null,
         };
 
-        $query = Lead::with(['latestActivity' => function ($q) use ($activityStatus) {
+        $query = Lead::query()
+            ->with(['latestActivity' => function ($q) use ($activityStatus) {
                 $q->selectRaw("
                     lead_id,
                     (
@@ -3984,7 +3986,10 @@ class NewReportController extends BaseApiController
             customers.phone,
             customers.email,
             users.name as sales,
-            channels.name as channel
+            channels.name as channel,
+            (
+                SELECT name FROM lead_categories WHERE id=leads.lead_category_id
+            ) as lead_category
             ")
             ->join('customers', 'customers.id', '=', 'leads.customer_id')
             ->join('users', 'users.id', '=', 'leads.user_id')
@@ -3994,18 +3999,23 @@ class NewReportController extends BaseApiController
 
         $isActive = $request->is_active ?? null;
         if ($isActive && $isActive == true) {
-            $query = $query->groupBy('leads.id');
+            $query = $query->whereCreatedAtRange($startDate, $endDate)->groupBy('leads.id');
         } else {
             $query = $query->whereCreatedAtRange($startDate, $endDate)
                 ->whereHas('customer', fn ($customer) => $customer->whereCreatedAtRange($startDate, $endDate))
                 ->groupBy('leads.customer_id');
         }
 
+        // $companyId = $request->company_id ?? $user->company_id;
+        $subscribtion_user_id = $user->subscribtion_user_id;
+        $channelId = $request->channel_id ?? null;
+
         $userType = $request->user_type ?? null;
         $id = $request->id ?? null;
 
         if ($userType && $id) {
             $user = match ($userType) {
+                'hs' => User::findOrFail($id),
                 'bum' => User::findOrFail($id),
                 'store' => Channel::findOrFail($id),
                 'store_leader' => User::findOrFail($id),
@@ -4017,18 +4027,23 @@ class NewReportController extends BaseApiController
         if ($user instanceof Channel) {
             $query = $query->where('leads.channel_id', $user->id);
         } elseif ($user->type->is(UserType::DIRECTOR)) {
-            // $companyIds = $user->company_ids ?? $user->company_id;
-            // $query = $query->whereIn('leads.channel_id', Channel::whereIn('company_id', $companyIds)->pluck('id')->all());
+            $query = $query->whereHas('channel', fn ($q) => $q->where('subscribtion_user_id', $subscribtion_user_id));
         } elseif ($user->type->is(UserType::SUPERVISOR)) {
             $query = $query->whereIn('leads.channel_id', $user->channels->pluck('id')->all());
+            // $query = $query->whereHas('leadUsers', fn ($q) => $q->where('user_id', $user->id));
         } else {
             // sales
             $query = $query->where('leads.user_id', $user->id);
+                // ->where('leads.channel_id', $user->channel_id);
         }
 
-        // if ($companyId = $request->company_id) $query = $query->where('leads.channel_id', Channel::where('company_id', $companyId)->pluck('id')->all());
-        if ($request->channel_id) $query = $query->where('leads.channel_id', $request->channel_id);
+        $query = $query->whereIn('leads.channel_id', Channel::where('subscribtion_user_id', $subscribtion_user_id)->pluck('id')->all());
+        if ($channelId) $query = $query->where('leads.channel_id', $channelId);
         if ($name = $request->name) $query = $query->whereHas('customer', fn ($q) => $q->where('first_name', 'LIKE', "%$name%")->orWhere('last_name', 'LIKE', "%$name%"));
+
+        if ($request->lead_category_id) {
+            $query = $query->where('lead_category_id', $request->lead_category_id);
+        }
 
         if ($request->product_brand_id) {
             $query = $query->whereHas('activityBrandValues', fn ($q) => $q->where('product_brand_id', $request->product_brand_id));
@@ -4041,102 +4056,6 @@ class NewReportController extends BaseApiController
         }
 
         $result = $query->orderBy('leads.id', 'desc')->simplePaginate($request->perPage ?? 20);
-
-        return response()->json($result);
-    }
-
-    public function interiorDesigns(Request $request)
-    {
-        $startDate = Carbon::now()->startOfMonth();
-        $endDate = Carbon::now()->endOfMonth();
-        if ((request()->has('start_date') && request()->start_date != '') && (request()->has('end_date') && request()->end_date != '')) {
-            $startDate = Carbon::createFromFormat('Y-m-d', request()->start_date)->startOfDay();
-            $endDate = Carbon::createFromFormat('Y-m-d', request()->end_date)->endOfDay();
-        }
-
-        $user = user();
-
-        $query = Order::selectRaw("
-        interior_designs.id as id,
-        SUM(orders.total_price) as revenue,
-        interior_designs.name as interior_design
-        ")
-            ->join('interior_designs', 'interior_designs.id', '=', 'orders.interior_design_id')
-            ->whereDeal($startDate, $endDate)
-            ->whereNotNull('orders.interior_design_id');
-
-        $userType = $request->user_type ?? null;
-        $id = $request->id ?? null;
-
-        if ($userType && $id) {
-            $user = match ($userType) {
-                'bum' => User::findOrFail($id),
-                'store' => Channel::findOrFail($id),
-                'store_leader' => User::findOrFail($id),
-                'sales' => User::findOrFail($id),
-                default => $user,
-            };
-        }
-
-        if ($user instanceof Channel) {
-            $query = $query->where('channel_id', $user->id);
-        } elseif ($user->type->is(UserType::DIRECTOR)) {
-            // $companyIds = $user->company_ids ?? $user->companies->pluck('id')->all();
-            // $query = $query->whereIn('company_id', $companyIds);
-        } elseif ($user->type->is(UserType::SUPERVISOR)) {
-            $query = $query->whereIn('channel_id', $user->channels->pluck('id')->all());
-        } else {
-            // sales
-            $query = $query->where('user_id', $user->id);
-        }
-
-        // if ($request->company_id) $query = $query->where('company_id', $request->company_id);
-        if ($request->channel_id) $query = $query->where('channel_id', $request->channel_id);
-        if ($request->user_id) $query = $query = $query->where('user_id', $request->user_id);
-
-        if ($request->product_brand_id) {
-            $query = $query->whereHas('activityBrandValues', fn ($q) => $q->where('product_brand_id', $request->product_brand_id));
-        }
-
-        $result = $query->groupBy('orders.interior_design_id')->orderBy('orders.id', 'desc')->get();
-
-        return response()->json($result);
-    }
-
-    public function interiorDesignDetails(Request $request)
-    {
-        $startDate = Carbon::now()->startOfMonth();
-        $endDate = Carbon::now()->endOfMonth();
-        if ((request()->has('start_date') && request()->start_date != '') && (request()->has('end_date') && request()->end_date != '')) {
-            $startDate = Carbon::createFromFormat('Y-m-d', request()->start_date)->startOfDay();
-            $endDate = Carbon::createFromFormat('Y-m-d', request()->end_date)->endOfDay();
-        }
-
-        $query = Order::selectRaw("
-        orders.id,
-        activities.id as activity_id,
-        orders.invoice_number,
-        orders.total_price,
-        users.name as sales,
-        channels.name as channel,
-        orders.created_at
-        ")
-            ->join('activities', 'activities.order_id', '=', 'orders.id')
-            ->join('users', 'users.id', '=', 'orders.user_id')
-            ->join('channels', 'channels.id', '=', 'orders.channel_id')
-            ->where('orders.interior_design_id', $request->interior_design_id)
-            ->whereDeal($startDate, $endDate)
-            ->whereNotNull('orders.interior_design_id');
-
-        // if ($request->company_id) $query = $query->where('company_id', $request->company_id);
-        if ($request->channel_id) $query = $query->where('channel_id', $request->channel_id);
-        if ($request->user_id) $query = $query = $query->where('user_id', $request->user_id);
-
-        if ($request->product_brand_id) {
-            $query = $query->whereHas('activityBrandValues', fn ($q) => $q->where('product_brand_id', $request->product_brand_id));
-        }
-
-        $result = $query->orderBy('orders.id', 'desc')->get();
 
         return response()->json($result);
     }
@@ -4202,7 +4121,7 @@ class NewReportController extends BaseApiController
                         fn ($q2) => $q2->whereDeal($startDate, $endDate)->where('channel_id', $id)
                     );
                 }]);
-                // ->where('company_id', $user->company_id);
+            // ->where('company_id', $user->company_id);
         } elseif ($user->type->is(UserType::DIRECTOR)) {
             // $target_brands = DB::table('new_targets')->where('model_type', 'company')->where('model_id', $user->company_id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
             $target_brands = DB::table('new_targets')->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
@@ -4232,7 +4151,7 @@ class NewReportController extends BaseApiController
                     );
                     if ($filterChannelId) $q->whereHas('order', fn ($q2) => $q2->where('channel_id', $filterChannelId));
                 }]);
-                // ->whereIn('company_id', $companyIds);
+            // ->whereIn('company_id', $companyIds);
         } elseif ($user->type->is(UserType::SUPERVISOR)) {
             $target_brands = DB::table('new_targets')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
 
@@ -4259,7 +4178,7 @@ class NewReportController extends BaseApiController
                     );
                     if ($filterChannelId) $q->whereHas('order', fn ($q2) => $q2->where('channel_id', $filterChannelId));
                 }]);
-                // ->where('company_id', $companyId);
+            // ->where('company_id', $companyId);
         } else {
             $target_brands = DB::table('new_targets')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
 
@@ -4281,7 +4200,7 @@ class NewReportController extends BaseApiController
                         fn ($q2) => $q2->whereDeal($startDate, $endDate)
                     );
                 }]);
-                // ->where('company_id', $user->company_id);
+            // ->where('company_id', $user->company_id);
         }
 
         // if (count($companyChannelIds) > 0) {
@@ -4366,7 +4285,7 @@ class NewReportController extends BaseApiController
                     );
                     if ($filterChannelId) $q->whereHas('order', fn ($q2) => $q2->where('channel_id', $filterChannelId));
                 }]);
-                // ->whereIn('company_id', $companyIds);
+            // ->whereIn('company_id', $companyIds);
         } elseif ($user->type->is(UserType::SUPERVISOR)) {
             $channelIds = $user->channels->pluck('id')->all();
 
@@ -4390,7 +4309,7 @@ class NewReportController extends BaseApiController
                     );
                     if ($filterChannelId) $q->whereHas('order', fn ($q2) => $q2->where('channel_id', $filterChannelId));
                 }]);
-                // ->where('company_id', $companyId);
+            // ->where('company_id', $companyId);
         } else {
             $query = $query->with(['activityBrandValues' => function ($q) use ($user, $filterChannelId, $startDate, $endDate) {
                 $q->whereCreatedAtRange($startDate, $endDate)
