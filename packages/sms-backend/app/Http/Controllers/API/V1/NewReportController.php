@@ -61,6 +61,30 @@ class NewReportController extends BaseApiController
         return response()->json($data['data']);
     }
 
+    public function newLeads(Request $request)
+    {
+        $data = ApiNewReportService::subNewLeads($request);
+        return response()->json($data['data']);
+    }
+
+    public function activeLeads(Request $request)
+    {
+        $data = ApiNewReportService::subActiveLeads($request);
+        return response()->json($data['data']);
+    }
+
+    public function followUp(Request $request)
+    {
+        $data = ApiNewReportService::subFollowUp($request);
+        return response()->json($data['data']);
+    }
+
+    public function leadStatus(Request $request)
+    {
+        $data = ApiNewReportService::subLeadStatus($request);
+        return response()->json($data['data']);
+    }
+
     public function index(Request $request)
     {
         $startDate = Carbon::now()->startOfMonth();

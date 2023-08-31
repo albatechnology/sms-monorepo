@@ -118,6 +118,10 @@ Route::middleware(['auth:sanctum', 'impersonate'])->group(function () {
     Route::get('new-reports', [NewReportController::class, 'index'])->name('newReports.index');
     Route::get('new-reports/deals', [NewReportController::class, 'deals'])->name('newReports.deals');
     Route::get('new-reports/quotation', [NewReportController::class, 'quotation'])->name('newReports.quotation');
+    Route::get('new-reports/new-leads', [NewReportController::class, 'newLeads'])->name('newReports.newLeads');
+    Route::get('new-reports/active-leads', [NewReportController::class, 'activeLeads'])->name('newReports.activeLeads');
+    Route::get('new-reports/follow-up', [NewReportController::class, 'followUp'])->name('newReports.followUp');
+    Route::get('new-reports/lead-status', [NewReportController::class, 'leadStatus'])->name('newReports.leadStatus');
     Route::get('new-reports/details', [NewReportController::class, 'details'])->name('newReports.details');
     Route::get('new-reports/interior-designs', [NewReportController::class, 'interiorDesigns'])->name('newReports.interiorDesigns');
     Route::get('new-reports/interior-designs/details', [NewReportController::class, 'interiorDesignDetails'])->name('newReports.interiorDesignDetails');

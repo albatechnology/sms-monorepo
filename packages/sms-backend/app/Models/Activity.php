@@ -100,8 +100,9 @@ class Activity extends BaseModel implements Tenanted, Reportable, HasMedia
             $lead = $model->lead;
             if (!$lead->has_activity) {
                 $lead->has_activity = true;
-                $lead->save();
             }
+            $lead->last_activity_status = $model->status;
+            $lead->save();
 
             // set customer to has activity
             $customer = $model->customer;

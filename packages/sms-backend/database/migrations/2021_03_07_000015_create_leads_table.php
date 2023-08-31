@@ -30,6 +30,7 @@ class CreateLeadsTable extends Migration
             $table->boolean('has_pending_status_change')->nullable()->default(0)->index();
             $table->boolean('has_activity')->default(false);
             $table->text('interest')->nullable();
+            $table->unsignedTinyInteger('last_activity_status')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

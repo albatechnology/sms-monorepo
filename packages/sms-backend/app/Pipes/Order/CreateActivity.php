@@ -43,6 +43,7 @@ class CreateActivity
     public function handle(Order $order, Closure $next)
     {
         $activity = Activity::createForOrder($order);
+        $order->lead->update(['last_activity_status', 1]);
 
         $additionalDiscount = (int)$order->additional_discount ?? 0;
         $sumActivityDatas = $order->activity_datas->sum();

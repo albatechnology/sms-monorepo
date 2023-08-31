@@ -61,6 +61,7 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         'deleted_at',
         // 'product_brand_id',
         'parent_id',
+        'last_activity_status',
     ];
 
     protected $casts = [
@@ -77,6 +78,7 @@ class Lead extends BaseModel implements Tenanted, HasMedia
         'status_history'   => 'array',
         'type'             => LeadType::class,
         'status'           => LeadStatus::class,
+        'last_activity_status' => \App\Enums\ActivityStatus::class,
         // 'product_brand_id' => 'integer',
     ];
 
