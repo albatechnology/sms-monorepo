@@ -13,6 +13,7 @@ use App\Http\Resources\V1\Address\BaseAddressResource;
 use App\Http\Resources\V1\CartDemand\CartDemandResource;
 use App\Http\Resources\V1\Channel\ChannelResource;
 use App\Http\Resources\V1\Customer\CustomerResource;
+use App\Http\Resources\V1\Discount\DiscountResource;
 // use App\Http\Resources\V1\Discount\BaseDiscountResource;
 use App\Http\Resources\V1\OrderDetailResource;
 use App\Http\Resources\V1\OrderDiscount\OrderDiscountResource;
@@ -56,6 +57,8 @@ class OrderResource extends BaseResource
 
 
             ResourceData::makeEnum('approval_status', OrderApprovalStatus::class),
+            // ResourceData::make('discount_id', Schema::TYPE_INTEGER, 1)->nullable(),
+            ResourceData::makeRelationship('discount', DiscountResource::class),
             ResourceData::makeEnum('discount_error', DiscountError::class, true),
 
             ResourceData::make('lead_id', Schema::TYPE_INTEGER, 1),
@@ -67,8 +70,7 @@ class OrderResource extends BaseResource
             ),
             ResourceData::make('channel_id', Schema::TYPE_INTEGER, 1),
             // ResourceData::make('company_id', Schema::TYPE_INTEGER, 1),
-            ResourceData::make('interior_design_id', Schema::TYPE_INTEGER, 1)->nullable(),
-            ResourceData::make('discount_id', Schema::TYPE_INTEGER, 1)->nullable(),
+            // ResourceData::make('interior_design_id', Schema::TYPE_INTEGER, 1)->nullable(),
 
             //ResourceData::makeRelationship('activity', ActivityResource::class),
 
