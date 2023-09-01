@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 29, 2023 at 09:34 AM
+-- Generation Time: Sep 01, 2023 at 05:12 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.0.15
 
@@ -142,12 +142,12 @@ CREATE TABLE `addresses` (
 --
 
 INSERT INTO `addresses` (`id`, `address_line_1`, `address_line_2`, `address_line_3`, `postcode`, `city`, `country`, `province`, `type`, `phone`, `customer_id`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Tangerang Raya', NULL, NULL, '15710', 'Tangerang', 'Indonesia', 'Banten', 1, '0987654321', 1, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(2, 'address customer dua', NULL, NULL, '15710', 'Tangerang', 'Indonesia', 'Banten', 1, '098709870987', 2, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(3, 'address customer tiga', NULL, NULL, '13848', 'Jakarta Utara', 'Indonesia', 'Jakarta', 1, '098765098765', 3, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(4, 'address customer empat', NULL, NULL, '22334', 'Bandung', 'Indonesia', 'Jawa Barat', 1, '098789098780', 4, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(5, 'address customer lima', NULL, NULL, '10902', 'Surabaya', 'Indonesia', 'Jawa Timur', 1, '082928347732', 5, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(6, 'address customer enam', NULL, NULL, '84930', 'Medan', 'Indonesia', 'Sumatera Utara', 1, '082127328283', 6, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL);
+(1, 'Tangerang Raya', NULL, NULL, '15710', 'Tangerang', 'Indonesia', 'Banten', 1, '0987654321', 1, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL),
+(2, 'address customer dua', NULL, NULL, '15710', 'Tangerang', 'Indonesia', 'Banten', 1, '098709870987', 2, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL),
+(3, 'address customer tiga', NULL, NULL, '13848', 'Jakarta Utara', 'Indonesia', 'Jakarta', 1, '098765098765', 3, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL),
+(4, 'address customer empat', NULL, NULL, '22334', 'Bandung', 'Indonesia', 'Jawa Barat', 1, '098789098780', 4, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL),
+(5, 'address customer lima', NULL, NULL, '10902', 'Surabaya', 'Indonesia', 'Jawa Timur', 1, '082928347732', 5, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL),
+(6, 'address customer enam', NULL, NULL, '84930', 'Medan', 'Indonesia', 'Sumatera Utara', 1, '082127328283', 6, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL);
 
 -- --------------------------------------------------------
 
@@ -189,9 +189,9 @@ CREATE TABLE `brand_categories` (
 --
 
 INSERT INTO `brand_categories` (`id`, `subscribtion_user_id`, `name`, `code`, `slug`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 2, 'Brand Category Otomotif', 'BCOtomotif', 'brand-category-Otomotif', '2023-08-29 07:30:37', '2023-08-29 07:30:37', NULL),
-(2, 2, 'Brand Category Properti', 'BCProperti', 'brand-category-Properti', '2023-08-29 07:30:40', '2023-08-29 07:30:40', NULL),
-(3, 2, 'Brand Category Assurance', 'ACassurance', 'brand-category-Assurance', '2023-08-29 07:30:43', '2023-08-29 07:30:43', NULL);
+(1, 2, 'Brand Category Otomotif', 'BCOtomotif', 'brand-category-Otomotif', '2023-09-01 03:06:01', '2023-09-01 03:06:01', NULL),
+(2, 2, 'Brand Category Properti', 'BCProperti', 'brand-category-Properti', '2023-09-01 03:06:18', '2023-09-01 03:06:18', NULL),
+(3, 2, 'Brand Category Assurance', 'ACassurance', 'brand-category-Assurance', '2023-09-01 03:06:23', '2023-09-01 03:06:23', NULL);
 
 -- --------------------------------------------------------
 
@@ -232,8 +232,8 @@ CREATE TABLE `channels` (
 --
 
 INSERT INTO `channels` (`id`, `subscribtion_user_id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 2, 'Channel Starter 1', '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(2, 3, 'Channel basic 1', '2023-08-29 07:30:37', '2023-08-29 07:30:37', NULL);
+(1, 2, 'Channel Starter 1', '2023-09-01 03:06:00', '2023-09-01 03:06:00', NULL),
+(2, 3, 'Channel basic 1', '2023-09-01 03:06:01', '2023-09-01 03:06:01', NULL);
 
 -- --------------------------------------------------------
 
@@ -301,12 +301,12 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `subscribtion_user_id`, `title`, `first_name`, `last_name`, `email`, `phone`, `date_of_birth`, `description`, `default_address_id`, `has_activity`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 2, 1, 'Customer satu', 'OKE', 'customer@gmail.com', '0987654321', '2023-08-29', 'description customer', NULL, 0, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(2, 2, 1, 'customer dua', 'sample', 'customerdua@gmail.com', '098709870987', NULL, NULL, NULL, 0, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(3, 2, 1, 'customer tiga', 'sample', 'customertiga@gmail.com', '098765098765', NULL, NULL, NULL, 0, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(4, 2, 1, 'customer empat', '', 'customerempat@gmail.com', '098789098780', NULL, NULL, NULL, 0, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(5, 2, 1, 'customer lima', '', 'customerlima@gmail.com', '082928347732', NULL, NULL, NULL, 0, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(6, 2, 1, 'customer enam', '', 'customerenam@gmail.com', '082127328283', NULL, NULL, NULL, 0, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL);
+(1, 2, 1, 'Customer satu', 'OKE', 'customer@gmail.com', '0987654321', '2023-09-01', 'description customer', NULL, 0, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL),
+(2, 2, 1, 'customer dua', 'sample', 'customerdua@gmail.com', '098709870987', NULL, NULL, NULL, 0, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL),
+(3, 2, 1, 'customer tiga', 'sample', 'customertiga@gmail.com', '098765098765', NULL, NULL, NULL, 0, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL),
+(4, 2, 1, 'customer empat', '', 'customerempat@gmail.com', '098789098780', NULL, NULL, NULL, 0, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL),
+(5, 2, 1, 'customer lima', '', 'customerlima@gmail.com', '082928347732', NULL, NULL, NULL, 0, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL),
+(6, 2, 1, 'customer enam', '', 'customerenam@gmail.com', '082127328283', NULL, NULL, NULL, 0, '2023-09-01 03:06:54', '2023-09-01 03:06:54', NULL);
 
 -- --------------------------------------------------------
 
@@ -473,6 +473,7 @@ CREATE TABLE `leads` (
   `has_pending_status_change` tinyint(1) DEFAULT 0,
   `has_activity` tinyint(1) NOT NULL DEFAULT 0,
   `interest` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_activity_status` tinyint(3) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
@@ -482,13 +483,13 @@ CREATE TABLE `leads` (
 -- Dumping data for table `leads`
 --
 
-INSERT INTO `leads` (`id`, `lead_category_id`, `sub_lead_category_id`, `parent_id`, `type`, `status`, `label`, `is_new_customer`, `is_unhandled`, `group_id`, `user_id`, `user_referral_id`, `customer_id`, `channel_id`, `status_history`, `status_change_due_at`, `has_pending_status_change`, `has_activity`, `interest`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 1, 1, NULL, 3, 1, 'Customer satu OKE - 29-08-2023', 1, 0, 1, 7, NULL, 1, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.163712Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.174236Z\"}]', NULL, 0, 0, NULL, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(2, 1, 1, NULL, 3, 1, 'customer dua sample - 29-08-2023', 1, 0, 2, 7, NULL, 2, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.177046Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.180795Z\"}]', NULL, 0, 0, NULL, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(3, 1, 1, NULL, 3, 1, 'customer tiga sample - 29-08-2023', 1, 0, 3, 7, NULL, 3, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.183596Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.187325Z\"}]', NULL, 0, 0, NULL, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(4, 1, 1, NULL, 3, 1, 'customer empat  - 29-08-2023', 1, 0, 4, 7, NULL, 4, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.190965Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.194120Z\"}]', NULL, 0, 0, NULL, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(5, 1, 1, NULL, 3, 1, 'customer lima  - 29-08-2023', 1, 0, 5, 7, NULL, 5, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.197107Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.200730Z\"}]', NULL, 0, 0, NULL, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL),
-(6, 1, 1, NULL, 3, 1, 'customer enam  - 29-08-2023', 1, 0, 6, 7, NULL, 6, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.203586Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-08-29T07:31:01.207910Z\"}]', NULL, 0, 0, NULL, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL);
+INSERT INTO `leads` (`id`, `lead_category_id`, `sub_lead_category_id`, `parent_id`, `type`, `status`, `label`, `is_new_customer`, `is_unhandled`, `group_id`, `user_id`, `user_referral_id`, `customer_id`, `channel_id`, `status_history`, `status_change_due_at`, `has_pending_status_change`, `has_activity`, `interest`, `last_activity_status`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 1, 1, NULL, 3, 1, 'Customer satu OKE - 01-09-2023', 1, 0, 1, 7, NULL, 1, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.076671Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.088529Z\"}]', NULL, 0, 0, NULL, NULL, '2023-09-01 03:06:55', '2023-09-01 03:06:55', NULL),
+(2, 1, 1, NULL, 3, 1, 'customer dua sample - 01-09-2023', 1, 0, 2, 7, NULL, 2, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.093251Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.099457Z\"}]', NULL, 0, 0, NULL, NULL, '2023-09-01 03:06:55', '2023-09-01 03:06:55', NULL),
+(3, 1, 1, NULL, 3, 1, 'customer tiga sample - 01-09-2023', 1, 0, 3, 7, NULL, 3, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.106391Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.113040Z\"}]', NULL, 0, 0, NULL, NULL, '2023-09-01 03:06:55', '2023-09-01 03:06:55', NULL),
+(4, 1, 1, NULL, 3, 1, 'customer empat  - 01-09-2023', 1, 0, 4, 7, NULL, 4, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.117284Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.123444Z\"}]', NULL, 0, 0, NULL, NULL, '2023-09-01 03:06:55', '2023-09-01 03:06:55', NULL),
+(5, 1, 1, NULL, 3, 1, 'customer lima  - 01-09-2023', 1, 0, 5, 7, NULL, 5, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.127658Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.133341Z\"}]', NULL, 0, 0, NULL, NULL, '2023-09-01 03:06:55', '2023-09-01 03:06:55', NULL),
+(6, 1, 1, NULL, 3, 1, 'customer enam  - 01-09-2023', 1, 0, 6, 7, NULL, 6, 1, '[{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.138489Z\"},{\"status\":1,\"type\":3,\"updated_at\":\"2023-09-01T03:06:55.143782Z\"}]', NULL, 0, 0, NULL, NULL, '2023-09-01 03:06:55', '2023-09-01 03:06:55', NULL);
 
 -- --------------------------------------------------------
 
@@ -511,7 +512,7 @@ CREATE TABLE `lead_categories` (
 --
 
 INSERT INTO `lead_categories` (`id`, `subscribtion_user_id`, `name`, `description`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Lead Category 1', 'description Lead Category 1', NULL, '2023-08-29 07:31:01', '2023-08-29 07:31:01');
+(1, 2, 'Lead Category 1', 'description Lead Category 1', NULL, '2023-09-01 03:06:55', '2023-09-01 03:06:55');
 
 -- --------------------------------------------------------
 
@@ -545,25 +546,25 @@ CREATE TABLE `media` (
 --
 
 INSERT INTO `media` (`id`, `model_type`, `model_id`, `uuid`, `collection_name`, `name`, `file_name`, `mime_type`, `disk`, `conversions_disk`, `size`, `manipulations`, `custom_properties`, `generated_conversions`, `responsive_images`, `order_column`, `created_at`, `updated_at`) VALUES
-(1, 'App\\Models\\ProductBrand', 1, 'f34d6d6a-ab4e-4896-80e2-9880e32649d8', 'photo', '64ed725a735e5_logo-astra-otoparts', '64ed725a735e5_logo-astra-otoparts.jpg', 'image/jpeg', 's3', 's3', 29090, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 1, '2023-08-29 07:30:37', '2023-08-29 07:30:38'),
-(2, 'App\\Models\\ProductCategory', 1, '7378010e-a8c1-42a8-86eb-1713ccc4c60d', 'photo', '64ed691f3d78e_Screen-Shot-2023-08-29-at-10.38.49', '64ed691f3d78e_Screen-Shot-2023-08-29-at-10.38.49.png', 'image/png', 's3', 's3', 251071, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 2, '2023-08-29 07:30:39', '2023-08-29 07:30:40'),
-(3, 'App\\Models\\ProductBrand', 2, '54bb65a3-9bd9-45e1-a679-8b1dfca333d7', 'photo', '64ed7329ae0c8_pngtree-property-logo-png-image_6430110', '64ed7329ae0c8_pngtree-property-logo-png-image_6430110.png', 'image/png', 's3', 's3', 9190, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 3, '2023-08-29 07:30:40', '2023-08-29 07:30:41'),
-(4, 'App\\Models\\ProductCategory', 2, '499f0acc-9465-4c26-89d1-e38bc5a420ae', 'photo', '64ed6915ead8f_Screen-Shot-2023-08-29-at-10.36.35', '64ed6915ead8f_Screen-Shot-2023-08-29-at-10.36.35.png', 'image/png', 's3', 's3', 794099, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 4, '2023-08-29 07:30:41', '2023-08-29 07:30:43'),
-(5, 'App\\Models\\ProductBrand', 3, 'da1bd66f-2352-4cfa-9061-5891d0f4b369', 'photo', '64ed7448c8ccc_256x256bb', '64ed7448c8ccc_256x256bb.jpg', 'image/jpeg', 's3', 's3', 17261, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 5, '2023-08-29 07:30:43', '2023-08-29 07:30:44'),
-(6, 'App\\Models\\ProductCategory', 3, '4c5e630b-cb57-4b62-943b-412b3bf650f8', 'photo', '64ed6904a42e3_logo-about-us', '64ed6904a42e3_logo-about-us.png', 'image/png', 's3', 's3', 50310, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 6, '2023-08-29 07:30:44', '2023-08-29 07:30:45'),
-(7, 'App\\Models\\Product', 1, '3d7f2e7b-8c31-482a-ae3f-996aa76fdd32', 'photo', '64ec4cfcac371_2023-tesla-model-x-101-1671475309', '64ec4cfcac371_2023-tesla-model-x-101-1671475309.jpeg', 'image/jpeg', 's3', 's3', 67473, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 7, '2023-08-29 07:30:45', '2023-08-29 07:30:46'),
-(8, 'App\\Models\\Product', 2, 'd9a11e9f-3b33-4ff1-95a3-e0563ff7f31b', 'photo', 'mengenal-mesin-diesel-common-rail-tdi-dan-diesel-konvensional', 'mengenal-mesin-diesel-common-rail-tdi-dan-diesel-konvensional.png', 'image/png', 's3', 's3', 196887, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 8, '2023-08-29 07:30:46', '2023-08-29 07:30:47'),
-(9, 'App\\Models\\Product', 3, '8a2666d1-7327-4f1f-8c5c-84be0ab1bad9', 'photo', 'crawler-buldozer-illustration-transportation-illustration-generative-ai_710947-95', 'crawler-buldozer-illustration-transportation-illustration-generative-ai_710947-95.jpg', 'image/jpeg', 's3', 's3', 75965, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 9, '2023-08-29 07:30:48', '2023-08-29 07:30:49'),
-(10, 'App\\Models\\Product', 4, '0a4338e6-3bc1-476f-9b38-36eb51237e91', 'photo', '64ec4d60f0f7e_2021-nissan-gt-r-2457-3-1664901335', '64ec4d60f0f7e_2021-nissan-gt-r-2457-3-1664901335.jpeg', 'image/jpeg', 's3', 's3', 130127, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 10, '2023-08-29 07:30:49', '2023-08-29 07:30:50'),
-(11, 'App\\Models\\Product', 5, '40aaa600-2d4b-42f8-8da1-fc513c9b726f', 'photo', '64ec4cb1f20df_IMG-20200506-WA0004-e1588733192512', '64ec4cb1f20df_IMG-20200506-WA0004-e1588733192512.jpeg', 'image/jpeg', 's3', 's3', 62475, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 11, '2023-08-29 07:30:51', '2023-08-29 07:30:51'),
-(12, 'App\\Models\\Product', 6, '8192f58b-ae06-481e-a5de-b3946396f6fe', 'photo', '64ed5c2e310a8_maxresdefault', '64ed5c2e310a8_maxresdefault.jpeg', 'image/jpeg', 's3', 's3', 92548, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 12, '2023-08-29 07:30:52', '2023-08-29 07:30:52'),
-(13, 'App\\Models\\Product', 7, '81bd8501-c800-4fdd-b194-e9da17b3f700', 'photo', '64ec4a9200e31_5fdebc94f4196', '64ec4a9200e31_5fdebc94f4196.jpeg', 'image/jpeg', 's3', 's3', 60368, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 13, '2023-08-29 07:30:53', '2023-08-29 07:30:53'),
-(14, 'App\\Models\\Product', 8, '9657eb2d-9770-4873-a9b3-3ba05595a5a2', 'photo', '64ec4bb7ee80c_32127_24959', '64ec4bb7ee80c_32127_24959.jpeg', 'image/jpeg', 's3', 's3', 282156, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 14, '2023-08-29 07:30:54', '2023-08-29 07:30:55'),
-(15, 'App\\Models\\Product', 9, 'cc40c484-7137-4664-8ecc-c25099b226f1', 'photo', '64ec4a5a50cf3_lampukristal', '64ec4a5a50cf3_lampukristal.jpeg', 'image/jpeg', 's3', 's3', 57413, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 15, '2023-08-29 07:30:55', '2023-08-29 07:30:56'),
-(16, 'App\\Models\\Product', 10, '2c98f032-c1e3-45a0-b92a-cc87568486b7', 'photo', '64ec4b710dd2c_Screen-Shot-2023-08-28-at-14.23.16', '64ec4b710dd2c_Screen-Shot-2023-08-28-at-14.23.16.png', 'image/png', 's3', 's3', 394404, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 16, '2023-08-29 07:30:56', '2023-08-29 07:30:57'),
-(17, 'App\\Models\\Product', 11, 'a8ce03cb-a697-401d-be06-c6f397185eb5', 'photo', '64ec4b4b857b9_nationwide-mutual-insurance-company4591', '64ec4b4b857b9_nationwide-mutual-insurance-company4591.jpeg', 'image/jpeg', 's3', 's3', 21025, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 17, '2023-08-29 07:30:58', '2023-08-29 07:30:58'),
-(18, 'App\\Models\\Product', 12, '1b979130-4320-4070-989f-9e870b7180a5', 'photo', '64ec4b031884a_insurance', '64ec4b031884a_insurance.jpeg', 'image/jpeg', 's3', 's3', 10848, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 18, '2023-08-29 07:30:59', '2023-08-29 07:30:59'),
-(19, 'App\\Models\\Product', 13, '65eb71bf-3bf0-470d-bfbc-7c7c2e0daa60', 'photo', '64ec59cd9475f_HQT8RYW6SJSGMP2YJVJV-59523127', '64ec59cd9475f_HQT8RYW6SJSGMP2YJVJV-59523127.jpeg', 'image/jpeg', 's3', 's3', 50385, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 19, '2023-08-29 07:31:00', '2023-08-29 07:31:01');
+(1, 'App\\Models\\ProductBrand', 1, '04ecc0db-c13d-40b4-8f83-af99d88cec85', 'photo', '64ed725a735e5_logo-astra-otoparts', '64ed725a735e5_logo-astra-otoparts.jpg', 'image/jpeg', 's3', 's3', 29090, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 1, '2023-09-01 03:06:01', '2023-09-01 03:06:16'),
+(2, 'App\\Models\\ProductCategory', 1, '019bc356-e2da-4687-9717-34eab94495b0', 'photo', '64ed691f3d78e_Screen-Shot-2023-08-29-at-10.38.49', '64ed691f3d78e_Screen-Shot-2023-08-29-at-10.38.49.png', 'image/png', 's3', 's3', 251071, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 2, '2023-09-01 03:06:16', '2023-09-01 03:06:18'),
+(3, 'App\\Models\\ProductBrand', 2, 'd0274d0c-0fbd-46ea-86fa-b45b12ba0b3b', 'photo', '64ed7329ae0c8_pngtree-property-logo-png-image_6430110', '64ed7329ae0c8_pngtree-property-logo-png-image_6430110.png', 'image/png', 's3', 's3', 9190, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 3, '2023-09-01 03:06:18', '2023-09-01 03:06:19'),
+(4, 'App\\Models\\ProductCategory', 2, 'bc452da3-b6a7-4465-b3ee-12cab6a8eced', 'photo', '64ed6915ead8f_Screen-Shot-2023-08-29-at-10.36.35', '64ed6915ead8f_Screen-Shot-2023-08-29-at-10.36.35.png', 'image/png', 's3', 's3', 794099, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 4, '2023-09-01 03:06:20', '2023-09-01 03:06:23'),
+(5, 'App\\Models\\ProductBrand', 3, 'd7afecd2-6737-48d5-8886-89cfa84ea2f0', 'photo', '64ed7448c8ccc_256x256bb', '64ed7448c8ccc_256x256bb.jpg', 'image/jpeg', 's3', 's3', 17261, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 5, '2023-09-01 03:06:23', '2023-09-01 03:06:24'),
+(6, 'App\\Models\\ProductCategory', 3, '49f7a2ec-831b-4548-84ed-2197ebb4ad28', 'photo', '64ed6904a42e3_logo-about-us', '64ed6904a42e3_logo-about-us.png', 'image/png', 's3', 's3', 50310, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 6, '2023-09-01 03:06:25', '2023-09-01 03:06:26'),
+(7, 'App\\Models\\Product', 1, '222109a2-e100-4e22-8887-f53fa4b2a823', 'photo', '64ec4cfcac371_2023-tesla-model-x-101-1671475309', '64ec4cfcac371_2023-tesla-model-x-101-1671475309.jpeg', 'image/jpeg', 's3', 's3', 67473, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 7, '2023-09-01 03:06:31', '2023-09-01 03:06:32'),
+(8, 'App\\Models\\Product', 2, '1eb40982-663c-4883-a61a-be010eb67034', 'photo', 'mengenal-mesin-diesel-common-rail-tdi-dan-diesel-konvensional', 'mengenal-mesin-diesel-common-rail-tdi-dan-diesel-konvensional.png', 'image/png', 's3', 's3', 196887, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 8, '2023-09-01 03:06:33', '2023-09-01 03:06:35'),
+(9, 'App\\Models\\Product', 3, '128d065b-391f-4ef8-85c5-d51e89424d2d', 'photo', 'crawler-buldozer-illustration-transportation-illustration-generative-ai_710947-95', 'crawler-buldozer-illustration-transportation-illustration-generative-ai_710947-95.jpg', 'image/jpeg', 's3', 's3', 75965, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 9, '2023-09-01 03:06:35', '2023-09-01 03:06:36'),
+(10, 'App\\Models\\Product', 4, '080affc1-617a-49fb-9183-b1818c790279', 'photo', '64ec4d60f0f7e_2021-nissan-gt-r-2457-3-1664901335', '64ec4d60f0f7e_2021-nissan-gt-r-2457-3-1664901335.jpeg', 'image/jpeg', 's3', 's3', 130127, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 10, '2023-09-01 03:06:37', '2023-09-01 03:06:38'),
+(11, 'App\\Models\\Product', 5, '6d6d2e07-eb28-49dd-a615-e60a156e53fc', 'photo', '64ec4cb1f20df_IMG-20200506-WA0004-e1588733192512', '64ec4cb1f20df_IMG-20200506-WA0004-e1588733192512.jpeg', 'image/jpeg', 's3', 's3', 62475, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 11, '2023-09-01 03:06:38', '2023-09-01 03:06:40'),
+(12, 'App\\Models\\Product', 6, '738d40e0-848a-4532-8fd7-3284351bed39', 'photo', '64ed5c2e310a8_maxresdefault', '64ed5c2e310a8_maxresdefault.jpeg', 'image/jpeg', 's3', 's3', 92548, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 12, '2023-09-01 03:06:40', '2023-09-01 03:06:41'),
+(13, 'App\\Models\\Product', 7, '48cc344c-3002-4cf0-bee6-277a8b0926ad', 'photo', '64ec4a9200e31_5fdebc94f4196', '64ec4a9200e31_5fdebc94f4196.jpeg', 'image/jpeg', 's3', 's3', 60368, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 13, '2023-09-01 03:06:42', '2023-09-01 03:06:43'),
+(14, 'App\\Models\\Product', 8, '08f8807a-3375-46f9-8baa-b68c883a143e', 'photo', '64ec4bb7ee80c_32127_24959', '64ec4bb7ee80c_32127_24959.jpeg', 'image/jpeg', 's3', 's3', 282156, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 14, '2023-09-01 03:06:44', '2023-09-01 03:06:46'),
+(15, 'App\\Models\\Product', 9, '79c6a8aa-aa3c-4204-bda8-0842753f2213', 'photo', '64ec4a5a50cf3_lampukristal', '64ec4a5a50cf3_lampukristal.jpeg', 'image/jpeg', 's3', 's3', 57413, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 15, '2023-09-01 03:06:46', '2023-09-01 03:06:47'),
+(16, 'App\\Models\\Product', 10, '9c92f28c-2bec-4799-a710-d54684c4de77', 'photo', '64ec4b710dd2c_Screen-Shot-2023-08-28-at-14.23.16', '64ec4b710dd2c_Screen-Shot-2023-08-28-at-14.23.16.png', 'image/png', 's3', 's3', 394404, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 16, '2023-09-01 03:06:47', '2023-09-01 03:06:49'),
+(17, 'App\\Models\\Product', 11, 'd387eb38-e4f9-4c98-bc6a-26455b57516b', 'photo', '64ec4b4b857b9_nationwide-mutual-insurance-company4591', '64ec4b4b857b9_nationwide-mutual-insurance-company4591.jpeg', 'image/jpeg', 's3', 's3', 21025, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 17, '2023-09-01 03:06:49', '2023-09-01 03:06:50'),
+(18, 'App\\Models\\Product', 12, 'aaa1fa0c-494c-4688-aa30-65e5590c184e', 'photo', '64ec4b031884a_insurance', '64ec4b031884a_insurance.jpeg', 'image/jpeg', 's3', 's3', 10848, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 18, '2023-09-01 03:06:51', '2023-09-01 03:06:52'),
+(19, 'App\\Models\\Product', 13, 'ec55fe94-9a2d-4641-a2aa-0e0e8323331f', 'photo', '64ec59cd9475f_HQT8RYW6SJSGMP2YJVJV-59523127', '64ec59cd9475f_HQT8RYW6SJSGMP2YJVJV-59523127.jpeg', 'image/jpeg', 's3', 's3', 50385, '[]', '[]', '{\"thumb\":true,\"preview\":true}', '[]', 19, '2023-09-01 03:06:52', '2023-09-01 03:06:54');
 
 -- --------------------------------------------------------
 
@@ -851,7 +852,6 @@ CREATE TABLE `password_resets` (
 CREATE TABLE `payments` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `subscribtion_user_id` bigint(20) UNSIGNED NOT NULL,
-  `channel_id` bigint(20) UNSIGNED NOT NULL,
   `amount` bigint(20) NOT NULL,
   `reference` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(3) UNSIGNED NOT NULL,
@@ -884,7 +884,7 @@ CREATE TABLE `payment_categories` (
 --
 
 INSERT INTO `payment_categories` (`id`, `subscribtion_user_id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 2, 'Transfer', '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL);
+(1, 2, 'Transfer', '2023-09-01 03:06:55', '2023-09-01 03:06:55', NULL);
 
 -- --------------------------------------------------------
 
@@ -908,7 +908,7 @@ CREATE TABLE `payment_types` (
 --
 
 INSERT INTO `payment_types` (`id`, `subscribtion_user_id`, `name`, `require_approval`, `payment_category_id`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 2, 'BCA Prioritas', 0, 1, '2023-08-29 07:31:01', '2023-08-29 07:31:01', NULL);
+(1, 2, 'BCA Prioritas', 0, 1, '2023-09-01 03:06:55', '2023-09-01 03:06:55', NULL);
 
 -- --------------------------------------------------------
 
@@ -930,93 +930,93 @@ CREATE TABLE `permissions` (
 --
 
 INSERT INTO `permissions` (`id`, `name`, `guard_name`, `parent_id`, `created_at`, `updated_at`) VALUES
-(1, 'dashboard_access', 'web', NULL, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(2, 'user_management_access', 'web', NULL, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(3, 'user_access', 'web', 2, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(4, 'user_create', 'web', 3, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(5, 'user_edit', 'web', 3, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(6, 'user_delete', 'web', 3, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(7, 'role_access', 'web', 2, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(8, 'role_create', 'web', 7, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(9, 'role_edit', 'web', 7, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(10, 'role_delete', 'web', 7, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(11, 'permission_access', 'web', 2, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(12, 'permission_create', 'web', 11, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(13, 'permission_edit', 'web', 11, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(14, 'permission_delete', 'web', 11, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(15, 'corporate_management_access', 'web', NULL, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(16, 'channel_access', 'web', 15, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(17, 'channel_create', 'web', 16, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(18, 'channel_edit', 'web', 16, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(19, 'channel_delete', 'web', 16, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(20, 'crm_access', 'web', NULL, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(21, 'lead_access', 'web', 20, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(22, 'lead_create', 'web', 21, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(23, 'lead_edit', 'web', 21, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(24, 'lead_delete', 'web', 21, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(25, 'lead_category_access', 'web', 20, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(26, 'lead_category_create', 'web', 25, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(27, 'lead_category_edit', 'web', 25, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(28, 'lead_category_delete', 'web', 25, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(29, 'sub_lead_category_access', 'web', 20, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(30, 'sub_lead_category_create', 'web', 29, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(31, 'sub_lead_category_edit', 'web', 29, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(32, 'sub_lead_category_delete', 'web', 29, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(33, 'activity_access', 'web', 20, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(34, 'activity_create', 'web', 33, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(35, 'activity_edit', 'web', 33, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(36, 'activity_delete', 'web', 33, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(37, 'customer_access', 'web', 20, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(38, 'customer_create', 'web', 37, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(39, 'customer_edit', 'web', 37, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(40, 'customer_delete', 'web', 37, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(41, 'address_access', 'web', 20, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(42, 'address_create', 'web', 41, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(43, 'address_edit', 'web', 41, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(44, 'address_delete', 'web', 41, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(45, 'product_management_access', 'web', NULL, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(46, 'brand_category_access', 'web', 45, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(47, 'brand_category_create', 'web', 46, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(48, 'brand_category_edit', 'web', 46, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(49, 'brand_category_delete', 'web', 46, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(50, 'product_brand_access', 'web', 45, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(51, 'product_brand_create', 'web', 50, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(52, 'product_brand_edit', 'web', 50, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(53, 'product_brand_delete', 'web', 50, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(54, 'product_category_access', 'web', 45, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(55, 'product_category_create', 'web', 54, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(56, 'product_category_edit', 'web', 54, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(57, 'product_category_delete', 'web', 54, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(58, 'product_access', 'web', 45, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(59, 'product_create', 'web', 58, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(60, 'product_edit', 'web', 58, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(61, 'product_delete', 'web', 58, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(62, 'marketing_access', 'web', NULL, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(63, 'promo_access', 'web', 62, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(64, 'promo_create', 'web', 63, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(65, 'promo_edit', 'web', 63, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(66, 'promo_delete', 'web', 63, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(67, 'discount_access', 'web', 62, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(68, 'discount_create', 'web', 67, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(69, 'discount_edit', 'web', 67, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(70, 'discount_delete', 'web', 67, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(71, 'finance_access', 'web', NULL, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(72, 'order_access', 'web', 71, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(73, 'order_create', 'web', 72, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(74, 'order_edit', 'web', 72, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(75, 'order_delete', 'web', 72, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(76, 'payment_access', 'web', 71, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(77, 'payment_create', 'web', 76, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(78, 'payment_edit', 'web', 76, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(79, 'payment_delete', 'web', 76, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(80, 'payment_category_access', 'web', 71, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(81, 'payment_category_create', 'web', 80, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(82, 'payment_category_edit', 'web', 80, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(83, 'payment_category_delete', 'web', 80, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(84, 'payment_type_access', 'web', 71, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(85, 'payment_type_create', 'web', 84, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(86, 'payment_type_edit', 'web', 84, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(87, 'payment_type_delete', 'web', 84, '2023-08-29 07:30:36', '2023-08-29 07:30:36');
+(1, 'dashboard_access', 'web', NULL, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(2, 'user_management_access', 'web', NULL, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(3, 'user_access', 'web', 2, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(4, 'user_create', 'web', 3, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(5, 'user_edit', 'web', 3, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(6, 'user_delete', 'web', 3, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(7, 'role_access', 'web', 2, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(8, 'role_create', 'web', 7, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(9, 'role_edit', 'web', 7, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(10, 'role_delete', 'web', 7, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(11, 'permission_access', 'web', 2, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(12, 'permission_create', 'web', 11, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(13, 'permission_edit', 'web', 11, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(14, 'permission_delete', 'web', 11, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(15, 'corporate_management_access', 'web', NULL, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(16, 'channel_access', 'web', 15, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(17, 'channel_create', 'web', 16, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(18, 'channel_edit', 'web', 16, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(19, 'channel_delete', 'web', 16, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(20, 'crm_access', 'web', NULL, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(21, 'lead_access', 'web', 20, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(22, 'lead_create', 'web', 21, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(23, 'lead_edit', 'web', 21, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(24, 'lead_delete', 'web', 21, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(25, 'lead_category_access', 'web', 20, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(26, 'lead_category_create', 'web', 25, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(27, 'lead_category_edit', 'web', 25, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(28, 'lead_category_delete', 'web', 25, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(29, 'sub_lead_category_access', 'web', 20, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(30, 'sub_lead_category_create', 'web', 29, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(31, 'sub_lead_category_edit', 'web', 29, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(32, 'sub_lead_category_delete', 'web', 29, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(33, 'activity_access', 'web', 20, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(34, 'activity_create', 'web', 33, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(35, 'activity_edit', 'web', 33, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(36, 'activity_delete', 'web', 33, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(37, 'customer_access', 'web', 20, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(38, 'customer_create', 'web', 37, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(39, 'customer_edit', 'web', 37, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(40, 'customer_delete', 'web', 37, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(41, 'address_access', 'web', 20, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(42, 'address_create', 'web', 41, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(43, 'address_edit', 'web', 41, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(44, 'address_delete', 'web', 41, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(45, 'product_management_access', 'web', NULL, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(46, 'brand_category_access', 'web', 45, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(47, 'brand_category_create', 'web', 46, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(48, 'brand_category_edit', 'web', 46, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(49, 'brand_category_delete', 'web', 46, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(50, 'product_brand_access', 'web', 45, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(51, 'product_brand_create', 'web', 50, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(52, 'product_brand_edit', 'web', 50, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(53, 'product_brand_delete', 'web', 50, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(54, 'product_category_access', 'web', 45, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(55, 'product_category_create', 'web', 54, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(56, 'product_category_edit', 'web', 54, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(57, 'product_category_delete', 'web', 54, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(58, 'product_access', 'web', 45, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(59, 'product_create', 'web', 58, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(60, 'product_edit', 'web', 58, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(61, 'product_delete', 'web', 58, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(62, 'marketing_access', 'web', NULL, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(63, 'promo_access', 'web', 62, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(64, 'promo_create', 'web', 63, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(65, 'promo_edit', 'web', 63, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(66, 'promo_delete', 'web', 63, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(67, 'discount_access', 'web', 62, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(68, 'discount_create', 'web', 67, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(69, 'discount_edit', 'web', 67, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(70, 'discount_delete', 'web', 67, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(71, 'finance_access', 'web', NULL, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(72, 'order_access', 'web', 71, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(73, 'order_create', 'web', 72, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(74, 'order_edit', 'web', 72, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(75, 'order_delete', 'web', 72, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(76, 'payment_access', 'web', 71, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(77, 'payment_create', 'web', 76, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(78, 'payment_edit', 'web', 76, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(79, 'payment_delete', 'web', 76, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(80, 'payment_category_access', 'web', 71, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(81, 'payment_category_create', 'web', 80, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(82, 'payment_category_edit', 'web', 80, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(83, 'payment_category_delete', 'web', 80, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(84, 'payment_type_access', 'web', 71, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(85, 'payment_type_create', 'web', 84, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(86, 'payment_type_edit', 'web', 84, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(87, 'payment_type_delete', 'web', 84, '2023-09-01 03:05:58', '2023-09-01 03:05:58');
 
 -- --------------------------------------------------------
 
@@ -1070,19 +1070,19 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `subscribtion_user_id`, `product_category_id`, `product_brand_id`, `brand_category_id`, `name`, `description`, `sku`, `price`, `is_active`, `uom`, `production_cost`, `product_category`, `volume`, `tags`, `video_url`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 2, 1, 1, 1, 'Motor Listrik M1', 'Motor Listrik M1', '10001', 1000000, 1, 1, 1000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:45', '2023-08-29 07:30:45', NULL),
-(2, 2, 1, 1, 1, 'Mesin Diesel 100HP', 'Mesin Diesel 100HP', '10002', 2000000, 1, 1, 2000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:46', '2023-08-29 07:30:46', NULL),
-(3, 2, 1, 1, 1, 'Bulldozer Metal Wheel', 'Bulldozer Metal Wheel', '10003', 3000000, 1, 1, 3000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:47', '2023-08-29 07:30:47', NULL),
-(4, 2, 1, 1, 1, 'Nissan GT-R', 'Motor Listrik M1', '10004', 2000000, 1, 1, 2000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:49', '2023-08-29 07:30:49', NULL),
-(5, 2, 1, 1, 1, 'Mazda RX-7 VeilSide', 'Mesin Diesel 100HP', '10005', 3000000, 1, 1, 3000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:50', '2023-08-29 07:30:50', NULL),
-(6, 2, 1, 1, 1, 'GSX 1000rr', 'Bulldozer Metal Wheel', '10006', 1800000, 1, 1, 1800000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:51', '2023-08-29 07:30:51', NULL),
-(7, 2, 2, 2, 2, 'Apartemen Garvyn 2 Kamar', 'Apartemen Garvyn 2 Kamar', '20001', 100000000, 1, 1, 100000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:52', '2023-08-29 07:30:52', NULL),
-(8, 2, 2, 2, 2, 'Sofa Lazboy Melandas', 'Sofa Lazboy Melandas', '20002', 20000000, 1, 1, 20000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:54', '2023-08-29 07:30:54', NULL),
-(9, 2, 2, 2, 2, 'Lampu Gantung Kristal', 'Lampu Gantung Kristal', '20003', 5000000, 1, 1, 5000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:55', '2023-08-29 07:30:55', NULL),
-(10, 2, 3, 3, 3, 'Asuransi Kesehatan', 'Asuransi Kesehatan', '30001', 1000000, 1, 1, 1000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:56', '2023-08-29 07:30:56', NULL),
-(11, 2, 3, 3, 3, 'Asuransi Kendaraan', 'Asuransi Kendaraan', '30002', 2000000, 1, 1, 2000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:57', '2023-08-29 07:30:57', NULL),
-(12, 2, 3, 3, 3, 'Asuransi Proyek', 'Asuransi Proyek', '30003', 3000000, 1, 1, 3000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:58', '2023-08-29 07:30:58', NULL),
-(13, 2, 3, 3, 3, 'FWD Soul Insurance', 'FWD Soul Insurance', '30004', 17000000, 1, 1, 17000000, NULL, NULL, NULL, NULL, '2023-08-29 07:30:59', '2023-08-29 07:30:59', NULL);
+(1, 2, 1, 1, 1, 'Motor Listrik M1', 'Motor Listrik M1', '10001', 1000000, 1, 1, 1000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:30', '2023-09-01 03:06:30', NULL),
+(2, 2, 1, 1, 1, 'Mesin Diesel 100HP', 'Mesin Diesel 100HP', '10002', 2000000, 1, 1, 2000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:32', '2023-09-01 03:06:32', NULL),
+(3, 2, 1, 1, 1, 'Bulldozer Metal Wheel', 'Bulldozer Metal Wheel', '10003', 3000000, 1, 1, 3000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:35', '2023-09-01 03:06:35', NULL),
+(4, 2, 1, 1, 1, 'Nissan GT-R', 'Motor Listrik M1', '10004', 2000000, 1, 1, 2000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:36', '2023-09-01 03:06:36', NULL),
+(5, 2, 1, 1, 1, 'Mazda RX-7 VeilSide', 'Mesin Diesel 100HP', '10005', 3000000, 1, 1, 3000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:38', '2023-09-01 03:06:38', NULL),
+(6, 2, 1, 1, 1, 'GSX 1000rr', 'Bulldozer Metal Wheel', '10006', 1800000, 1, 1, 1800000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:40', '2023-09-01 03:06:40', NULL),
+(7, 2, 2, 2, 2, 'Apartemen Garvyn 2 Kamar', 'Apartemen Garvyn 2 Kamar', '20001', 100000000, 1, 1, 100000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:41', '2023-09-01 03:06:41', NULL),
+(8, 2, 2, 2, 2, 'Sofa Lazboy Melandas', 'Sofa Lazboy Melandas', '20002', 20000000, 1, 1, 20000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:43', '2023-09-01 03:06:43', NULL),
+(9, 2, 2, 2, 2, 'Lampu Gantung Kristal', 'Lampu Gantung Kristal', '20003', 5000000, 1, 1, 5000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:46', '2023-09-01 03:06:46', NULL),
+(10, 2, 3, 3, 3, 'Asuransi Kesehatan', 'Asuransi Kesehatan', '30001', 1000000, 1, 1, 1000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:47', '2023-09-01 03:06:47', NULL),
+(11, 2, 3, 3, 3, 'Asuransi Kendaraan', 'Asuransi Kendaraan', '30002', 2000000, 1, 1, 2000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:49', '2023-09-01 03:06:49', NULL),
+(12, 2, 3, 3, 3, 'Asuransi Proyek', 'Asuransi Proyek', '30003', 3000000, 1, 1, 3000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:50', '2023-09-01 03:06:50', NULL),
+(13, 2, 3, 3, 3, 'FWD Soul Insurance', 'FWD Soul Insurance', '30004', 17000000, 1, 1, 17000000, NULL, NULL, NULL, NULL, '2023-09-01 03:06:52', '2023-09-01 03:06:52', NULL);
 
 -- --------------------------------------------------------
 
@@ -1107,9 +1107,9 @@ CREATE TABLE `product_brands` (
 --
 
 INSERT INTO `product_brands` (`id`, `subscribtion_user_id`, `brand_category_id`, `name`, `hpp_calculation`, `currency_id`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 2, 1, 'Brand Otomotif', 0, NULL, '2023-08-29 07:30:37', '2023-08-29 07:30:37', NULL),
-(2, 2, 2, 'Brand Properti', 0, NULL, '2023-08-29 07:30:40', '2023-08-29 07:30:40', NULL),
-(3, 2, 3, 'Brand Assurance', 0, NULL, '2023-08-29 07:30:43', '2023-08-29 07:30:43', NULL);
+(1, 2, 1, 'Brand Otomotif', 0, NULL, '2023-09-01 03:06:01', '2023-09-01 03:06:01', NULL),
+(2, 2, 2, 'Brand Properti', 0, NULL, '2023-09-01 03:06:18', '2023-09-01 03:06:18', NULL),
+(3, 2, 3, 'Brand Assurance', 0, NULL, '2023-09-01 03:06:23', '2023-09-01 03:06:23', NULL);
 
 -- --------------------------------------------------------
 
@@ -1170,9 +1170,9 @@ CREATE TABLE `product_categories` (
 --
 
 INSERT INTO `product_categories` (`id`, `subscribtion_user_id`, `name`, `description`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 2, 'Category Otomotif', NULL, '2023-08-29 07:30:38', '2023-08-29 07:30:38', NULL),
-(2, 2, 'Category Properti', NULL, '2023-08-29 07:30:41', '2023-08-29 07:30:41', NULL),
-(3, 2, 'Category Assurance', NULL, '2023-08-29 07:30:44', '2023-08-29 07:30:44', NULL);
+(1, 2, 'Category Otomotif', NULL, '2023-09-01 03:06:16', '2023-09-01 03:06:16', NULL),
+(2, 2, 'Category Properti', NULL, '2023-09-01 03:06:19', '2023-09-01 03:06:19', NULL),
+(3, 2, 'Category Assurance', NULL, '2023-09-01 03:06:24', '2023-09-01 03:06:24', NULL);
 
 -- --------------------------------------------------------
 
@@ -1245,9 +1245,9 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `subscribtion_user_id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 1, 'super-admin', 'web', '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(2, NULL, 'admin', 'web', '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(3, NULL, 'user', 'web', '2023-08-29 07:30:36', '2023-08-29 07:30:36');
+(1, 1, 'super-admin', 'web', '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(2, NULL, 'admin', 'web', '2023-09-01 03:05:59', '2023-09-01 03:05:59'),
+(3, NULL, 'user', 'web', '2023-09-01 03:06:00', '2023-09-01 03:06:00');
 
 -- --------------------------------------------------------
 
@@ -1448,9 +1448,9 @@ CREATE TABLE `subscribtion_packages` (
 --
 
 INSERT INTO `subscribtion_packages` (`id`, `name`, `max_users`, `max_customers`, `max_activities`, `max_leads`, `max_orders`, `max_brands`, `max_categories`, `max_products`, `can_discount`, `can_approval`, `can_multi_companies`, `created_at`, `updated_at`) VALUES
-(1, 'Starter', 10, 500, 500, 500, 1000, 1, 10, 50, 0, 0, 0, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(2, 'Basic', 50, 3000, 2000, 3000, 10000, 10, 50, 500, 1, 1, 0, '2023-08-29 07:30:36', '2023-08-29 07:30:36'),
-(3, 'Advance', 200, NULL, NULL, NULL, NULL, NULL, NULL, 5000, 1, 1, 1, '2023-08-29 07:30:36', '2023-08-29 07:30:36');
+(1, 'Starter', 10, 500, 500, 500, 1000, 1, 10, 50, 0, 0, 0, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(2, 'Basic', 50, 3000, 2000, 3000, 10000, 10, 50, 500, 1, 1, 0, '2023-09-01 03:05:58', '2023-09-01 03:05:58'),
+(3, 'Advance', 200, NULL, NULL, NULL, NULL, NULL, NULL, 5000, 1, 1, 1, '2023-09-01 03:05:58', '2023-09-01 03:05:58');
 
 -- --------------------------------------------------------
 
@@ -1475,10 +1475,10 @@ CREATE TABLE `subscribtion_users` (
 --
 
 INSERT INTO `subscribtion_users` (`id`, `subscribtion_package_id`, `name`, `email`, `phone`, `expiration_date`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, NULL, 'PT. Alba Digital Technology', 'alba@gmail.com', '080808080808', NULL, '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(2, 1, 'User Starter', 'user.starter@gmail.com', '09876543211', '2023-09-29', '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(3, 2, 'User Basic', 'user.basic@gmail.com', '09876789009', '2023-09-29', '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(4, 3, 'User Advance', 'user.advance@gmail.com', '098123456734', '2023-09-29', '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL);
+(1, NULL, 'PT. Alba Digital Technology', 'alba@gmail.com', '080808080808', NULL, '2023-09-01 03:05:58', '2023-09-01 03:05:58', NULL),
+(2, 1, 'User Starter', 'user.starter@gmail.com', '09876543211', '2023-10-01', '2023-09-01 03:05:58', '2023-09-01 03:05:58', NULL),
+(3, 2, 'User Basic', 'user.basic@gmail.com', '09876789009', '2023-10-01', '2023-09-01 03:05:58', '2023-09-01 03:05:58', NULL),
+(4, 3, 'User Advance', 'user.advance@gmail.com', '098123456734', '2023-10-01', '2023-09-01 03:05:58', '2023-09-01 03:05:58', NULL);
 
 -- --------------------------------------------------------
 
@@ -1500,7 +1500,7 @@ CREATE TABLE `sub_lead_categories` (
 --
 
 INSERT INTO `sub_lead_categories` (`id`, `lead_category_id`, `name`, `description`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Lead Category 1', 'description Lead Category 1', '2023-08-29 07:31:01', '2023-08-29 07:31:01');
+(1, 1, 'Lead Category 1', 'description Lead Category 1', '2023-09-01 03:06:55', '2023-09-01 03:06:55');
 
 -- --------------------------------------------------------
 
@@ -1559,10 +1559,10 @@ CREATE TABLE `supervisor_types` (
 --
 
 INSERT INTO `supervisor_types` (`id`, `name`, `code`, `level`, `can_assign_lead`, `discount_approval_limit_percentage`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Store Leader', 'store-leader', 1, 0, 0, '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(2, 'Manager Area', 'manager-area', 2, 0, 0, '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(3, 'Head Sales', 'head-sales', 3, 0, 0, '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(4, 'Director Sales Marketing', 'director-sales-marketing', 4, 0, 0, '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL);
+(1, 'Store Leader', 'store-leader', 1, 0, 0, '2023-09-01 03:05:57', '2023-09-01 03:05:57', NULL),
+(2, 'Manager Area', 'manager-area', 2, 0, 0, '2023-09-01 03:05:58', '2023-09-01 03:05:58', NULL),
+(3, 'Head Sales', 'head-sales', 3, 0, 0, '2023-09-01 03:05:58', '2023-09-01 03:05:58', NULL),
+(4, 'Director Sales Marketing', 'director-sales-marketing', 4, 0, 0, '2023-09-01 03:05:58', '2023-09-01 03:05:58', NULL);
 
 -- --------------------------------------------------------
 
@@ -1700,14 +1700,14 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `subscribtion_user_id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `type`, `channel_id`, `supervisor_type_id`, `supervisor_id`, `_lft`, `_rgt`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 1, 'Super Admin', 'superadmin@gmail.com', NULL, '$2y$10$zdcGiJo610Jgx.iC88paEO9BNokMTaLGFLQaHaClbAxWUMHOoGje6', NULL, 1, NULL, NULL, NULL, 1, 2, '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(2, 1, 'Admin ALBA', 'admin@gmail.com', NULL, '$2y$10$vWAzWZjrA6Kzi5ZZu28e8uWIbN4e30.Ga/oZ.vVEWKPv5L9BzshKi', NULL, 1, NULL, NULL, NULL, 3, 4, '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(3, 2, 'Admin Starter', 'adminstarter@gmail.com', NULL, '$2y$10$7ECDLTAYMOCqyueK6YoXC.BdOq3itLSMmwcVw5IPUy7wN8swBUeKS', NULL, 1, NULL, NULL, NULL, 5, 6, '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(4, 2, 'Director', 'director@gmail.com', NULL, '$2y$10$0MG4ly4.nDnpIodJlUXaQOtxPDU34DvRA4QJXtoKOcLckgMfvs8ii', NULL, 4, 1, NULL, NULL, 7, 8, '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(5, 2, 'BUM', 'bum@gmail.com', NULL, '$2y$10$UQygg.GA6BU9qs9xLM2I7.igW0j7yUM9AOmJuLdRpMoCU6W0.by2.', NULL, 3, 1, 2, NULL, 9, 14, '2023-08-29 07:30:36', '2023-08-29 07:30:36', NULL),
-(6, 2, 'Store Leader', 'storeleader@gmail.com', NULL, '$2y$10$XGN0AKXDslhxrJVFyzUqte.Rcw7Kwjy/kkUOhlYmhRsyVTDQchunW', NULL, 3, 1, 1, 5, 10, 13, '2023-08-29 07:30:37', '2023-08-29 07:30:37', NULL),
-(7, 2, 'Sales', 'sales@gmail.com', NULL, '$2y$10$HsPEaDXo2n7dDhj5Sf2fT.DtskFtb8pSHA6/hGVEkmQZ/V9q..7KC', NULL, 2, 1, NULL, 6, 11, 12, '2023-08-29 07:30:37', '2023-08-29 07:30:37', NULL),
-(8, 3, 'Admin basic', 'adminbasic@gmail.com', NULL, '$2y$10$DC2cgnY9SKbchssGNh11heT5OX/jdeLvFR91RR54T4wxQPwSHHQom', NULL, 1, NULL, NULL, NULL, 15, 16, '2023-08-29 07:30:37', '2023-08-29 07:30:37', NULL);
+(1, 1, 'Super Admin', 'superadmin@gmail.com', NULL, '$2y$10$PMUVXwNVTm82Psmoxepr/.1Ridep0td6EwZXgBzDK1RvwkjBtVooS', NULL, 1, NULL, NULL, NULL, 1, 2, '2023-09-01 03:05:59', '2023-09-01 03:05:59', NULL),
+(2, 1, 'Admin ALBA', 'admin@gmail.com', NULL, '$2y$10$PKhqvnGqw1Rp3PrdS0Qvp.XzZliICMgfSGbbro5d8DlfaLP4qjEF6', NULL, 1, NULL, NULL, NULL, 3, 4, '2023-09-01 03:06:00', '2023-09-01 03:06:00', NULL),
+(3, 2, 'Admin Starter', 'adminstarter@gmail.com', NULL, '$2y$10$VAVNQuosEpmneh6t9Kq/zezqmuekFIc5B9vNuzPTFAumjLoaCSNZ.', NULL, 1, NULL, NULL, NULL, 5, 6, '2023-09-01 03:06:00', '2023-09-01 03:06:00', NULL),
+(4, 2, 'Director', 'director@gmail.com', NULL, '$2y$10$hlSSOt2JoI6gZofqWaYEEO8NYJWM9QPz6zwLuq3Ss7l4mEEDmJyqi', NULL, 4, 1, NULL, NULL, 7, 8, '2023-09-01 03:06:00', '2023-09-01 03:06:00', NULL),
+(5, 2, 'BUM', 'bum@gmail.com', NULL, '$2y$10$RU.n1K69uDBiFSMtL3FxtOVqM2O7YXa2feHlNJrTYE9iBgSEQnCcW', NULL, 3, 1, 2, NULL, 9, 14, '2023-09-01 03:06:00', '2023-09-01 03:06:00', NULL),
+(6, 2, 'Store Leader', 'storeleader@gmail.com', NULL, '$2y$10$bCmfodQvVpxwHlMAegvtg.ybeZ9y0NOZehCSkoii0AwWa.cfCux6S', NULL, 3, 1, 1, 5, 10, 13, '2023-09-01 03:06:00', '2023-09-01 03:06:00', NULL),
+(7, 2, 'Sales', 'sales@gmail.com', NULL, '$2y$10$BBBxFlSWjT6KTOLu1W6VZeVa7Yxh3kNLu74e2Sa3iM0wLc4iBLhZO', NULL, 2, 1, NULL, 6, 11, 12, '2023-09-01 03:06:01', '2023-09-01 03:06:01', NULL),
+(8, 3, 'Admin basic', 'adminbasic@gmail.com', NULL, '$2y$10$AWCwpWrgcrj1K8kN/eFmZ.my1JI5hLLxqxIIAT/044feG8rTupUti', NULL, 1, NULL, NULL, NULL, 15, 16, '2023-09-01 03:06:01', '2023-09-01 03:06:01', NULL);
 
 -- --------------------------------------------------------
 
@@ -2020,7 +2020,6 @@ ALTER TABLE `password_resets`
 ALTER TABLE `payments`
   ADD PRIMARY KEY (`id`),
   ADD KEY `payments_subscribtion_user_id_foreign` (`subscribtion_user_id`),
-  ADD KEY `payments_channel_id_foreign` (`channel_id`),
   ADD KEY `payments_payment_type_id_foreign` (`payment_type_id`),
   ADD KEY `payments_approved_by_id_foreign` (`approved_by_id`),
   ADD KEY `payments_added_by_id_foreign` (`added_by_id`),
@@ -2779,7 +2778,6 @@ ALTER TABLE `order_details`
 ALTER TABLE `payments`
   ADD CONSTRAINT `payments_added_by_id_foreign` FOREIGN KEY (`added_by_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `payments_approved_by_id_foreign` FOREIGN KEY (`approved_by_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `payments_channel_id_foreign` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`),
   ADD CONSTRAINT `payments_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
   ADD CONSTRAINT `payments_payment_type_id_foreign` FOREIGN KEY (`payment_type_id`) REFERENCES `payment_types` (`id`),
   ADD CONSTRAINT `payments_subscribtion_user_id_foreign` FOREIGN KEY (`subscribtion_user_id`) REFERENCES `subscribtion_users` (`id`);
