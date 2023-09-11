@@ -140,8 +140,8 @@ class NewReportController extends BaseApiController
             // $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', TargetType::ACTIVITY_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
             $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('type', TargetType::ACTIVITY_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            // $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
-            $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            // $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'company')->where('model_id', $companyId)->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
+            $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_supervisor) {
             if ($user->supervisor_type_id == 1) {
                 $userType = 'sl';
@@ -155,7 +155,7 @@ class NewReportController extends BaseApiController
 
             $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', TargetType::ACTIVITY_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
         } else if ($user->is_sales) {
             $userType = 'sales';
 
@@ -163,7 +163,7 @@ class NewReportController extends BaseApiController
 
             $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', TargetType::ACTIVITY_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-            $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+            $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
         }
 
         if ($user->is_director || $user->is_supervisor) {
@@ -172,7 +172,7 @@ class NewReportController extends BaseApiController
 
                 $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', TargetType::ACTIVITY_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
-                $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+                $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'channel')->where('model_id', $channelId)->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
             }
         }
 
@@ -1045,7 +1045,7 @@ class NewReportController extends BaseApiController
                     ->where('supervisor_type_id', 2);
                 // ->where('company_id', $companyId);
 
-                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='NEW_LEAD_COUNT' AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
+                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='NEW_LEAD_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_leads");
 
                 $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='ACTIVITY_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
@@ -1452,7 +1452,7 @@ class NewReportController extends BaseApiController
                     ->where('supervisor_type_id', 1);
                 // ->where('company_id', $companyId);
 
-                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='NEW_LEAD_COUNT' AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
+                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='NEW_LEAD_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_leads");
 
                 $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='ACTIVITY_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
@@ -1848,7 +1848,7 @@ class NewReportController extends BaseApiController
                 // ->where('company_id', $companyId);
                 // ->whereIn('id', $user->channels->pluck('id')->all());
 
-                $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='channel' AND model_id=channels.id AND type='NEW_LEAD_COUNT' AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
+                $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='channel' AND model_id=channels.id AND type='NEW_LEAD_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_leads");
 
                 $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='channel' AND model_id=channels.id AND type='ACTIVITY_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
@@ -2228,7 +2228,7 @@ class NewReportController extends BaseApiController
                     ) as total_leads
                 ");
 
-            $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='NEW_LEAD_COUNT' AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
+            $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='NEW_LEAD_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_leads");
 
             $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='ACTIVITY_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
@@ -2526,7 +2526,7 @@ class NewReportController extends BaseApiController
             if ($request->user_type == 'store') {
                 $query = Channel::selectRaw('id, name')->whereIn('id', $user->channels->pluck('id')->all());
 
-                $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='channel' AND model_id=channels.id AND type='NEW_LEAD_COUNT' AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
+                $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='channel' AND model_id=channels.id AND type='NEW_LEAD_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_leads");
 
                 $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='channel' AND model_id=channels.id AND type='ACTIVITY_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
@@ -2896,7 +2896,7 @@ class NewReportController extends BaseApiController
                     ->where('supervisor_id', $user->id)
                     ->whereHas('channels', fn ($q) => $q->whereIn('id', $user->channels->pluck('id')->all()));
 
-                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='NEW_LEAD_COUNT' AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
+                $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='NEW_LEAD_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_leads");
 
                 $query = $query->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='ACTIVITY_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
@@ -3231,7 +3231,7 @@ class NewReportController extends BaseApiController
                 ->whereIn('id', $user->channels->pluck('id')->all())
                 ->with(['sales' => function ($q) use ($channelId, $startTargetDate, $endTargetDate, $startDate, $endDate, $startDateCompare, $endDateCompare) {
 
-                    $q->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='NEW_LEAD_COUNT' AND DATE(start_date) >= '" . $startTargetDate . "' AND DATE(end_date) <= '" . $endTargetDate . "') as target_leads");
+                    $q->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='NEW_LEAD_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_leads");
 
                     $q->selectRaw("(SELECT SUM(target) FROM targets WHERE model_type='user' AND model_id=users.id AND type='ACTIVITY_COUNT' AND DATE(created_at) >= '" . $startTargetDate . "' AND DATE(created_at) <= '" . $endTargetDate . "') as target_activities");
 
@@ -3556,7 +3556,7 @@ class NewReportController extends BaseApiController
 
         // else sales
 
-        $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('start_date', '>=', $startTargetDate)->whereDate('end_date', '<=', $endTargetDate)->first()?->target ?? 0;
+        $target_leads = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', TargetType::NEW_LEAD_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
         $target_activities = DB::table('targets')->selectRaw('SUM(target) as target')->where('model_type', 'user')->where('model_id', $user->id)->where('type', TargetType::ACTIVITY_COUNT)->whereDate('created_at', '>=', $startTargetDate)->whereDate('created_at', '<=', $endTargetDate)->first()?->target ?? 0;
 
@@ -4101,7 +4101,7 @@ class NewReportController extends BaseApiController
         // $companyChannelIds = \App\Models\Channel::where('company_id', $companyId)->pluck('id')?->all() ?? [];
 
         if ($user instanceof Channel) {
-            $target_brands = DB::table('targets')->where('model_type', 'channel')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
+            $target_brands = DB::table('targets')->where('model_type', 'channel')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('created_at', '>=', $startDate)->whereDate('created_at', '<=', $endDate)->pluck('target', 'target_id');
             // $salesIds = User::where('channel_id', $user->id)->where('type', 2)->pluck('id')->all();
             $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
                 ->with(['activityBrandValues' => function ($q) use ($id, $startDate, $endDate) {
@@ -4125,7 +4125,7 @@ class NewReportController extends BaseApiController
             // ->where('company_id', $user->company_id);
         } elseif ($user->type->is(UserType::DIRECTOR)) {
             // $target_brands = DB::table('targets')->where('model_type', 'company')->where('model_id', $user->company_id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
-            $target_brands = DB::table('targets')->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
+            $target_brands = DB::table('targets')->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('created_at', '>=', $startDate)->whereDate('created_at', '<=', $endDate)->pluck('target', 'target_id');
 
             // $companyIds = [$companyId] ?? $user->companies->pluck('id')->all() ?? [];
 
@@ -4154,7 +4154,7 @@ class NewReportController extends BaseApiController
                 }]);
             // ->whereIn('company_id', $companyIds);
         } elseif ($user->type->is(UserType::SUPERVISOR)) {
-            $target_brands = DB::table('targets')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
+            $target_brands = DB::table('targets')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('created_at', '>=', $startDate)->whereDate('created_at', '<=', $endDate)->pluck('target', 'target_id');
 
             $channelIds = $user->channels->pluck('id')->all();
 
@@ -4181,7 +4181,7 @@ class NewReportController extends BaseApiController
                 }]);
             // ->where('company_id', $companyId);
         } else {
-            $target_brands = DB::table('targets')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('start_date', '>=', $startDate)->whereDate('end_date', '<=', $endDate)->pluck('target', 'target_id');
+            $target_brands = DB::table('targets')->where('model_type', 'user')->where('model_id', $user->id)->where('type', NewTargetType::PRODUCT_BRAND)->whereDate('created_at', '>=', $startDate)->whereDate('created_at', '<=', $endDate)->pluck('target', 'target_id');
 
             $query = ProductBrand::selectRaw('id, name as product_brand, (SELECT name FROM brand_categories WHERE id=product_brands.brand_category_id) as brand_category')
                 ->with(['activityBrandValues' => function ($q) use ($id, $startDate, $endDate) {
