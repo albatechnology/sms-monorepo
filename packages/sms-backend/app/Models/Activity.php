@@ -94,7 +94,7 @@ class Activity extends BaseModel implements Tenanted, Reportable, HasMedia
             $model->lead->resetStatus();
 
             // register new activity to report
-            app(ReportService::class)->registerTargetMap($model);
+            // app(ReportService::class)->registerTargetMap($model);
 
             // set lead to has activity
             $lead = $model->lead;

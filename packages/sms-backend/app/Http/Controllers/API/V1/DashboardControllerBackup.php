@@ -41,7 +41,7 @@ class DashboardControllerBackup extends BaseApiController
             $query->select('id', 'name', 'company_id');
         }, 'model.channel.company' => function ($query) {
             $query->select('id', 'name');
-        }])->where('type', TargetType::DEALS_INVOICE_PRICE)->where('model_type', 'user')
+        }])->where('type', TargetType::DEALS_ORDER_PRICE)->where('model_type', 'user')
             ->whereHas('report', function ($query) use ($startDate, $endDate) {
                 // $query->whereDate('start_date', Carbon::parse($startDate))->whereDate('end_date', Carbon::parse($endDate));
                 $query->where('start_date', '>=', Carbon::parse($startDate))->where('end_date', '<=', Carbon::parse($endDate));
