@@ -45,7 +45,7 @@ class DashboardController extends BaseApiController
             $query->select('id', 'name', 'company_id');
         }, 'model.channel.company' => function ($query) {
             $query->select('id', 'name');
-        }])->where('type', TargetType::DEALS_INVOICE_PRICE)->where('model_type', 'user')
+        }])->where('type', TargetType::DEALS_ORDER_PRICE)->where('model_type', 'user')
             ->whereHas('report', function ($query) use ($startDate, $endDate) {
                 $query->where('start_date', '>=', Carbon::parse($startDate))->where('end_date', '<=', Carbon::parse($endDate));
             })->selectRaw('id, model_type, model_id, target, value, IF(target = 0, 0, ((value / target) * 100)) as percentage');
@@ -56,7 +56,7 @@ class DashboardController extends BaseApiController
             $query->select('id', 'name', 'company_id');
         }, 'model.channel.company' => function ($query) {
             $query->select('id', 'name');
-        }])->where('type', TargetType::DEALS_INVOICE_PRICE)->where('model_type', 'user')
+        }])->where('type', TargetType::DEALS_ORDER_PRICE)->where('model_type', 'user')
             ->whereHas('report', function ($query) use ($startDate, $endDate) {
                 $query->where('start_date', '>=', Carbon::parse($startDate))->where('end_date', '<=', Carbon::parse($endDate));
             })->selectRaw('id, model_type, model_id, target, value, IF(target = 0, 0, ((value / target) * 100)) as percentage');
@@ -65,7 +65,7 @@ class DashboardController extends BaseApiController
             $query->select('id', 'name');
         }, 'model.company' => function ($query) {
             $query->select('id', 'name');
-        }])->where('type', TargetType::DEALS_INVOICE_PRICE)->where('model_type', 'channel')
+        }])->where('type', TargetType::DEALS_ORDER_PRICE)->where('model_type', 'channel')
             ->whereHas('report', function ($query) use ($startDate, $endDate) {
                 $query->where('start_date', '>=', Carbon::parse($startDate))->where('end_date', '<=', Carbon::parse($endDate));
             })->selectRaw('id, model_type, model_id, target, value, IF(target = 0, 0, ((value / target) * 100)) as percentage');
@@ -223,7 +223,7 @@ class DashboardController extends BaseApiController
                 $query->select('id', 'name', 'company_id');
             }, 'model.channel.company' => function ($query) {
                 $query->select('id', 'name');
-            }])->where('type', TargetType::DEALS_INVOICE_PRICE)->where('model_type', 'user')
+            }])->where('type', TargetType::DEALS_ORDER_PRICE)->where('model_type', 'user')
                 ->whereHas('report', function ($query) use ($startDate, $endDate) {
                     $query->where('start_date', '>=', Carbon::parse($startDate))->where('end_date', '<=', Carbon::parse($endDate));
                 });
@@ -232,7 +232,7 @@ class DashboardController extends BaseApiController
                 $query->select('id', 'name');
             }, 'model.company' => function ($query) {
                 $query->select('id', 'name');
-            }])->where('type', TargetType::DEALS_INVOICE_PRICE)->where('model_type', 'channel')
+            }])->where('type', TargetType::DEALS_ORDER_PRICE)->where('model_type', 'channel')
                 ->whereHas('report', function ($query) use ($startDate, $endDate) {
                     $query->where('start_date', '>=', Carbon::parse($startDate))->where('end_date', '<=', Carbon::parse($endDate));
                 });
