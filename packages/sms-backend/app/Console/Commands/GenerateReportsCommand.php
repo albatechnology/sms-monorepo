@@ -2,10 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\TargetType;
 use App\Enums\UserType;
 use App\Models\Channel;
-use App\Models\ProductBrand;
 use App\Models\SubscribtionUser;
 use App\Models\User;
 use Carbon\Carbon;
