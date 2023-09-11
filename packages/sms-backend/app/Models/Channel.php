@@ -140,6 +140,11 @@ class Channel extends BaseModel implements ReportableScope, Tenanted
     //     return $this->belongsTo(Company::class, 'company_id');
     // }
 
+    public function reports()
+    {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function targets()
     {
         return $this->morphMany(Target::class, 'model');

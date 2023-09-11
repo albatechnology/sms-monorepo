@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Enums\ReportableType;
 use App\Models\Channel;
 use App\Models\Company;
+use App\Models\SubscribtionUser;
 use App\Models\User;
 use Livewire\Component;
 
@@ -38,8 +39,12 @@ class ReportPage extends Component
     {
         $type = ReportableType::fromValue($value);
 
-        if ($type->is(ReportableType::COMPANY)) {
-            $this->reportable_models = Company::tenanted()->get();
+        // if ($type->is(ReportableType::COMPANY)) {
+        //     $this->reportable_models = Company::tenanted()->get();
+        // }
+
+        if ($type->is(ReportableType::SUBSCRIBTION_USER)) {
+            $this->reportable_models = SubscribtionUser::get();
         }
 
         if ($type->is(ReportableType::CHANNEL)) {

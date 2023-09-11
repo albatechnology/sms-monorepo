@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services;
-
 
 use App\Enums\ReportPipelineMode;
 use App\Enums\TargetType;
@@ -268,7 +266,7 @@ class ReportService
                     });
 
                     // could possibly go as a new job
-                    $this->reevaluateReport($newReport);
+                    // $this->reevaluateReport($newReport);
                 });
             }
         });

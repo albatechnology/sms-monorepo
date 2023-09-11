@@ -4,13 +4,10 @@ namespace App\Models;
 
 use App\Enums\TargetChartType;
 use App\Enums\TargetType;
-use App\Jobs\GenericQueueJob;
-use App\Services\ReportService;
 use App\Traits\Auditable;
 use App\Traits\IsTenanted;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Queue\SerializableClosure;
 
 /**
  * @mixin IdeHelperTarget
@@ -55,12 +52,11 @@ class Target extends BaseModel
     public static function boot()
     {
         self::created(function (self $model) {
+            // $job = static function () use ($model) {
+            //     app(ReportService::class)->evaluateTarget($model);
+            // };
 
-            $job = static function () use ($model) {
-                app(ReportService::class)->evaluateTarget($model);
-            };
-
-            GenericQueueJob::dispatch(new SerializableClosure($job));
+            // GenericQueueJob::dispatch(new SerializableClosure($job));
         });
 
         parent::boot();

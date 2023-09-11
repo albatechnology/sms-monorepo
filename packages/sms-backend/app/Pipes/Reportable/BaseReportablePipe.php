@@ -107,9 +107,9 @@ abstract class BaseReportablePipe
         }
 
         // order made for different company
-        if ($this->report->reportable_type->is(ReportableType::COMPANY) && $this->model->company_id !== $this->report->reportable_id) {
-            return false;
-        }
+        // if ($this->report->reportable_type->is(ReportableType::COMPANY) && $this->model->company_id !== $this->report->reportable_id) {
+        //     return false;
+        // }
 
         // order made for different channel
         if ($this->report->reportable_type->is(ReportableType::CHANNEL) && $this->model->channel_id !== $this->report->reportable_id) {
@@ -203,9 +203,9 @@ abstract class BaseReportablePipe
         $query = $this->whereReportableBaseQuery($class::query());
 
         // scope to company
-        if ($this->report->reportable_type->is(ReportableType::COMPANY)) {
-            $query = $this->whereReportableCompany($query, $this->target->model_id);
-        }
+        // if ($this->report->reportable_type->is(ReportableType::COMPANY)) {
+        //     $query = $this->whereReportableCompany($query, $this->target->model_id);
+        // }
 
         // scope to channel
         if ($this->report->reportable_type->is(ReportableType::CHANNEL)) {

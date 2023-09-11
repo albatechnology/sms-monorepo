@@ -3,7 +3,8 @@
 namespace App\Enums;
 
 use App\Models\Channel;
-use App\Models\Company;
+use App\Models\SubscribtionUser;
+// use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,7 +15,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 final class ReportableType extends BaseEnum
 {
-    public const COMPANY = 'company';
+    // public const COMPANY = 'company';
+    public const SUBSCRIBTION_USER = 'subscribtion_user';
     public const CHANNEL = 'channel';
     public const USER    = 'user';
 
@@ -27,8 +29,12 @@ final class ReportableType extends BaseEnum
 
     public static function fromModel(Model $model)
     {
-        if ($model instanceof Company) {
-            return self::COMPANY();
+        // if ($model instanceof Company) {
+        //     return self::COMPANY();
+        // }
+
+        if ($model instanceof SubscribtionUser) {
+            return self::SUBSCRIBTION_USER();
         }
 
         if ($model instanceof Channel) {
@@ -43,7 +49,8 @@ final class ReportableType extends BaseEnum
     public static function getMorphMap(): array
     {
         return [
-            'company' => Company::class,
+            // 'company' => Company::class,
+            'subscribtion_user' => SubscribtionUser::class,
             'channel' => Channel::class,
             'user'    => User::class,
         ];

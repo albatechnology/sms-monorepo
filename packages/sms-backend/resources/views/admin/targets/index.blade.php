@@ -37,9 +37,9 @@
                     <th>
                         {{ trans('cruds.target.fields.target') }}
                     </th>
-                    <th>
+                    {{-- <th>
                         {{ trans('cruds.target.fields.value') }}
-                    </th>
+                    </th> --}}
                     <th>
                         &nbsp;
                     </th>
@@ -55,9 +55,9 @@
                     <td>
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
                     </td>
-                    <td>
+                    {{-- <td>
                         <input class="search" type="text" placeholder="{{ trans('global.search') }}">
-                    </td>
+                    </td> --}}
                     <td>
                     </td>
                 </tr>
@@ -120,7 +120,7 @@
                     {data: 'report_name', name: 'report.name'},
                     {data: 'type', name: 'type'},
                     {data: 'target', name: 'target'},
-                    {data: 'value', name: 'value'},
+                    // {data: 'value', name: 'value'},
                     {data: 'actions', name: '{{ trans('global.actions') }}'}
                 ],
                 orderCellsTop: true,

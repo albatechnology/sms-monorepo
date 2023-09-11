@@ -151,7 +151,8 @@ class Report extends BaseModel implements Tenanted
 
     public function makeReportName()
     {
-        if ($this->reportable_type->is(ReportableType::COMPANY)) {
+        // if ($this->reportable_type->is(ReportableType::COMPANY)) {
+        if ($this->reportable_type->is(ReportableType::SUBSCRIBTION_USER)) {
             return sprintf(
                 '%s %s',
                 $this->reportable->getReportLabel(),
@@ -162,7 +163,7 @@ class Report extends BaseModel implements Tenanted
         if ($this->reportable_type->is(ReportableType::CHANNEL)) {
             return sprintf(
                 '%s - %s',
-                $this->reportable->company->getReportLabel(),
+                $this->reportable->subscribtionUser->getReportLabel(),
                 $this->reportable->getReportLabel(),
             );
         }
@@ -170,7 +171,7 @@ class Report extends BaseModel implements Tenanted
         if ($this->reportable_type->is(ReportableType::USER)) {
             return sprintf(
                 '%s - %s - %s',
-                $this->reportable->company->getReportLabel(),
+                $this->reportable->subscribtionUser->getReportLabel(),
                 strtoupper($this->reportable->getReportLabel()),
                 Carbon::make($this->start_date)->format('F Y'),
             );
