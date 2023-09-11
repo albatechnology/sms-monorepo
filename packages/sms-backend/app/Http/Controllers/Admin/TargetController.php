@@ -59,9 +59,9 @@ class TargetController extends Controller
                 return $row->target_formatted ?? "";
             });
 
-            $table->editColumn('value', function ($row) {
-                return $row->value_formatted ?? "";
-            });
+            // $table->editColumn('value', function ($row) {
+            //     return $row->value_formatted ?? "";
+            // });
 
             $table->rawColumns(['actions', 'placeholder']);
 

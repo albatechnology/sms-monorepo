@@ -663,15 +663,20 @@ class User extends Authenticatable implements Tenanted, ReportableScope
         return (int) $value;
     }
 
+    public function reports()
+    {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
     public function targets()
     {
         return $this->morphMany(Target::class, 'model');
     }
 
-    public function newTargets()
-    {
-        return $this->morphMany(NewTarget::class, 'model');
-    }
+    // public function newTargets()
+    // {
+    //     return $this->morphMany(NewTarget::class, 'model');
+    // }
 
     public function userSalesIds($user, $conditions)
     {

@@ -4,55 +4,35 @@ namespace App\Enums;
 
 use App\Models\Activity;
 use App\Models\Order;
-use App\Models\ProductBrand;
-use App\Models\ProductModel;
 use App\Pipes\Reportable\ActivityCount;
-use App\Pipes\Reportable\DealsBrandPrice;
 use App\Pipes\Reportable\DealsInvoicePrice;
 use App\Pipes\Reportable\DealsOrderCount;
 use App\Pipes\Reportable\DealsPaymentPrice;
-use App\Pipes\Reportable\OrderSettlementCount;
 
 /**
- * @method static static DEALS_INVOICE_PRICE()
- * @method static static DEALS_PAYMENT_PRICE()
- * @method static static DEALS_BRAND_PRICE()
- * @method static static DEALS_MODEL_PRICE()
+ * @method static static DEALS_ORDER_PRICE()
  * @method static static DEALS_ORDER_COUNT()
- * @method static static DEALS_BRAND_COUNT()
- * @method static static DEALS_MODEL_COUNT()
  * @method static static ACTIVITY_COUNT()
- * @method static static ACTIVITY_COUNT_CLOSED()
- * @method static static ORDER_SETTLEMENT_COUNT()
+ * @method static static NEW_LEAD_COUNT()
  */
 final class TargetType extends BaseEnum
 {
-    public const DEALS_INVOICE_PRICE = 0;
-    public const DEALS_PAYMENT_PRICE = 1;
-    public const DEALS_BRAND_PRICE   = 2;
-    public const DEALS_MODEL_PRICE   = 3;
-    public const DEALS_ORDER_COUNT   = 4;
-    public const DEALS_BRAND_COUNT      = 5;
-    public const DEALS_MODEL_COUNT      = 6;
-    public const ACTIVITY_COUNT         = 7;
-    public const ACTIVITY_COUNT_CLOSED  = 8;
-    public const ORDER_SETTLEMENT_COUNT = 9;
+    public const DEALS_ORDER_PRICE = 'DEALS_ORDER_PRICE';
+    public const DEALS_ORDER_COUNT = 'DEALS_ORDER_COUNT';
+    public const ACTIVITY_COUNT = 'ACTIVITY_COUNT';
+    public const LEAD_COUNT = 'LEAD_COUNT';
+    public const NEW_LEAD_COUNT = 'NEW_LEAD_COUNT';
 
     public static function getDescription($value): string
     {
         // Deal are order with payment status down_payment or settlement, and not cancelled
 
         return match ($value) {
-            self::DEALS_INVOICE_PRICE => 'Calculate the total invoice price from all orders that has reached a deal',
-            self::DEALS_PAYMENT_PRICE => 'Calculate the total confirmed payment made against all orders that has reached a deal',
-            self::DEALS_BRAND_PRICE => 'Calculate the total net price of all order detail from a selected brand.',
-            self::DEALS_MODEL_PRICE => 'Calculate the total net price of all order detail from a selected model.',
+            self::DEALS_ORDER_PRICE => 'Calculate the total invoice price from all orders that has reached a deal',
             self::DEALS_ORDER_COUNT => 'Calculate the number of deal order made.',
-            self::DEALS_BRAND_COUNT => 'Calculate the total quantity of product unit purchased as a deal for a given brand.',
-            self::DEALS_MODEL_COUNT => 'Calculate the total quantity of product unit purchased as a deal for a given model.',
             self::ACTIVITY_COUNT => 'Calculate the number of activity',
-            self::ACTIVITY_COUNT_CLOSED => 'Calculate the number of activity with status closed',
-            self::ORDER_SETTLEMENT_COUNT => 'Calculate the number order that has been fully paid',
+            self::LEAD_COUNT => 'Calculate the number of lead',
+            self::NEW_LEAD_COUNT => 'Calculate the number of new lead',
             default => self::getKey($value),
         };
     }
@@ -76,12 +56,11 @@ final class TargetType extends BaseEnum
     {
         return $this->in(
             [
-                self::DEALS_INVOICE_PRICE,
-                self::DEALS_PAYMENT_PRICE,
+                self::DEALS_ORDER_PRICE,
                 self::DEALS_ORDER_COUNT,
                 self::ACTIVITY_COUNT,
-                self::ORDER_SETTLEMENT_COUNT,
-                self::DEALS_BRAND_PRICE,
+                self::LEAD_COUNT,
+                self::NEW_LEAD_COUNT
             ]
         );
     }
@@ -89,17 +68,10 @@ final class TargetType extends BaseEnum
     public function getChartType(): TargetChartType
     {
         return match ($this->value) {
-            self::DEALS_INVOICE_PRICE,
-            self::DEALS_PAYMENT_PRICE,
-            self::DEALS_ORDER_COUNT,
-            self::ACTIVITY_COUNT_CLOSED,
-            self::ORDER_SETTLEMENT_COUNT => TargetChartType::SINGLE(),
+            self::DEALS_ORDER_PRICE,
+            self::DEALS_ORDER_COUNT => TargetChartType::SINGLE(),
 
-            self::ACTIVITY_COUNT,
-            self::DEALS_BRAND_PRICE,
-            self::DEALS_MODEL_PRICE,
-            self::DEALS_BRAND_COUNT,
-            self::DEALS_MODEL_COUNT => TargetChartType::MULTIPLE()
+            self::ACTIVITY_COUNT => TargetChartType::MULTIPLE()
         };
     }
 
@@ -108,10 +80,7 @@ final class TargetType extends BaseEnum
         return in_array(
             $this->value,
             [
-                self::DEALS_INVOICE_PRICE,
-                self::DEALS_PAYMENT_PRICE,
-                self::DEALS_BRAND_PRICE,
-                self::DEALS_MODEL_PRICE,
+                self::DEALS_ORDER_PRICE,
             ],
             true
         );
@@ -123,16 +92,9 @@ final class TargetType extends BaseEnum
     public function getPriority(): int
     {
         return match ($this->value) {
-            self::DEALS_INVOICE_PRICE => 1,
-            self::DEALS_PAYMENT_PRICE => 2,
+            self::DEALS_ORDER_PRICE => 1,
             self::DEALS_ORDER_COUNT => 3,
-            self::ORDER_SETTLEMENT_COUNT => 4,
             self::ACTIVITY_COUNT => 5,
-            self::ACTIVITY_COUNT_CLOSED => 6,
-            self::DEALS_BRAND_PRICE => 7,
-            self::DEALS_MODEL_PRICE => 8,
-            self::DEALS_BRAND_COUNT => 9,
-            self::DEALS_MODEL_COUNT => 10,
             default => 99,
         };
     }
@@ -144,18 +106,14 @@ final class TargetType extends BaseEnum
             DealsOrderCount::class,
             DealsPaymentPrice::class,
             ActivityCount::class,
-            OrderSettlementCount::class,
-            DealsBrandPrice::class,
+            // OrderSettlementCount::class,
+            // DealsBrandPrice::class,
         ];
     }
 
     public function getTargetLineModelClass(): ?string
     {
         return match ($this->value) {
-            self::DEALS_BRAND_COUNT,
-            self::DEALS_BRAND_PRICE => ProductBrand::class,
-            self::DEALS_MODEL_COUNT,
-            self::DEALS_MODEL_PRICE => ProductModel::class,
             default => null,
         };
     }
@@ -163,16 +121,9 @@ final class TargetType extends BaseEnum
     public function getBaseModel(): ?string
     {
         return match ($this->value) {
-            self::DEALS_INVOICE_PRICE,
-            self::DEALS_PAYMENT_PRICE,
-            self::DEALS_BRAND_PRICE,
-            self::DEALS_MODEL_PRICE,
-            self::DEALS_ORDER_COUNT,
-            self::DEALS_BRAND_COUNT,
-            self::ORDER_SETTLEMENT_COUNT,
-            self::DEALS_MODEL_COUNT => Order::class,
-            self::ACTIVITY_COUNT,
-            self::ACTIVITY_COUNT_CLOSED => Activity::class,
+            self::DEALS_ORDER_PRICE,
+            self::DEALS_ORDER_COUNT => Order::class,
+            self::ACTIVITY_COUNT => Activity::class,
             default => null,
         };
     }
