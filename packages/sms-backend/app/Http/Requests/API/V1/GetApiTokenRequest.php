@@ -10,7 +10,7 @@ class GetApiTokenRequest extends BaseApiRequest
     protected static function data()
     {
         return [
-            RequestData::make("email", "string", 'admin@melandas.id', 'required|email'),
+            RequestData::make("email", "string", 'admin@gmail.com', 'required|email'),
             RequestData::make("password", "string", "password", 'required'),
         ];
     }
